@@ -3,114 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2K Gaming</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #1e1e1e; /* Hafif karanlık */
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: 'Arial', sans-serif;
-        }
-        .header {
-            background-color: #121212;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #00ffcc; /* Turkuaz accent, istersen değiştir */
-        }
-        .main-content {
-            flex: 1;
-            display: flex;
-        }
-        .game-half {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: background-color 0.4s, transform 0.3s;
-            cursor: pointer;
-        }
-        .game-half:hover {
-            background-color: #2d2d2d;
-            transform: scale(1.03);
-        }
-        .left {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://via.placeholder.com/800x600?text=Kim+Milyoner+Olmak+Ister') center/cover no-repeat;
-        }
-        .right {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://via.placeholder.com/800x600?text=Sherlock') center/cover no-repeat;
-        }
-        .game-title {
-            font-size: 3rem;
-            font-weight: bold;
-            text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
-            margin-bottom: 20px;
-        }
-        .play-btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            background-color: #00ffcc;
-            color: #000;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .play-btn:hover {
-            background-color: #00ccaa;
-            transform: scale(1.1);
-        }
-        footer {
-            background-color: #121212;
-            padding: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        @media (max-width: 768px) {
-            .main-content { flex-direction: column; }
-            .game-title { font-size: 2rem; }
-            .play-btn { padding: 12px 30px; font-size: 1.3rem; }
-        }
-    </style>
+    <title>2K Oyunlar</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <!-- Yapımcılar Butonu -->
+        <button class="creators-button" id="creatorsBtn">
+            <span>Yapımcılar</span>
+        </button>
 
-    <!-- Header -->
-    <div class="header">
-        <div class="container">
-            <div class="logo">2K Gaming</div>
+        <!-- Yapımcılar Modal -->
+        <div class="modal-overlay" id="creatorsModal">
+            <div class="modal-content creators-modal">
+                <button class="modal-close" id="closeCreatorsModal">&times;</button>
+                <h2 class="modal-title">Yapımcılar</h2>
+                <div class="creators-list" id="creatorsList">
+                    <!-- Buraya sonradan isimler eklenecek -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Ana İçerik -->
+        <div class="main-content">
+            <div class="title-section">
+                <h1 class="main-title">2K</h1>
+                <p class="subtitle">gaming</p>
+            </div>
+            
+            <div class="games-container">
+                <button class="game-button game-button-1" id="game1">
+                    <span>Kim 250TL Almak İster</span>
+                </button>
+                
+                <button class="game-button game-button-2" id="game2">
+                    <span>Sherlock</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Kim 250TL Oyun Ekranı -->
+        <div class="game-screen game-screen-1" id="gameScreen1">
+            <div class="game-background millionaire-bg">
+                <div class="stage-lights"></div>
+                <div class="audience"></div>
+                <div class="spotlight"></div>
+            </div>
+            <button class="back-button" id="backButton1">← Ana Menü</button>
+            <button class="how-to-play-button" id="howToPlayBtn1">Nasıl Oynanır?</button>
+            <div class="game-content">
+                <!-- Oyun içeriği buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- Kim 250TL Nasıl Oynanır Modal -->
+        <div class="modal-overlay" id="howToPlayModal1">
+            <div class="modal-content how-to-play-modal">
+                <button class="modal-close" id="closeHowToPlayModal1">&times;</button>
+                <h2 class="modal-title">💸 Kim 250 TL Almak İster? Nasıl Oynanır?</h2>
+                <div class="how-to-play-content">
+                    <p>Bu oyun, çoktan seçmeli soruların sorulduğu ve her doğru cevapta ödülün arttığı bir bilgi oyunudur.</p>
+                    
+                    <h3>🎮 Oynanış</h3>
+                    <ul>
+                        <li>Oyuncuya çoktan seçmeli bir soru sorulur.</li>
+                        <li>Her sorunun tek bir doğru cevabı vardır.</li>
+                        <li>Doğru cevap verildikçe bir sonraki soruya geçilir.</li>
+                    </ul>
+                    
+                    <h3>💰 Ödül</h3>
+                    <ul>
+                        <li>Her doğru cevapta kazanılan para artar.</li>
+                        <li>En yüksek ödül 250 TL'dir.</li>
+                        <li>Yanlış cevap verildiğinde oyun sona erer.</li>
+                    </ul>
+                    
+                    <h3>🃏 Jokerler</h3>
+                    <p>Oyuncu, oyun sırasında her jokeri bir kez kullanabilir.</p>
+                    <ul>
+                        <li><strong>%50 Jokeri</strong><br>Yanlış seçeneklerin yarısı elenir, doğru cevap kalanlar arasında yer alır.</li>
+                        <li><strong>2x Cevap Jokeri</strong><br>Oyuncu iki farklı seçenek işaretleyebilir. Seçeneklerden biri doğruysa soru doğru kabul edilir.</li>
+                    </ul>
+                    
+                    <h3>📌 Kurallar</h3>
+                    <ul>
+                        <li>Her soru için normalde tek cevap seçilir.</li>
+                        <li>Jokerler kullanıldıktan sonra tekrar kullanılamaz.</li>
+                        <li>Cevaplar kilitlendikten sonra değiştirilemez.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sherlock Oyun Ekranı -->
+        <div class="game-screen game-screen-2" id="gameScreen2">
+            <div class="game-background sherlock-bg"></div>
+            <button class="back-button" id="backButton2">← Ana Menü</button>
+            <button class="how-to-play-button" id="howToPlayBtn2">Nasıl Oynanır?</button>
+            <div class="game-content">
+                <!-- Oyun içeriği buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- Sherlock Nasıl Oynanır Modal -->
+        <div class="modal-overlay" id="howToPlayModal2">
+            <div class="modal-content how-to-play-modal">
+                <button class="modal-close" id="closeHowToPlayModal2">&times;</button>
+                <h2 class="modal-title">🔍 Sherlock Oyunu Nasıl Oynanır?</h2>
+                <div class="how-to-play-content">
+                    <p>Sherlock, kısa ve gizemli bir olayın verildiği, oyuncuların sadece "Evet / Hayır" soruları sorarak olayın arkasındaki gerçeği bulmaya çalıştığı bir mantık oyunudur.</p>
+                    
+                    <h3>🎮 Oynanış</h3>
+                    <ul>
+                        <li>Oyunu yöneten kişi hikâyenin tam cevabını bilir.</li>
+                        <li>Oyunculara eksik ve kafa karıştırıcı bir olay anlatılır.</li>
+                        <li>Oyuncular sırayla sorular sorarak olayı çözmeye çalışır.</li>
+                    </ul>
+                    
+                    <h3>❓ Soru Kuralları</h3>
+                    <ul>
+                        <li>Sorular evet veya hayır ile cevaplanabilir olmalıdır.</li>
+                        <li>Hikâye hakkında ipucu veya açıklama verilmez.</li>
+                        <li>Uygun olmayan sorular "Alakasız" olarak cevaplanır.</li>
+                    </ul>
+                    
+                    <h3>🧠 Amaç</h3>
+                    <p>Amaç, doğru soruları sorarak olayın neden ve nasıl gerçekleştiğini ortaya çıkarmaktır.</p>
+                    
+                    <h3>📌 Önemli</h3>
+                    <ul>
+                        <li>Detayları sorgulayın</li>
+                        <li>Farklı ihtimalleri düşünün</li>
+                        <li>Hızlı değil, mantıklı ilerleyin</li>
+                    </ul>
+                    <p>Doğru sonuca ulaşıldığında oyun tamamlanır.</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Ana İçerik - İkiye Bölünmüş -->
-    <div class="main-content">
-        <!-- Sol Taraf: Kim Milyoner Olmak İster -->
-        <div class="game-half left" onclick="window.location.href='milyoner.html'">
-            <div class="game-title">Kim Milyoner Olmak İster?</div>
-            <button class="play-btn">OYNA</button>
-        </div>
-
-        <!-- Sağ Taraf: Sherlock -->
-        <div class="game-half right" onclick="window.location.href='sherlock.html'">
-            <div class="game-title">Sherlock</div>
-            <button class="play-btn">OYNA</button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        &copy; 2025 2K Gaming - Tüm hakları saklıdır.
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
