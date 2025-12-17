@@ -1,0 +1,583 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0a0a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Yapımcılar Butonu */
+.creators-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    border: 2px solid #4a4a4a;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.creators-button:hover {
+    transform: translateY(-2px);
+    border-color: #6a6a6a;
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #2a2a2a 0%, #353535 100%);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #4a4a4a;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s ease;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    transform: rotate(90deg);
+    color: #ff4444;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+.creators-list {
+    font-size: 18px;
+    line-height: 2.2;
+    color: #e0e0e0;
+}
+
+.creators-list p {
+    margin: 10px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: color 0.2s ease;
+}
+
+.creators-list p:hover {
+    color: #ffffff;
+    padding-left: 10px;
+    transition: padding-left 0.2s ease;
+}
+
+/* Ana İçerik */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 20px;
+    z-index: 10;
+}
+
+.title-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-title {
+    font-size: 140px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #d0d0d0 0%, #808080 50%, #d0d0d0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 15px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    animation: titleGlow 3s ease-in-out infinite alternate;
+    margin: 0;
+}
+
+@keyframes titleGlow {
+    0% {
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+    }
+    100% {
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.25));
+    }
+}
+
+.subtitle {
+    font-size: 18px;
+    font-weight: 300;
+    color: #888888;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-top: -10px;
+    animation: subtitleFade 2s ease-in-out infinite alternate;
+}
+
+@keyframes subtitleFade {
+    0% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Oyun Butonları */
+.games-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.game-button {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+    border: 2px solid #3a3a3a;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    padding: 18px 60px;
+    min-width: 400px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.6s;
+}
+
+.game-button:hover::before {
+    left: 100%;
+}
+
+.game-button span {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+/* Kim 250TL Butonu */
+.game-button-1 {
+    border-color: #4a90e2;
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.game-button-1:hover {
+    transform: scale(1.08) translateY(-3px);
+    opacity: 0.9;
+    border-color: #6ba8f0;
+    box-shadow: 0 10px 30px rgba(74, 144, 226, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #252525 0%, #2d2d2d 100%);
+}
+
+/* Sherlock Butonu */
+.game-button-2 {
+    border-color: #8b6f47;
+    box-shadow: 0 6px 20px rgba(139, 111, 71, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.game-button-2:hover {
+    transform: scale(1.08) translateY(-3px);
+    opacity: 0.9;
+    border-color: #a6895f;
+    box-shadow: 0 10px 30px rgba(139, 111, 71, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #252525 0%, #2d2d2d 100%);
+}
+
+.game-button:active {
+    transform: scale(1.02);
+}
+
+/* Oyun Ekranları */
+.game-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 500;
+    overflow-y: auto;
+    background: transparent;
+}
+
+.game-screen.active {
+    display: block;
+}
+
+.game-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Kim Milyoner Olmak İster Arka Planı */
+.millionaire-bg {
+    background: linear-gradient(180deg, 
+        #0a0f2e 0%, 
+        #0f1528 10%,
+        #1a1f3e 25%,
+        #1a1f3e 50%,
+        #1a1f3e 75%,
+        #0f1528 90%,
+        #0a0f2e 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.stage-lights {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(100, 150, 255, 0.2) 0%, transparent 60%);
+    animation: lightsPulse 4s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes lightsPulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.audience {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.3) 0px,
+            rgba(0, 0, 0, 0.1) 2px,
+            rgba(0, 0, 0, 0.3) 4px
+        ),
+        linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+    opacity: 0.7;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.spotlight {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    animation: spotlightMove 6s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes spotlightMove {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+}
+
+/* Sherlock Arka Planı */
+.sherlock-bg {
+    background: #4a3d2e;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(-5px);
+}
+
+.how-to-play-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.how-to-play-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.game-content {
+    position: relative;
+    z-index: 10;
+    padding: 100px 50px 50px;
+    min-height: 100vh;
+    background: transparent;
+}
+
+.how-to-play-modal {
+    max-width: 700px;
+    max-height: 85vh;
+}
+
+.how-to-play-content {
+    color: #e0e0e0;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.how-to-play-content h3 {
+    color: #ffffff;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.how-to-play-content p {
+    margin-bottom: 15px;
+}
+
+.how-to-play-content ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.how-to-play-content li {
+    margin-bottom: 8px;
+}
+
+.how-to-play-content strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 90px;
+        letter-spacing: 8px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+        letter-spacing: 5px;
+    }
+    
+    .game-button {
+        min-width: 300px;
+        font-size: 18px;
+        padding: 15px 40px;
+    }
+    
+    .creators-button {
+        top: 20px;
+        left: 20px;
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+    
+    .back-button,
+    .how-to-play-button {
+        top: 20px;
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+    
+    .back-button {
+        left: 20px;
+    }
+    
+    .how-to-play-button {
+        right: 20px;
+    }
+    
+    .modal-content {
+        padding: 30px 20px;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+    }
+    
+    .how-to-play-content {
+        font-size: 14px;
+    }
+    
+    .how-to-play-content h3 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 60px;
+        letter-spacing: 5px;
+    }
+    
+    .subtitle {
+        font-size: 12px;
+    }
+    
+    .game-button {
+        min-width: 280px;
+        font-size: 16px;
+        padding: 12px 30px;
+    }
+}
