@@ -1,3 +1,4 @@
+// Yapımcılar Modal Kontrolü
 const creatorsBtn = document.getElementById('creatorsBtn');
 const creatorsModal = document.getElementById('creatorsModal');
 const closeCreatorsModal = document.getElementById('closeCreatorsModal');
@@ -29,20 +30,20 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Oyun Ekranları Kontrolü
-const game1Btn = document.getElementById('game1');
-const game2Btn = document.getElementById('game2');
+const gameArea1 = document.getElementById('gameArea1');
+const gameArea2 = document.getElementById('gameArea2');
 const gameScreen1 = document.getElementById('gameScreen1');
 const gameScreen2 = document.getElementById('gameScreen2');
 const backButton1 = document.getElementById('backButton1');
 const backButton2 = document.getElementById('backButton2');
 const mainContent = document.querySelector('.main-content');
 
-game1Btn.addEventListener('click', function() {
+gameArea1.addEventListener('click', function() {
     mainContent.style.display = 'none';
     gameScreen1.classList.add('active');
 });
 
-game2Btn.addEventListener('click', function() {
+gameArea2.addEventListener('click', function() {
     mainContent.style.display = 'none';
     gameScreen2.classList.add('active');
 });
@@ -92,6 +93,28 @@ howToPlayModal2.addEventListener('click', function(e) {
         howToPlayModal2.classList.remove('active');
     }
 });
+
+// Sherlock Video Kontrolü
+const sherlockVideo = document.getElementById('sherlockGif');
+let videoTimeout;
+
+if (gameArea2 && sherlockVideo) {
+    gameArea2.addEventListener('mouseenter', function() {
+        sherlockVideo.currentTime = 0;
+        sherlockVideo.play().catch(e => console.log('Video play error:', e));
+        
+        // 5 saniye sonra durdur
+        clearTimeout(videoTimeout);
+        videoTimeout = setTimeout(() => {
+            sherlockVideo.pause();
+        }, 5000);
+    });
+
+    gameArea2.addEventListener('mouseleave', function() {
+        sherlockVideo.pause();
+        clearTimeout(videoTimeout);
+    });
+}
 
 // Yapımcılar listesine isim ekleme fonksiyonu
 function addCreator(name) {
