@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2K Oyunlar</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Yapımcılar Butonu -->
@@ -19,7 +21,6 @@
                 <button class="modal-close" id="closeCreatorsModal">&times;</button>
                 <h2 class="modal-title">Yapımcılar</h2>
                 <div class="creators-list" id="creatorsList">
-                    <!-- Buraya sonradan isimler eklenecek -->
                     <p><span class="gold-text">svvl2k</span></p>
                     <p>grkm2k</p>
                     <p>eren2k</p>
@@ -30,34 +31,68 @@
         <!-- Ana İçerik -->
         <div class="main-content">
             <div class="title-section">
-                <h1 class="main-title">
-                    <span class="title-char title-2">2</span>
-                    <span class="title-char title-k">K</span>
-                </h1>
-                <p class="subtitle">gaming</p>
+                <img src="2klogo.png" alt="2K Gaming" class="main-logo">
             </div>
-            
+
             <!-- Sol ve Sağ Tıklanabilir Alanlar -->
             <div class="split-screen">
                 <div class="game-area game-area-left" id="gameArea1">
                     <div class="game-area-overlay">
-                        <h2 class="game-area-title">Kim 250TL Almak İster</h2>
+                        <h2 class="game-area-title">THE XII</h2>
                         <p class="game-area-subtitle">Tıklayarak oyuna başla</p>
+                    </div>
+                    <div class="leaderboard-curtain" id="curtainTheXII">
+                        <div class="curtain-content">
+                            <h2 class="leaderboard-title">THE XII<br>EN İYİLER</h2>
+                            <table class="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Oyuncu</th>
+                                        <th>Puan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rowsTheXII"></tbody>
+                            </table>
+                        </div>
+                        <div class="rope-container" id="ropeTheXII">
+                            <div class="rope"></div>
+                            <div class="rope-handle"><span>🏆</span></div>
+                        </div>
                     </div>
                 </div>
                 <div class="game-area game-area-right" id="gameArea2">
                     <div class="game-area-overlay">
-                        <h2 class="game-area-title">Sherlock</h2>
+                        <h2 class="game-area-title">SHERLOCK</h2>
                         <p class="game-area-subtitle">Tıklayarak oyuna başla</p>
                     </div>
                     <video class="sherlock-gif" id="sherlockGif" muted>
                         <source src="sherlock_intro.mp4" type="video/mp4">
                     </video>
+                    <div class="leaderboard-curtain" id="curtainSherlock">
+                        <div class="curtain-content">
+                            <h2 class="leaderboard-title">SHERLOCK<br>EN İYİLER</h2>
+                            <table class="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Oyuncu</th>
+                                        <th>Puan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rowsSherlock"></tbody>
+                            </table>
+                        </div>
+                        <div class="rope-container" id="ropeSherlock">
+                            <div class="rope"></div>
+                            <div class="rope-handle"><span>🏆</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Kim 250TL Oyun Ekranı -->
+        <!-- THE XII Oyun Ekranı -->
         <div class="game-screen game-screen-1" id="gameScreen1">
             <div class="game-background millionaire-bg">
                 <div class="stage-lights"></div>
@@ -67,39 +102,78 @@
             <button class="back-button" id="backButton1">← Ana Menü</button>
             <button class="how-to-play-button" id="howToPlayBtn1">Nasıl Oynanır?</button>
             <div class="game-content">
-                <!-- Oyun içeriği buraya gelecek -->
+                <!-- Start Screen -->
+                <div id="the12-start-screen" class="game-view active">
+                    <h1 class="game-title">THE XII</h1>
+                    <p class="game-description">12 Soru. Büyük Ödül. Hazır mısın?</p>
+                    <button class="start-game-btn" id="startThe12Btn">OYUNA BAŞLA</button>
+                </div>
+
+                <!-- Quiz Screen -->
+                <div id="the12-quiz-screen" class="game-view">
+                    <div class="quiz-header">
+                        <div class="question-counter">Soru <span id="question-number">1</span>/12</div>
+                        <div class="score-display">Kazanılan: <span id="current-prize">0</span> TL</div>
+                    </div>
+
+                    <div class="question-container">
+                        <h2 id="question-text">Soru buraya gelecek...</h2>
+                    </div>
+
+                    <div class="options-container" id="options-container">
+                        <!-- Options will be generated by JS -->
+                        <button class="option-btn">A) Seçenek 1</button>
+                        <button class="option-btn">B) Seçenek 2</button>
+                        <button class="option-btn">C) Seçenek 3</button>
+                        <button class="option-btn">D) Seçenek 4</button>
+                    </div>
+
+                    <div class="money-tree">
+                        <!-- Visual representation of progress could go here -->
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="the12-result-screen" class="game-view">
+                    <h2 class="result-title">Oyun Bitti!</h2>
+                    <p class="final-score">Toplam Kazanç: <span id="final-prize">0</span> TL</p>
+                    <button class="restart-game-btn" id="restartThe12Btn">TEKRAR OYNA</button>
+                </div>
             </div>
         </div>
 
-        <!-- Kim 250TL Nasıl Oynanır Modal -->
+        <!-- THE XII Nasıl Oynanır Modal -->
         <div class="modal-overlay" id="howToPlayModal1">
             <div class="modal-content how-to-play-modal">
                 <button class="modal-close" id="closeHowToPlayModal1">&times;</button>
-                <h2 class="modal-title">💸 Kim 250 TL Almak İster? Nasıl Oynanır?</h2>
+                <h2 class="modal-title">💸 THE XII - Nasıl Oynanır?</h2>
                 <div class="how-to-play-content">
-                    <p>Bu oyun, çoktan seçmeli soruların sorulduğu ve her doğru cevapta ödülün arttığı bir bilgi oyunudur.</p>
-                    
+                    <p>Bu oyun, çoktan seçmeli soruların sorulduğu ve her doğru cevapta ödülün arttığı bir bilgi
+                        oyunudur.</p>
+
                     <h3>🎮 Oynanış</h3>
                     <ul>
                         <li>Oyuncuya çoktan seçmeli bir soru sorulur.</li>
                         <li>Her sorunun tek bir doğru cevabı vardır.</li>
                         <li>Doğru cevap verildikçe bir sonraki soruya geçilir.</li>
                     </ul>
-                    
+
                     <h3>💰 Ödül</h3>
                     <ul>
                         <li>Her doğru cevapta kazanılan para artar.</li>
                         <li>En yüksek ödül 250 TL'dir.</li>
                         <li>Yanlış cevap verildiğinde oyun sona erer.</li>
                     </ul>
-                    
+
                     <h3>🃏 Jokerler</h3>
                     <p>Oyuncu, oyun sırasında her jokeri bir kez kullanabilir.</p>
                     <ul>
-                        <li><strong>%50 Jokeri</strong><br>Yanlış seçeneklerin yarısı elenir, doğru cevap kalanlar arasında yer alır.</li>
-                        <li><strong>2x Cevap Jokeri</strong><br>Oyuncu iki farklı seçenek işaretleyebilir. Seçeneklerden biri doğruysa soru doğru kabul edilir.</li>
+                        <li><strong>%50 Jokeri</strong><br>Yanlış seçeneklerin yarısı elenir, doğru cevap kalanlar
+                            arasında yer alır.</li>
+                        <li><strong>2x Cevap Jokeri</strong><br>Oyuncu iki farklı seçenek işaretleyebilir. Seçeneklerden
+                            biri doğruysa soru doğru kabul edilir.</li>
                     </ul>
-                    
+
                     <h3>📌 Kurallar</h3>
                     <ul>
                         <li>Her soru için normalde tek cevap seçilir.</li>
@@ -126,25 +200,26 @@
                 <button class="modal-close" id="closeHowToPlayModal2">&times;</button>
                 <h2 class="modal-title">🔍 Sherlock Oyunu Nasıl Oynanır?</h2>
                 <div class="how-to-play-content">
-                    <p>Sherlock, kısa ve gizemli bir olayın verildiği, oyuncuların sadece "Evet / Hayır" soruları sorarak olayın arkasındaki gerçeği bulmaya çalıştığı bir mantık oyunudur.</p>
-                    
+                    <p>Sherlock, kısa ve gizemli bir olayın verildiği, oyuncuların sadece "Evet / Hayır" soruları
+                        sorarak olayın arkasındaki gerçeği bulmaya çalıştığı bir mantık oyunudur.</p>
+
                     <h3>🎮 Oynanış</h3>
                     <ul>
                         <li>Oyunu yöneten kişi hikâyenin tam cevabını bilir.</li>
                         <li>Oyunculara eksik ve kafa karıştırıcı bir olay anlatılır.</li>
                         <li>Oyuncular sırayla sorular sorarak olayı çözmeye çalışır.</li>
                     </ul>
-                    
+
                     <h3>❓ Soru Kuralları</h3>
                     <ul>
                         <li>Sorular evet veya hayır ile cevaplanabilir olmalıdır.</li>
                         <li>Hikâye hakkında ipucu veya açıklama verilmez.</li>
                         <li>Uygun olmayan sorular "Alakasız" olarak cevaplanır.</li>
                     </ul>
-                    
+
                     <h3>🧠 Amaç</h3>
                     <p>Amaç, doğru soruları sorarak olayın neden ve nasıl gerçekleştiğini ortaya çıkarmaktır.</p>
-                    
+
                     <h3>📌 Önemli</h3>
                     <ul>
                         <li>Detayları sorgulayın</li>
@@ -155,10 +230,13 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
 
 
