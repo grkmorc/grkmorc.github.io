@@ -27,18 +27,30 @@
         <!-- Ana İçerik -->
         <div class="main-content">
             <div class="title-section">
-                <h1 class="main-title">2K</h1>
+                <h1 class="main-title">
+                    <span class="title-char title-2">2</span>
+                    <span class="title-char title-k">K</span>
+                </h1>
                 <p class="subtitle">gaming</p>
             </div>
             
-            <div class="games-container">
-                <button class="game-button game-button-1" id="game1">
-                    <span>Kim 250TL Almak İster</span>
-                </button>
-                
-                <button class="game-button game-button-2" id="game2">
-                    <span>Sherlock</span>
-                </button>
+            <!-- Sol ve Sağ Tıklanabilir Alanlar -->
+            <div class="split-screen">
+                <div class="game-area game-area-left" id="gameArea1">
+                    <div class="game-area-overlay">
+                        <h2 class="game-area-title">Kim 250TL Almak İster</h2>
+                        <p class="game-area-subtitle">Tıklayarak oyuna başla</p>
+                    </div>
+                </div>
+                <div class="game-area game-area-right" id="gameArea2">
+                    <div class="game-area-overlay">
+                        <h2 class="game-area-title">Sherlock</h2>
+                        <p class="game-area-subtitle">Tıklayarak oyuna başla</p>
+                    </div>
+                    <video class="sherlock-gif" id="sherlockGif" muted>
+                        <source src="2025-12-17T19-58-09_have_the_man_lean_watermarked.mp4" type="video/mp4">
+                    </video>
+                </div>
             </div>
         </div>
 
@@ -144,4 +156,4 @@
 
     <script src="script.js"></script>
 </body>
-</html
+</html>
