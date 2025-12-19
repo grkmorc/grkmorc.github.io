@@ -163,24 +163,77 @@ setupLeaderboard(ropeTheXII, curtainTheXII, document.getElementById('gameArea1')
 setupLeaderboard(ropeSherlock, curtainSherlock, document.getElementById('gameArea2'));
 
 // Dummy Data Population
-const dummyTheXII = [
-    { rank: 1, name: "MasterMind", score: 250 },
-    { rank: 2, name: "ProGamer", score: 250 },
-    { rank: 3, name: "LuckyOne", score: 200 },
-    { rank: 4, name: "KnowledgeKing", score: 200 },
-    { rank: 5, name: "QuizWizard", score: 150 }
-];
+// Leaderboard Data Structure
+const defaultLeaderboardData = {
+    theXII: {
+        daily: [],
+        monthly: []
+    },
+    sherlock: {
+        daily: [],
+        monthly: []
+    }
+};
 
-const dummySherlock = [
-    { rank: 1, name: "SherlockH", score: 1000 },
-    { rank: 2, name: "WatsonDr", score: 950 },
-    { rank: 3, name: "Moriarty", score: 900 },
-    { rank: 4, name: "DetectiveX", score: 850 },
-    { rank: 5, name: "InspectorL", score: 800 }
-];
+// LocalStorage'dan verileri yükle veya varsayılanları kullan
+function loadLeaderboardData() {
+    const saved = localStorage.getItem('leaderboardData_2kgaming_v2'); // Key değişti, eski veriler silindi
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch (e) {
+            console.warn('LocalStorage verisi bozuk, varsayılanlara dönülüyor');
+            return JSON.parse(JSON.stringify(defaultLeaderboardData));
+        }
+    }
+    return JSON.parse(JSON.stringify(defaultLeaderboardData));
+}
+
+// LocalStorage'a kaydet
+function saveLeaderboardData() {
+    try {
+        localStorage.setItem('leaderboardData_2kgaming_v2', JSON.stringify(leaderboardData));
+    } catch (e) {
+        console.error('LocalStorage kaydetme hatası:', e);
+    }
+}
+
+let leaderboardData = loadLeaderboardData();
+
+// Populate Initial Data (Daily by default)
+populateLeaderboard(leaderboardData.theXII.daily, rowsTheXII);
+populateLeaderboard(leaderboardData.sherlock.daily, rowsSherlock);
+
+// Tab Switching Logic
+const tabBtns = document.querySelectorAll('.tab-btn');
+
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Butona tıklayınca oyunun açılmasını engelle
+        const game = btn.dataset.game; // "theXII" or "sherlock"
+        const period = btn.dataset.period; // "daily" or "monthly"
+
+        // 1. Update UI (Active Class) with proper scoping
+        // Sadece ilgili oyunun tablarını bul
+        const wrapper = btn.closest('.leaderboard-tabs');
+        if (wrapper) {
+            wrapper.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // 2. Fetch Data
+        const data = leaderboardData[game][period];
+        const targetTable = game === "theXII" ? rowsTheXII : rowsSherlock;
+
+        // 3. Render
+        populateLeaderboard(data, targetTable);
+    });
+});
 
 function populateLeaderboard(data, element) {
-    element.innerHTML = data.map(player => `
+    // Sadece ilk 5 kişiyi göster
+    const topFive = data.slice(0, 5);
+    element.innerHTML = topFive.map(player => `
         <tr>
             <td>${player.rank}</td>
             <td>${player.name}</td>
@@ -189,72 +242,40 @@ function populateLeaderboard(data, element) {
     `).join('');
 }
 
-populateLeaderboard(dummyTheXII, rowsTheXII);
-populateLeaderboard(dummySherlock, rowsSherlock);
+function saveScoreToLeaderboard(name, score, gameName) {
+    // gameName parametresi, obje anahtarı ile eşleşmeli
+    // "THE XII" -> "theXII", "SHERLOCK" -> "sherlock"
+    const key = gameName === "THE XII" ? "theXII" : "sherlock";
 
-/* THE XII GAME LOGIC */
-const questions = [
-    {
-        question: "1. Soru: Türkiye'nin başkenti neresidir?",
-        options: ["İstanbul", "Ankara", "İzmir", "Bursa"],
-        answer: 1 // 0-indexed, so Ankara
-    },
-    {
-        question: "2. Soru: Hangi gezegen 'Kızıl Gezegen' olarak bilinir?",
-        options: ["Venüs", "Mars", "Jüpiter", "Satürn"],
-        answer: 1
-    },
-    {
-        question: "3. Soru: Suyun kaynama noktası kaç derecedir?",
-        options: ["90°C", "100°C", "110°C", "120°C"],
-        answer: 1
-    },
-    {
-        question: "4. Soru: 'Hamlet' oyununun yazarı kimdir?",
-        options: ["William Shakespeare", "Charles Dickens", "Mark Twain", "Victor Hugo"],
-        answer: 0
-    },
-    {
-        question: "5. Soru: En büyük okyanus hangisidir?",
-        options: ["Atlantik Okyanusu", "Hint Okyanusu", "Pasifik Okyanusu", "Arktik Okyanusu"],
-        answer: 2
-    },
-    {
-        question: "6. Soru: Bir yılda kaç ay 31 çeker?",
-        options: ["4", "5", "6", "7"],
-        answer: 3
-    },
-    {
-        question: "7. Soru: Futbol maçları kaç dakika sürer?",
-        options: ["45", "90", "100", "120"],
-        answer: 1
-    },
-    {
-        question: "8. Soru: Türkiye'nin plaka kodu nedir?",
-        options: ["TR", "TK", "TC", "TUR"],
-        answer: 0
-    },
-    {
-        question: "9. Soru: Mona Lisa tablosu hangi müzededir?",
-        options: ["Louvre Müzesi", "British Museum", "Metropolitan Müzesi", "Prado Müzesi"],
-        answer: 0
-    },
-    {
-        question: "10. Soru: Hangi hayvan memeli değildir?",
-        options: ["Yunus", "Penguen", "Yarasa", "Balina"],
-        answer: 1
-    },
-    {
-        question: "11. Soru: Atatürk'ün doğum yılı nedir?",
-        options: ["1880", "1881", "1882", "1883"],
-        answer: 1
-    },
-    {
-        question: "12. Soru: Periyodik tabloda 'O' hangi elementi simgeler?",
-        options: ["Osmiyum", "Oksijen", "Opak", "Onyx"],
-        answer: 1
+    console.log(`Skor Kaydedildi: ${name} - ${score} (${gameName})`);
+
+    // Sadece 'Daily' listesine ekleyelim şimdilik
+    const list = leaderboardData[key].daily;
+
+    list.push({ rank: list.length + 1, name: name, score: score });
+    list.sort((a, b) => b.score - a.score);
+    list.forEach((item, index) => item.rank = index + 1);
+
+    // LocalStorage'a kaydet ✨
+    saveLeaderboardData();
+
+    // Eğer şu an 'Daily' tabı aktifse arayüzü güncelle
+    // Basitlik için direk populate çağıralım, aktif tab kontrolü şu anlık zorunlu değil ama iyi olurdu
+    // (Şu anki basit yapıda, kullanıcı 'Aylık'taysa günlük skorunu göremeyecek ama 'Günlük'e geçince görecek)
+    const targetTable = key === "theXII" ? rowsTheXII : rowsSherlock;
+
+    // Aktif tab'ı kontrol etmek yerine, varsayılan olarak o tab'ı update edebiliriz
+    // Ama kullanıcı monthly'de kalmış olabilir. 
+    // En temizi: Eğer o anki aktif buton 'daily' ise güncelle.
+    const activeBtn = document.querySelector(`.tab-btn[data-game="${key}"][data-period="daily"]`);
+    if (activeBtn && activeBtn.classList.contains('active')) {
+        populateLeaderboard(list, targetTable);
     }
-];
+}
+
+// Sorular artık questions.js'den geliyor
+// Her oyun başladığında rastgele 12 soru seçilecek
+let questions = [];
 
 // Para ağacı (Basit artış)
 const prizes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 250];
@@ -262,8 +283,157 @@ const prizes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 250];
 let currentQuestionIndex = 0;
 let currentPrize = 0;
 let isAnswerLocked = false;
+let timerInterval;
+const TIME_LIMIT = 12;
 
-// DOM Elements for Quiz
+// Sherlock Game Logic
+const sherlockInput = document.getElementById('sherlock-input');
+const chatLog = document.getElementById('chat-log');
+const askBtn = document.getElementById('sherlock-ask-btn');
+const solveBtn = document.getElementById('solve-case-btn');
+
+// Case Data: The Balloon Mystery
+const balloonCase = {
+    title: "Vaka 1: Çöl Ateşi",
+    intro: "İki adam çölün ortasında çıplak bir şekilde, ellerinde birer kibrit çöpüyle ölü bulundu. Yakınlarda başka iz yok.",
+    keywords: [
+        // Balon (Kritik)
+        { words: ["balon", "uçan", "hava aracı"], response: "EVET! Kesinlikle bir balonun içindeydiler." },
+
+        // Kıyafetler/Çıplaklık
+        { words: ["kıyafet", "soyun", "çıplak", "giysi"], response: "Evet, kıyafetlerini ağırlık azaltmak için çıkardılar." },
+
+        // Kibrit
+        { words: ["kibrit", "çöp"], response: "Evet, kibritleri kura çekmek için kullandılar. Kısa çöpü çeken..." },
+
+        // Ateş/Yakıt
+        { words: ["ateş", "yakıt", "söndü", "gaz"], response: "Evet, balonun ateşi azalıyordu. Düşüyorlardı." },
+
+        // Atlamak/Düşmek
+        { words: ["atla", "düş", "aşağı"], response: "Evet, balondan atladılar (veya atıldılar)." },
+
+        // Cinayet/İntihar
+        { words: ["cinayet", "öldür"], response: "Hayır, teknik olarak cinayet değil." },
+        { words: ["intihar", "kendi"], response: "Zorunlu bir feda diyelim." },
+        { words: ["anlaşma", "iddaa", "oyun"], response: "Evet, aralarında bir anlaşma yaptılar." },
+
+        // alakasızlar
+        { words: ["susuz", "su", "çöl"], response: "Çöl sadece düştükleri yer. Susuzlukla ilgisi yok." },
+        { words: ["silah", "bıçak", "zehir"], response: "Hayır, cinayet aleti yok." },
+        { words: ["uçak", "helikopter"], response: "Hayır, motorlu bir araç değildi." }
+    ],
+    defaultResponses: [
+        "Bunun olayla pek ilgisi yok.",
+        "Detaylara odaklan. Neden çıplaklar?",
+        "Yanlış yoldasın.",
+        "Bunu cevaplayamam, kafa karıştırıcı.",
+        "Hayır."
+    ]
+};
+
+function startSherlockGame() {
+    sherlockStartScreen.classList.remove('active');
+    sherlockGameScreen.classList.add('active');
+
+    // Reset Chat
+    chatLog.innerHTML = `<div class="message system-msg">Sherlock: Olayı çözmem için bana "Evet" veya "Hayır" sorusu sorabilirsin.</div>`;
+    addSystemMessage(balloonCase.intro);
+}
+
+// Chat Interaction
+askBtn.addEventListener('click', handleUserQuestion);
+sherlockInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleUserQuestion();
+});
+
+async function handleUserQuestion() {
+    const text = sherlockInput.value.trim();
+    if (!text) return;
+
+    // User Message
+    const userDiv = document.createElement('div');
+    userDiv.className = 'message user-msg';
+    userDiv.textContent = text;
+    chatLog.appendChild(userDiv);
+    sherlockInput.value = '';
+
+    // Scroll to bottom
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    // Loading indicator
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'message system-msg';
+    loadingDiv.textContent = '🔍 Düşünüyorum...';
+    loadingDiv.id = 'loading-msg';
+    chatLog.appendChild(loadingDiv);
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    try {
+        // AI API Call
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: text,
+                caseInfo: balloonCase.intro
+            })
+        });
+
+        // Remove loading
+        document.getElementById('loading-msg')?.remove();
+
+        if (response.ok) {
+            const data = await response.json();
+            addSystemMessage(data.response);
+        } else {
+            // Fallback to keyword matching if API fails
+            const fallbackResponse = findResponseLocal(text.toLowerCase());
+            addSystemMessage(fallbackResponse);
+        }
+    } catch (error) {
+        // Remove loading and use fallback
+        document.getElementById('loading-msg')?.remove();
+        console.log('AI API error, using fallback:', error);
+        const fallbackResponse = findResponseLocal(text.toLowerCase());
+        addSystemMessage(fallbackResponse);
+    }
+}
+
+// Local fallback (keyword matching)
+function findResponseLocal(text) {
+    for (let item of balloonCase.keywords) {
+        for (let word of item.words) {
+            if (text.includes(word)) {
+                return item.response;
+            }
+        }
+    }
+    const random = Math.floor(Math.random() * balloonCase.defaultResponses.length);
+    return balloonCase.defaultResponses[random];
+}
+
+function addSystemMessage(text) {
+    const sysDiv = document.createElement('div');
+    sysDiv.className = 'message system-msg';
+    sysDiv.textContent = text;
+    chatLog.appendChild(sysDiv);
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+// Solve Button Logic (Basic Alert for now)
+solveBtn.addEventListener('click', () => {
+    // Burada çoktan seçmeli bir modal açabiliriz.
+    // Şimdilik hikayeyi anlatıp puan verelim.
+    const confirmSolve = confirm("Olayı çözdüğüne emin misin? Balon hikayesini tahmin ediyor musun?");
+    if (confirmSolve) {
+        alert("TEBRİKLER! Olay: Balon düşüyordu, ağırlık atmak için soyundular, yetmeyince kura çektiler ve kaybedenler atladı.");
+        saveScoreToLeaderboard(currentUser.nickname, 1000, "SHERLOCK");
+        sherlockGameScreen.classList.remove('active');
+        mainContent.style.display = 'flex';
+    }
+});
+
+// THE XII DOM Elements
 const startScreen = document.getElementById('the12-start-screen');
 const quizScreen = document.getElementById('the12-quiz-screen');
 const resultScreen = document.getElementById('the12-result-screen');
@@ -272,13 +442,71 @@ const optionsContainer = document.getElementById('options-container');
 const questionNumberSpan = document.getElementById('question-number');
 const currentPrizeSpan = document.getElementById('current-prize');
 const finalPrizeSpan = document.getElementById('final-prize');
+const nicknameThe12Input = document.getElementById('nicknameThe12');
+const timerDisplay = document.getElementById('timer-container');
+const joker50Btn = document.getElementById('joker-50');
+const joker2xBtn = document.getElementById('joker-2x');
 
-document.getElementById('startThe12Btn').addEventListener('click', startGame);
-document.getElementById('restartThe12Btn').addEventListener('click', startGame);
+// Joker States
+let jokers = {
+    fifty: false, // false = available
+    double: false
+};
+let isDoubleDipActive = false;
 
-function startGame() {
+
+// Global User State
+let currentUser = {
+    nickname: "Anonim",
+    game: ""
+};
+
+document.getElementById('startThe12Btn').addEventListener('click', () => {
+    const name = nicknameThe12Input.value.trim();
+    if (!name) {
+        alert("Lütfen bir isim giriniz!");
+        return;
+    }
+    currentUser.nickname = name;
+    currentUser.game = "THE XII";
+    startGameThe12();
+});
+
+// Sherlock Start Logic (Already defined above at line 384)
+const sherlockStartScreen = document.getElementById('sherlock-start-screen');
+const sherlockGameScreen = document.getElementById('sherlock-game-screen');
+const nicknameSherlockInput = document.getElementById('nicknameSherlock');
+
+document.getElementById('startSherlockBtn').addEventListener('click', () => {
+    const name = nicknameSherlockInput.value.trim();
+    if (!name) {
+        alert("Lütfen dedektif adınızı giriniz!");
+        return;
+    }
+    currentUser.nickname = name;
+    currentUser.game = "SHERLOCK";
+    startSherlockGame();
+});
+
+document.getElementById('restartThe12Btn').addEventListener('click', startGameThe12);
+
+function startGameThe12() {
+    // Soru havuzundan rastgele 12 soru seç
+    questions = getRandomQuestions(12);
+
     currentQuestionIndex = 0;
     currentPrize = 0;
+    jokers.fifty = false; // Reset jokers global
+    jokers.double = false; // Reset jokers global
+    joker50Btn.disabled = false;
+    joker2xBtn.disabled = false;
+    // Reset Styles & Jokers for Question Load
+    jokers.double = jokers.double; // Keep usage state, but reset active
+    isDoubleDipActive = false;
+    // Joker butonlarının görsel durumu (Sadece kullanıldı mı diye bak)
+    if (jokers.fifty) joker50Btn.disabled = true;
+    if (jokers.double) joker2xBtn.disabled = true;
+
     startScreen.classList.remove('active');
     resultScreen.classList.remove('active');
     quizScreen.classList.add('active');
@@ -286,8 +514,53 @@ function startGame() {
     updateUI();
 }
 
+// Joker Event Listeners
+joker50Btn.addEventListener('click', () => {
+    if (jokers.fifty || isAnswerLocked) return;
+
+    // Yanlış şıkları bul
+    const currentQ = questions[currentQuestionIndex];
+    const correctIndex = currentQ.answer;
+
+    // Butonları al
+    const buttons = Array.from(optionsContainer.querySelectorAll('.option-btn'));
+
+    // Doğru cevap dışındaki (yanlış) butonları filtrele
+    const wrongButtons = buttons.filter((btn, index) => index !== correctIndex);
+
+    // Rastgele 2 tanesini seç ve gizle
+    // Basit karıştırma
+    wrongButtons.sort(() => Math.random() - 0.5);
+
+    wrongButtons.slice(0, 2).forEach(btn => {
+        btn.style.visibility = 'hidden'; // Veya opacity 0
+    });
+
+    // Joker kullanıldı işaretle
+    jokers.fifty = true;
+    joker50Btn.disabled = true;
+});
+
+joker2xBtn.addEventListener('click', () => {
+    if (jokers.double || isAnswerLocked) return;
+
+    isDoubleDipActive = true;
+    jokers.double = true;
+    joker2xBtn.disabled = true;
+
+    // Görsel geri bildirim (Aktif olduğunu göster)
+    joker2xBtn.style.background = "#4BB543"; // Yeşil
+    joker2xBtn.style.color = "#fff";
+});
+
 function loadQuestion() {
     isAnswerLocked = false;
+    // 2x active durumunu her soruda sıfırlama (Zaten joker tek kullanımlık)
+    // Ama eğer kullanılmadıysa sıfırlama gerekmez.
+    // Kullanılan joker zaten disabled oluyor.
+
+    startTimer(); // Sayacı başlat
+
     const currentQ = questions[currentQuestionIndex];
 
     questionText.textContent = currentQ.question;
@@ -305,28 +578,72 @@ function loadQuestion() {
     updateUI();
 }
 
-function checkAnswer(selectedIndex, selectedBtn) {
+// Timer Functions
+function startTimer() {
+    clearInterval(timerInterval);
+    let timeLeft = TIME_LIMIT;
+    timerDisplay.textContent = timeLeft;
+    timerDisplay.className = '';
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 5 && timeLeft > 3) {
+            timerDisplay.classList.add('warning');
+        }
+        if (timeLeft <= 3) {
+            timerDisplay.classList.remove('warning');
+            timerDisplay.classList.add('danger');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timeIsUp();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+function timeIsUp() {
     if (isAnswerLocked) return;
     isAnswerLocked = true;
+
+    const currentQ = questions[currentQuestionIndex];
+    const buttons = optionsContainer.querySelectorAll('.option-btn');
+    buttons[currentQ.answer].classList.add('correct');
+
+    setTimeout(() => {
+        showResult(false);
+        saveScoreToLeaderboard(currentUser.nickname, currentPrize, "THE XII");
+    }, 2000);
+}
+
+function checkAnswer(selectedIndex, selectedBtn) {
+    if (isAnswerLocked) return; // Kilitliyse işlem yapma
+    // 2x Joker aktifse ve cevap yanlışsa kilitleme!
 
     const currentQ = questions[currentQuestionIndex];
     const correctIndex = currentQ.answer;
 
     if (selectedIndex === correctIndex) {
         // Doğru Cevap
+        stopTimer(); // Süreyi durdur
+        isAnswerLocked = true; // Artık kilitle
         selectedBtn.classList.add('correct');
         const wonAmount = prizes[currentQuestionIndex];
         currentPrize = wonAmount;
 
-        // Ses efekti eklenebilir
-
-        // Bir sonraki soruya geçiş
         setTimeout(() => {
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
             } else {
-                showResult(true); // Oyunu kazandı
+                showResult(true);
+                saveScoreToLeaderboard(currentUser.nickname, 250, "THE XII");
             }
         }, 1500);
 
@@ -334,15 +651,29 @@ function checkAnswer(selectedIndex, selectedBtn) {
         // Yanlış Cevap
         selectedBtn.classList.add('wrong');
 
+        if (isDoubleDipActive) {
+            // 2x Aktif, bu yüzden oyunu bitirme, sadece hakkı ye
+            isDoubleDipActive = false; // Hakkı bitti
+            // Butonu geri normale döndür (disabled stili zaten CSS'den gelir ama renk değişikliğini sıfırla)
+            joker2xBtn.style.background = "";
+            joker2xBtn.style.color = "";
+            return; // Fonksiyondan çık, oyun bitmesin, SÜRE DEVAM EDİYOR
+        }
+
+        stopTimer(); // Süreyi durdur
+        isAnswerLocked = true; // Oyun bittiği için kilitle
+
         // Doğru cevabı göster
         const buttons = optionsContainer.querySelectorAll('.option-btn');
         buttons[correctIndex].classList.add('correct');
 
         setTimeout(() => {
             showResult(false); // Kaybetti
+            saveScoreToLeaderboard(currentUser.nickname, currentPrize, "THE XII");
         }, 2000);
     }
 }
+
 
 function updateUI() {
     questionNumberSpan.textContent = currentQuestionIndex + 1;
