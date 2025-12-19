@@ -44,6 +44,10 @@
                     <div class="leaderboard-curtain" id="curtainTheXII">
                         <div class="curtain-content">
                             <h2 class="leaderboard-title">THE XII<br>EN İYİLER</h2>
+                            <div class="leaderboard-tabs">
+                                <button class="tab-btn active" data-game="theXII" data-period="daily">Günlük</button>
+                                <button class="tab-btn" data-game="theXII" data-period="monthly">Aylık</button>
+                            </div>
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
@@ -72,6 +76,10 @@
                     <div class="leaderboard-curtain" id="curtainSherlock">
                         <div class="curtain-content">
                             <h2 class="leaderboard-title">SHERLOCK<br>EN İYİLER</h2>
+                            <div class="leaderboard-tabs">
+                                <button class="tab-btn active" data-game="sherlock" data-period="daily">Günlük</button>
+                                <button class="tab-btn" data-game="sherlock" data-period="monthly">Aylık</button>
+                            </div>
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
@@ -106,6 +114,10 @@
                 <div id="the12-start-screen" class="game-view active">
                     <h1 class="game-title">THE XII</h1>
                     <p class="game-description">12 Soru. Büyük Ödül. Hazır mısın?</p>
+                    <div class="input-group">
+                        <input type="text" id="nicknameThe12" class="nickname-input modern-input"
+                            placeholder="Adınızı Giriniz..." autocomplete="off">
+                    </div>
                     <button class="start-game-btn" id="startThe12Btn">OYUNA BAŞLA</button>
                 </div>
 
@@ -113,11 +125,17 @@
                 <div id="the12-quiz-screen" class="game-view">
                     <div class="quiz-header">
                         <div class="question-counter">Soru <span id="question-number">1</span>/12</div>
+                        <div id="timer-container">12</div>
                         <div class="score-display">Kazanılan: <span id="current-prize">0</span> TL</div>
                     </div>
 
                     <div class="question-container">
                         <h2 id="question-text">Soru buraya gelecek...</h2>
+                    </div>
+
+                    <div class="lifelines-container">
+                        <button class="joker-btn" id="joker-50" title="İki yanlış şıkkı siler">%50</button>
+                        <button class="joker-btn" id="joker-2x" title="Çifte cevap hakkı verir">2x</button>
                     </div>
 
                     <div class="options-container" id="options-container">
@@ -190,7 +208,42 @@
             <button class="back-button" id="backButton2">← Ana Menü</button>
             <button class="how-to-play-button" id="howToPlayBtn2">Nasıl Oynanır?</button>
             <div class="game-content">
-                <!-- Oyun içeriği buraya gelecek -->
+                <!-- Sherlock Start Screen -->
+                <div id="sherlock-start-screen" class="game-view active">
+                    <h1 class="game-title sherlock-title">SHERLOCK</h1>
+                    <p class="game-description sherlock-desc">Gerçeği bulmak imkansız değil,<br>sadece olasılık dışıdır.
+                    </p>
+                    <div class="input-group">
+                        <input type="text" id="nicknameSherlock" class="nickname-input vintage-input"
+                            placeholder="Dedektif Adı..." autocomplete="off">
+                    </div>
+                    <button class="start-game-btn vintage-btn" id="startSherlockBtn">VAKAYI ÇÖZMEYE BAŞLA</button>
+                </div>
+
+                <!-- Sherlock Game Content -->
+                <div id="sherlock-game-screen" class="game-view">
+                    <div class="case-file">
+                        <h2 id="case-title">Dava 1: Çöldeki Cesetler</h2>
+                        <p id="case-intro">İki adam çölün ortasında çıplak bir şekilde, ellerinde birer kibrit çöpüyle
+                            ölü bulundu. Yakınlarda ayak izi yok.</p>
+                        <p class="case-hint">Ne olduğunu çözmek için sorular sor...</p>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="chat-log" id="chat-log">
+                            <!-- Mesajlar buraya gelecek -->
+                            <div class="message system-msg">Sherlock: Olayı çözmem için bana "Evet" veya "Hayır" sorusu
+                                sorabilirsin.</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="sherlock-input" placeholder="Sorunu buraya yaz..."
+                                autocomplete="off">
+                            <button id="sherlock-ask-btn">SOR</button>
+                        </div>
+                    </div>
+
+                    <button class="solve-btn" id="solve-case-btn">TAHMİN ET / ÇÖZ</button>
+                </div>
             </div>
         </div>
 
@@ -234,9 +287,9 @@
 
     </div>
 
+    <script src="questions.js"></script>
     <script src="script.js"></script>
 </body>
 
 </html>
-
 
