@@ -124,6 +124,1315 @@ body {
     justify-content: center;
 }
 
+/* JOKER LIFELINES STYLES */
+.lifelines-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.joker-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #ffd700;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffd700;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.joker-btn:hover:not(:disabled) {
+    background: #ffd700;
+    color: #000;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.joker-btn:disabled {
+    border-color: #555;
+    color: #555;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Çarpı işareti (kullanıldı efekti) */
+.joker-btn:disabled::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #ff4444;
+    transform: rotate(45deg);
+}
+
+.joker-btn:disabled::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #ff4444;
+    transform: rotate(-45deg);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    /* Varsayılan mavi çerçeveyi kaldır */
+    font-size: 18px;
+    font-weight: bold;
+    color: #5d4037;
+    /* Soluk kahve */
+    cursor: pointer;
+    font-family: inherit;
+    padding: 5px 15px;
+    position: relative;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    border-radius: 5px;
+    /* Hafif yuvarlaklık */
+}
+
+.tab-btn:hover {
+    color: #3e2723;
+    opacity: 1;
+    background: rgba(93, 64, 55, 0.1);
+    /* Hafif hover arka planı */
+}
+
+.modal-close:hover {
+    transform: rotate(90deg);
+    color: #ff4444;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+.creators-list {
+    font-size: 18px;
+    line-height: 2.2;
+    color: #e0e0e0;
+}
+
+.creators-list p {
+    margin: 10px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: color 0.2s ease;
+}
+
+.creators-list p:hover {
+    color: #ffffff;
+    padding-left: 10px;
+    transition: padding-left 0.2s ease;
+}
+
+/* Ana İçerik */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 20px;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+}
+
+.title-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.main-logo {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
+    transition: all 0.4s ease;
+}
+
+.main-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+}
+
+/* Ekranı İkiye Bölme */
+.split-screen {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    gap: 2px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.game-area {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.game-area-left {
+    background: linear-gradient(135deg, rgba(10, 15, 46, 0.3) 0%, rgba(26, 31, 62, 0.3) 100%);
+    border-right: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.game-area-right {
+    background: rgba(139, 111, 71, 0.3);
+    border-left: 1px solid rgba(184, 134, 11, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-area:hover {
+    flex: 1.05;
+}
+
+.game-area-left:hover {
+    background: linear-gradient(135deg, rgba(10, 15, 46, 0.5) 0%, rgba(26, 31, 62, 0.5) 100%);
+    border-right-color: rgba(74, 144, 226, 0.6);
+    box-shadow: inset -10px 0 30px rgba(74, 144, 226, 0.2);
+}
+
+.game-area-right:hover {
+    border-left-color: rgba(184, 134, 11, 0.8);
+    box-shadow: inset 10px 0 30px rgba(184, 134, 11, 0.3);
+}
+
+.sherlock-gif {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+    display: block;
+}
+
+.game-area-right:hover .sherlock-gif {
+    opacity: 1;
+}
+
+.game-area-right:not(:hover) .sherlock-gif {
+    opacity: 0;
+}
+
+/* Leaderboard açıkken videoyu gizle */
+.game-area-right.leaderboard-open .sherlock-gif {
+    opacity: 0 !important;
+}
+
+.game-area-overlay {
+    position: relative;
+    z-index: 1;
+}
+
+.game-area-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.game-area-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.game-area-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.game-area:hover .game-area-title {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.game-area:hover .game-area-subtitle {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+/* Oyun Ekranları */
+.game-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 500;
+    overflow-y: auto;
+    background: transparent;
+}
+
+.game-screen.active {
+    display: block;
+}
+
+.game-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Kim Milyoner Olmak İster Arka Planı */
+.millionaire-bg {
+    background: linear-gradient(180deg,
+            #0a0f2e 0%,
+            #0f1528 10%,
+            #1a1f3e 25%,
+            #1a1f3e 50%,
+            #1a1f3e 75%,
+            #0f1528 90%,
+            #0a0f2e 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.stage-lights {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(74, 144, 226, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(100, 150, 255, 0.2) 0%, transparent 60%);
+    animation: lightsPulse 4s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes lightsPulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.audience {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background:
+        repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.3) 0px,
+            rgba(0, 0, 0, 0.1) 2px,
+            rgba(0, 0, 0, 0.3) 4px),
+        linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+    opacity: 0.7;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.spotlight {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    animation: spotlightMove 6s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes spotlightMove {
+
+    0%,
+    100% {
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+}
+
+/* Sherlock Arka Planı */
+.sherlock-bg {
+    background: #4a3d2e;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(-5px);
+}
+
+.how-to-play-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.how-to-play-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.game-content {
+    position: relative;
+    z-index: 10;
+    padding: 100px 50px 50px;
+    min-height: 100vh;
+    background: transparent;
+}
+
+.how-to-play-modal {
+    max-width: 700px;
+    max-height: 85vh;
+}
+
+.how-to-play-content {
+    color: #e0e0e0;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.how-to-play-content h3 {
+    color: #ffffff;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.how-to-play-content p {
+    margin-bottom: 15px;
+}
+
+.how-to-play-content ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.how-to-play-content li {
+    margin-bottom: 8px;
+}
+
+.how-to-play-content strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Altın Yazı Efekti */
+.gold-text {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    font-weight: 700;
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+}
+
+/* Leaderboard Rope Style */
+.rope-container {
+    position: relative;
+    /* Artık akışın içinde (perdenin sonunda) */
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin-top: -10px;
+    /* Kancaya denk gelmesi için ayar */
+    /* Perdeye hafifçe yapışık görünsün */
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    /* transform transition kaldırıldı, parent (curtain) hareket edecek */
+    animation: swing 3s ease-in-out infinite alternate;
+    transform-origin: top center;
+}
+
+.rope-container:hover {
+    transform: scale(1.1);
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(-2deg);
+    }
+
+    100% {
+        transform: rotate(2deg);
+    }
+}
+
+.rope {
+    width: 8px;
+    height: 100px;
+    background:
+        /* Gölgelendirme (Sağ/Sol koyu, orta açık - Silindir efekti) */
+        linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0.4) 100%),
+        /* Halat Dokusu */
+        repeating-linear-gradient(45deg,
+            #8b5a2b 0px,
+            #8b5a2b 4px,
+            #5c3a1e 4px,
+            #5c3a1e 8px);
+    box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+/* Halatın ucundaki düğüm */
+.rope::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 30% 30%, #a06b3e, #4a2e16);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.rope-handle {
+    width: 60px;
+    height: 60px;
+    /* Altın Halka Görünümü */
+    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b 60%, #5d4000 100%);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow:
+        /* İç gölge (halka derinliği) */
+        inset 0 0 10px rgba(0, 0, 0, 0.6),
+        /* Dış gölge */
+        0 5px 15px rgba(0, 0, 0, 0.6);
+    position: relative;
+    top: -5px;
+    /* İple birleşimi için */
+    z-index: 2;
+    /* Düğüm üstte kalsın diye */
+}
+
+/* Halkanın ortasını delik yapalım (Torus şekli) */
+.rope-handle::before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.6), transparent), #1a1a1a;
+    /* Arka plan rengiyle uyumlu olsun diye */
+    border-radius: 50%;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8), 2px 2px 2px rgba(255, 255, 255, 0.2);
+    /* Delik efekti */
+}
+
+.rope-handle span {
+    position: absolute;
+    z-index: 3;
+    font-size: 24px;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8));
+    /* Emojiyi halkanın üstüne çıkar */
+}
+
+/* Leaderboard Curtain Style */
+.leaderboard-curtain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    background: transparent;
+    z-index: 1500;
+
+    /* GİZLİ DURUM: Kendi yüksekliği kadar yukarı (-100%) + İp boyu kadar aşağı (+85px) */
+    /* Böylece sadece ip kısmı görünür */
+    /* GİZLİ DURUM: Kendi yüksekliği kadar yukarı + İp boyu + Çubuk */
+    transform: translateY(calc(-100% + 115px));
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+
+    display: flex;
+    flex-direction: column;
+    /* İçerik ve ipi alt alta diz */
+    align-items: center;
+    /* Ortala */
+    padding-top: 10px;
+}
+
+/* Hover durumu: Tamamen aşağı in */
+.leaderboard-curtain:hover,
+.leaderboard-curtain.active {
+    transform: translateY(0);
+}
+
+.curtain-content {
+    width: 60%;
+    max-width: 400px;
+    height: auto;
+    max-height: 80%;
+    /* PARŞÖMEN GÖRÜNÜMÜ */
+    background:
+        /* Kağıt dokusu */
+        linear-gradient(to bottom right, #f4e4bc 0%, #e6d2aa 100%);
+    /* Ahşap çerçeve (yanlar) */
+    border-left: 4px solid #5c4033;
+    border-right: 4px solid #5c4033;
+    border-top: none;
+    /* Alt kısım için AHŞAP ÇUBUK (Rod) */
+    border-bottom: 18px solid #3e2723;
+    /* Koyu ahşap */
+    border-radius: 2px 2px 4px 4px;
+
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow:
+        /* Kağıt parlaması */
+        inset 0 0 40px rgba(139, 69, 19, 0.1),
+        /* Kumaş/Kağıt gölgesi */
+        0 10px 30px rgba(0, 0, 0, 0.6),
+        /* Çubuğun alt gölgesi */
+        0 4px 0 #271914;
+    color: #3e2723;
+    /* Mürekkep rengi */
+    overflow-y: auto;
+    /* Scroll özelliği kalsın ama çubuğu gizleyelim */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+    position: relative;
+}
+
+/* Chrome, Safari, Opera için scrollbarı gizle */
+.curtain-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ahşap çubuğun üzerindeki süsler (Pirinç çiviler) */
+.curtain-content::after {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 18px;
+    background:
+        radial-gradient(circle at 10px 9px, #b8860b 2px, transparent 3px),
+        radial-gradient(circle at calc(100% - 10px) 9px, #b8860b 2px, transparent 3px);
+    /* Sadece köşelerde çivi var */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* İpin bağlandığı kanca - Paslı metal */
+.curtain-content::before {
+    content: '';
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 22px;
+    border: 5px solid #4a3c31;
+    /* Koyu bronz */
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    z-index: 0;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.leaderboard-title {
+    font-size: 32px;
+    color: #3e2723;
+    /* Koyu kahve */
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+    /* Hafif kabartma */
+    margin-bottom: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1.2;
+    border-bottom: 2px solid #3e2723;
+    padding-bottom: 10px;
+    width: 80%;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(62, 39, 35, 0.2);
+    /* Silik kahve çizgi */
+    color: #3e2723;
+}
+
+.leaderboard-table th {
+    color: #271914;
+    font-size: 20px;
+    border-bottom: 3px double #3e2723;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.leaderboard-table tr:hover {
+    background: rgba(139, 69, 19, 0.05);
+}
+
+.leaderboard-table tr:nth-child(1) td {
+    color: #b8860b;
+    /* Koyu altın */
+    font-weight: bold;
+    font-size: 22px;
+    text-shadow: none;
+}
+
+.leaderboard-table tr:nth-child(2) td {
+    color: #555;
+    /* Gümüşümsü koyu gri */
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.leaderboard-table tr:nth-child(3) td {
+    color: #8a5a44;
+    /* Bronz kahve */
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .main-logo {
+        max-width: 250px;
+    }
+
+    .split-screen {
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .game-area-title {
+        font-size: 32px;
+    }
+
+    .game-area-subtitle {
+        font-size: 14px;
+    }
+
+    .creators-button {
+        top: 20px;
+        left: 20px;
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    .back-button,
+    .how-to-play-button {
+        top: 20px;
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .back-button {
+        left: 20px;
+    }
+
+    .how-to-play-button {
+        right: 20px;
+    }
+
+    .modal-content {
+        padding: 30px 20px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .how-to-play-content {
+        font-size: 14px;
+    }
+
+    .how-to-play-content h3 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-logo {
+        max-width: 180px;
+    }
+
+    .game-area-title {
+        font-size: 24px;
+    }
+
+    .game-area-subtitle {
+        font-size: 12px;
+    }
+
+    .split-screen {
+        height: 100vh;
+    }
+}
+
+/* THE XII Quiz UI Styling */
+.game-view {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.game-view.active {
+    display: flex;
+}
+
+.game-title {
+    font-size: 80px;
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.game-description {
+    font-size: 24px;
+    color: #e0e0e0;
+    margin-bottom: 40px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.start-game-btn,
+.restart-game-btn {
+    padding: 15px 50px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(45deg, #1e3c72, #2a5298);
+    border: 2px solid #4a90e2;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.start-game-btn:hover,
+.restart-game-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(74, 144, 226, 0.6);
+    filter: brightness(1.2);
+}
+
+/* Quiz Screen Styles */
+.quiz-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    align-items: center;
+}
+
+#timer-container {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Timer Renk Durumları */
+#timer-container.warning {
+    color: #ffd700;
+    border-color: #ffd700;
+    animation: pulse 1s infinite;
+}
+
+#timer-container.danger {
+    color: #ff4444;
+    border-color: #ff4444;
+    background: rgba(255, 0, 0, 0.2);
+    animation: shake 0.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.question-counter,
+.score-display {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.question-container {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.8), transparent);
+    padding: 30px;
+    width: 100%;
+    margin-bottom: 40px;
+    border-top: 2px solid #DAA520;
+    border-bottom: 2px solid #DAA520;
+}
+
+#question-text {
+    font-size: 28px;
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+.options-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.option-btn {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    border: 2px solid #4a90e2;
+    padding: 20px;
+    border-radius: 50px;
+    /* Hap şekli */
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.option-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+.option-btn.correct {
+    background: linear-gradient(135deg, #11998e, #38ef7d) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 20px rgba(56, 239, 125, 0.5);
+}
+
+.option-btn.wrong {
+    background: linear-gradient(135deg, #cb2d3e, #ef473a) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 20px rgba(239, 71, 58, 0.5);
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* Results Screen */
+.result-title {
+    font-size: 48px;
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+.final-score {
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .options-container {
+        grid-template-columns: 1fr;
+    }
+
+    .game-title {
+        font-size: 48px;
+    }
+
+    #question-text {
+        font-size: 20px;
+    }
+}
+
+/* NICKNAME INPUT STYLES */
+.input-group {
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.nickname-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 20px;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* THE XII Style Input (Modern/Glass) */
+.modern-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50px;
+    color: #ffd700;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.modern-input::placeholder {
+    color: rgba(255, 215, 0, 0.5);
+}
+
+.modern-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #ffd700;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+    transform: scale(1.05);
+}
+
+/* SHERLOCK Style Input (Vintage/Parchment) */
+.sherlock-title {
+    font-family: 'Times New Roman', serif;
+    background: linear-gradient(180deg, #3e2723 0%, #5d4037 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+}
+
+.sherlock-desc {
+    font-family: 'Times New Roman', serif;
+    font-style: italic;
+    color: #3e2723;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.vintage-input {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid #3e2723;
+    border-radius: 0;
+    color: #3e2723;
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.vintage-input::placeholder {
+    color: rgba(62, 39, 35, 0.5);
+    font-style: italic;
+}
+
+.vintage-input:focus {
+    border-bottom-color: #8b4513;
+    background: rgba(62, 39, 35, 0.05);
+}
+
+/* Vintage Button */
+.vintage-btn {
+    background: #3e2723;
+    color: #f4e4bc;
+    border: 2px solid #5d4037;
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    text-transform: uppercase;
+    padding: 15px 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vintage-btn:hover {
+    background: #5d4037;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0a0a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Yapımcılar Butonu */
+.creators-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    border: 2px solid #4a4a4a;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.creators-button:hover {
+    transform: translateY(-2px);
+    border-color: #6a6a6a;
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #2a2a2a 0%, #353535 100%);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #4a4a4a;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s ease;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .modal-close:hover {
     transform: rotate(90deg);
     color: #ff4444;
