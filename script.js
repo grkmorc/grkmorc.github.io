@@ -370,7 +370,7 @@ async function handleUserQuestion() {
 
     try {
         // AI API Call
-        const response = await fetch('https://2kgamingwork.grkm00018.workers.dev', {
+        const response = await fetch('https://sherlock-api.grkm00018.workers.dev', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
