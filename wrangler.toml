@@ -2,12 +2,9 @@ name = "2kgamingwork"
 main = "src/index.js"
 compatibility_date = "2025-12-22"
 
-[
-ai
-]
+
+[ai]
 binding = "AI"
 
-[
-assets
-]
+[assets]
 directory = "."
