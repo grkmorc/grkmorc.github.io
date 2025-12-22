@@ -1,0 +1,8 @@
+name = "2kgamingwork"  # Dashboard'daki Worker adı ile aynı olsun!
+main = "src/index.js"  # AI Worker script'inin yolu
+compatibility_date = "2025-12-22"
+
+[
+ai
+]
+binding = "AI"  # Worker'da AI'ye erişmek için
