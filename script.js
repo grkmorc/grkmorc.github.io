@@ -384,7 +384,7 @@ async function handleUserQuestion() {
 
         if (response.ok) {
             const data = await response.json();
-            addSystemMessage(data.response);
+            addSystemMessage(data.answer || data.response || 'Cevap alınamadı');
         } else {
             // Fallback to keyword matching if API fails
             const fallbackResponse = findResponseLocal(text.toLowerCase());
