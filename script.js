@@ -295,40 +295,7 @@ const solveBtn = document.getElementById('solve-case-btn');
 // Case Data: The Balloon Mystery
 const balloonCase = {
     title: "Vaka 1: Çöl Ateşi",
-    intro: "İki adam çölün ortasında çıplak bir şekilde, ellerinde birer kibrit çöpüyle ölü bulundu. Yakınlarda başka iz yok.",
-    keywords: [
-        // Balon (Kritik)
-        { words: ["balon", "uçan", "hava aracı"], response: "EVET! Kesinlikle bir balonun içindeydiler." },
-
-        // Kıyafetler/Çıplaklık
-        { words: ["kıyafet", "soyun", "çıplak", "giysi"], response: "Evet, kıyafetlerini ağırlık azaltmak için çıkardılar." },
-
-        // Kibrit
-        { words: ["kibrit", "çöp"], response: "Evet, kibritleri kura çekmek için kullandılar. Kısa çöpü çeken..." },
-
-        // Ateş/Yakıt
-        { words: ["ateş", "yakıt", "söndü", "gaz"], response: "Evet, balonun ateşi azalıyordu. Düşüyorlardı." },
-
-        // Atlamak/Düşmek
-        { words: ["atla", "düş", "aşağı"], response: "Evet, balondan atladılar (veya atıldılar)." },
-
-        // Cinayet/İntihar
-        { words: ["cinayet", "öldür"], response: "Hayır, teknik olarak cinayet değil." },
-        { words: ["intihar", "kendi"], response: "Zorunlu bir feda diyelim." },
-        { words: ["anlaşma", "iddaa", "oyun"], response: "Evet, aralarında bir anlaşma yaptılar." },
-
-        // alakasızlar
-        { words: ["susuz", "su", "çöl"], response: "Çöl sadece düştükleri yer. Susuzlukla ilgisi yok." },
-        { words: ["silah", "bıçak", "zehir"], response: "Hayır, cinayet aleti yok." },
-        { words: ["uçak", "helikopter"], response: "Hayır, motorlu bir araç değildi." }
-    ],
-    defaultResponses: [
-        "Bunun olayla pek ilgisi yok.",
-        "Detaylara odaklan. Neden çıplaklar?",
-        "Yanlış yoldasın.",
-        "Bunu cevaplayamam, kafa karıştırıcı.",
-        "Hayır."
-    ]
+    intro: "İki adam çölün ortasında çıplak bir şekilde, ellerinde birer kibrit çöpüyle ölü bulundu. Yakınlarda başka iz yok."
 };
 
 function startSherlockGame() {
@@ -384,33 +351,18 @@ async function handleUserQuestion() {
 
         if (response.ok) {
             const data = await response.json();
-            addSystemMessage(data.answer || data.response || 'Cevap alınamadı');
+            addSystemMessage(data.answer || 'Cevap alınamadı');
         } else {
-            // Fallback to keyword matching if API fails
-            const fallbackResponse = findResponseLocal(text.toLowerCase());
-            addSystemMessage(fallbackResponse);
+            addSystemMessage('❌ API Hatası: ' + response.status);
         }
     } catch (error) {
-        // Remove loading and use fallback
         document.getElementById('loading-msg')?.remove();
-        console.log('AI API error, using fallback:', error);
-        const fallbackResponse = findResponseLocal(text.toLowerCase());
-        addSystemMessage(fallbackResponse);
+        console.error('AI API error:', error);
+        addSystemMessage('❌ Bağlantı Hatası: ' + error.message);
     }
 }
 
-// Local fallback (keyword matching)
-function findResponseLocal(text) {
-    for (let item of balloonCase.keywords) {
-        for (let word of item.words) {
-            if (text.includes(word)) {
-                return item.response;
-            }
-        }
-    }
-    const random = Math.floor(Math.random() * balloonCase.defaultResponses.length);
-    return balloonCase.defaultResponses[random];
-}
+// Fallback kaldırıldı - AI hatalarını görmek için
 
 function addSystemMessage(text) {
     const sysDiv = document.createElement('div');
