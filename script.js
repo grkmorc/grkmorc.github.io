@@ -94,6 +94,28 @@ howToPlayModal2.addEventListener('click', function (e) {
     }
 });
 
+// THE XII Video Kontrolü
+const thexiiVideo = document.getElementById('thexiiGif');
+let thexiiVideoTimeout;
+
+if (gameArea1 && thexiiVideo) {
+    gameArea1.addEventListener('mouseenter', function () {
+        thexiiVideo.currentTime = 0;
+        thexiiVideo.play().catch(e => console.log('THE XII Video play error:', e));
+
+        // 5 saniye sonra durdur
+        clearTimeout(thexiiVideoTimeout);
+        thexiiVideoTimeout = setTimeout(() => {
+            thexiiVideo.pause();
+        }, 5000);
+    });
+
+    gameArea1.addEventListener('mouseleave', function () {
+        thexiiVideo.pause();
+        clearTimeout(thexiiVideoTimeout);
+    });
+}
+
 // Sherlock Video Kontrolü
 const sherlockVideo = document.getElementById('sherlockGif');
 let videoTimeout;
