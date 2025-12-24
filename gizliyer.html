@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Gizli Alan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Animasyonlu Arka Plan */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 0, 150, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 200, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 20% 80%, rgba(100, 0, 255, 0.1) 0%, transparent 30%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Login Container */
+        .login-container {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5),
+                inset 0 0 100px rgba(255, 255, 255, 0.02);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0080, transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            to {
+                left: 100%;
+            }
+        }
+
+        .lock-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #ff0080;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff0080, #7928ca);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff0080;
+        }
+
+        /* Secret Content - Hidden by default */
+        .secret-content {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .secret-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .secret-content p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .secret-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 30px;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 128, 0.2);
+            border-color: #ff0080;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-animation"></div>
+
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <div class="lock-icon">🔐</div>
+        <h1 class="login-title">Gizli Alan</h1>
+        <p class="login-subtitle">Bu alana erişmek için giriş yapın</p>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" placeholder="Kullanıcı adınızı girin..." autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" placeholder="Şifrenizi girin...">
+            </div>
+            <button type="submit" class="login-btn">Giriş Yap</button>
+            <p class="error-message" id="errorMessage">❌ Hatalı kullanıcı adı veya şifre!</p>
+        </form>
+
+        <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
+    </div>
+
+    <!-- Secret Content -->
+    <div class="secret-content" id="secretContent">
+        <h1>🎉 Hoş Geldiniz!</h1>
+        <p>Gizli alana başarıyla giriş yaptınız.<br>Bu alan sadece yetkili kişiler içindir.</p>
+
+        <div class="secret-box">
+            <h3>📋 Admin Paneli</h3>
+            <p>Bu alana istediğiniz gizli içerikleri ekleyebilirsiniz.</p>
+        </div>
+
+        <button class="logout-btn" id="logoutBtn">🚪 Çıkış Yap</button>
+    </div>
+
+    <script>
+        // ⚠️ GÜVENLİK NOTU: Bu basit bir istemci tarafı korumasıdır.
+        // Gerçek güvenlik için sunucu tarafı doğrulama gerekir.
+
+        // 🔑 KULLANICI ADI VE ŞİFREYİ BURADAN DEĞİŞTİREBİLİRSİNİZ
+        const VALID_CREDENTIALS = {
+            username: "2kadmin",
+            password: "2k2024gizli"
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const loginContainer = document.getElementById('loginContainer');
+        const secretContent = document.getElementById('secretContent');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Oturum kontrolü
+        function checkSession() {
+            const isLoggedIn = sessionStorage.getItem('gizliAlanGiris');
+            if (isLoggedIn === 'true') {
+                showSecretContent();
+            }
+        }
+
+        function showSecretContent() {
+            loginContainer.style.display = 'none';
+            secretContent.style.display = 'block';
+        }
+
+        function showLoginForm() {
+            loginContainer.style.display = 'block';
+            secretContent.style.display = 'none';
+        }
+
+        // Giriş işlemi
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+                sessionStorage.setItem('gizliAlanGiris', 'true');
+                errorMessage.style.display = 'none';
+                showSecretContent();
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        });
+
+        // Çıkış işlemi
+        logoutBtn.addEventListener('click', function () {
+            sessionStorage.removeItem('gizliAlanGiris');
+            showLoginForm();
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+
+        // Sayfa yüklendiğinde oturum kontrolü
+        checkSession();
+    </script>
+</body>
+
+</html>
