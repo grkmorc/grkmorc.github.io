@@ -317,7 +317,7 @@ const solveBtn = document.getElementById('solve-case-btn');
 // Case Data: The Balloon Mystery
 const balloonCase = {
     title: "Vaka 1: Çöl Ateşi",
-    intro: "İki adam çölün ortasında çıplak bir şekilde, ellerinde birer kibrit çöpüyle ölü bulundu. Yakınlarda başka iz yok."
+    intro: "Bir adam çölün ortasında çıplak halde ölü bulundu, elinde yarım bir kibrit tutuyordu. Yakınlarda hiçbir iz yok."
 };
 
 function startSherlockGame() {
