@@ -1279,40 +1279,43 @@ body {
 /* SHERLOCK Style Input (Vintage/Parchment) */
 .sherlock-title {
     font-family: 'Times New Roman', serif;
-    background: linear-gradient(180deg, #3e2723 0%, #5d4037 100%);
+    background: linear-gradient(180deg, #f5e6d3 0%, #d4a574 50%, #c4956a 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.2);
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.6));
     margin-bottom: 20px;
 }
 
 .sherlock-desc {
     font-family: 'Times New Roman', serif;
     font-style: italic;
-    color: #3e2723;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+    color: #f4e4bc;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .vintage-input {
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid #3e2723;
-    border-radius: 0;
-    color: #3e2723;
+    background: linear-gradient(to bottom, #f5ead6, #efe3c9);
+    border: 2px solid #5d4037;
+    border-radius: 8px;
+    color: #1a0f0a;
     font-family: 'Times New Roman', serif;
     font-weight: bold;
     font-size: 22px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .vintage-input::placeholder {
-    color: rgba(62, 39, 35, 0.5);
+    color: #6d4c41;
     font-style: italic;
+    opacity: 0.8;
 }
 
 .vintage-input:focus {
-    border-bottom-color: #8b4513;
-    background: rgba(62, 39, 35, 0.05);
+    border-color: #8b4513;
+    background: linear-gradient(to bottom, #faf3e3, #f5ead6);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 10px rgba(139, 69, 19, 0.3);
+    outline: none;
 }
 
 /* Vintage Button */
