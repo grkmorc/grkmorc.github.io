@@ -331,6 +331,35 @@ body {
     box-shadow: inset 10px 0 30px rgba(184, 134, 11, 0.3);
 }
 
+/* THE XII Video */
+.thexii-gif {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+    display: block;
+}
+
+.game-area-left:hover .thexii-gif {
+    opacity: 1;
+}
+
+.game-area-left:not(:hover) .thexii-gif {
+    opacity: 0;
+}
+
+/* Leaderboard açıkken videoyu gizle */
+.game-area-left.leaderboard-open .thexii-gif {
+    opacity: 0 !important;
+}
+
+/* Sherlock Video */
 .sherlock-gif {
     position: absolute;
     top: 0;
