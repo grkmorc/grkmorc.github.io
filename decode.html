@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECODE - 2K Gaming</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Arka plan animasyonu */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 200, 255, 0.1) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes bgPulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        /* Geri Butonu */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(-5px);
+        }
+
+        /* Ana Başlık */
+        .game-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-title h1 {
+            font-size: 64px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            letter-spacing: 8px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 30px rgba(0, 255, 136, 0.8));
+            }
+        }
+
+        .game-title p {
+            color: #888;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* Kilit Görseli */
+        .lock-visual {
+            width: 120px;
+            height: 150px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .lock-body {
+            width: 100px;
+            height: 80px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #444;
+            box-shadow:
+                inset 0 5px 15px rgba(255, 255, 255, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .lock-body::before {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+        }
+
+        .lock-shackle {
+            width: 60px;
+            height: 50px;
+            border: 8px solid #555;
+            border-bottom: none;
+            border-radius: 30px 30px 0 0;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Ekranlar */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Kart Stili */
+        .card {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.9));
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h2 {
+            color: #00ff88;
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Input Stili */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: #fff;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .input-group input::placeholder {
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        /* Butonlar */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #666;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #444;
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 14px;
+        }
+
+        /* Oda Kodu Gösterimi */
+        .room-code-display {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px dashed #00ff88;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .room-code-display p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .room-code-display .code {
+            font-size: 36px;
+            font-weight: 900;
+            color: #00ff88;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #00ff88;
+            color: #000;
+        }
+
+        /* Bekleme Ekranı */
+        .waiting {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .waiting .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #333;
+            border-top-color: #00ff88;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .waiting p {
+            color: #888;
+            font-size: 16px;
+        }
+
+        /* Oyun Ekranı */
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .game-info .player {
+            text-align: center;
+        }
+
+        .game-info .player-name {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .game-info .player-status {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .status-your-turn {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .status-waiting {
+            background: #666;
+            color: #fff;
+        }
+
+        /* Şifre Gösterimi (Kendi şifren) */
+        .your-secret {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .your-secret p {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .your-secret .secret-number {
+            font-size: 28px;
+            color: #00d4ff;
+            letter-spacing: 10px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Tahmin Geçmişi */
+        .guess-history {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .guess-history::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .guess-history::-webkit-scrollbar-track {
+            background: #222;
+            border-radius: 3px;
+        }
+
+        .guess-history::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 3px;
+        }
+
+        .guess-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #444;
+        }
+
+        .guess-item.your-guess {
+            border-left-color: #00ff88;
+        }
+
+        .guess-item.opponent-guess {
+            border-left-color: #ff6b6b;
+        }
+
+        .guess-number {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .guess-result {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-plus,
+        .result-minus {
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .result-plus {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .result-minus {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+
+        /* Tahmin Input */
+        .guess-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .guess-input-area input {
+            flex: 1;
+            padding: 15px;
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .guess-input-area input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+
+        .guess-input-area button {
+            padding: 15px 25px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .guess-input-area button:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .guess-input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Oyun Sonu */
+        .game-over {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .game-over h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .game-over.win h2 {
+            color: #00ff88;
+        }
+
+        .game-over.lose h2 {
+            color: #ff6b6b;
+        }
+
+        .game-over p {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* Hata Mesajı */
+        .error-msg {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Bağlantı Durumu */
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .connection-status.connected {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .game-title h1 {
+                font-size: 48px;
+                letter-spacing: 4px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .room-code-display .code {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back-button">← Ana Menü</a>
+
+    <div id="connectionStatus" class="connection-status disconnected">Bağlanıyor...</div>
+
+    <div class="container">
+        <!-- MENU SCREEN -->
+        <div id="menuScreen" class="screen active">
+            <div class="game-title">
+                <div class="lock-visual">
+                    <div class="lock-shackle"></div>
+                    <div class="lock-body"></div>
+                </div>
+                <h1>DECODE</h1>
+                <p>Rakibinin 3 haneli şifresini kır!</p>
+            </div>
+
+            <div class="card">
+                <div class="input-group">
+                    <label>Oyuncu Adı</label>
+                    <input type="text" id="playerName" placeholder="İsminizi girin" maxlength="15">
+                </div>
+
+                <button class="btn btn-primary" id="createRoomBtn">ODA OLUŞTUR</button>
+
+                <div class="divider"><span>veya</span></div>
+
+                <div class="input-group">
+                    <label>Oda Kodu</label>
+                    <input type="text" id="roomCodeInput" placeholder="6 haneli kod" maxlength="6"
+                        style="text-transform: uppercase;">
+                </div>
+
+                <button class="btn btn-secondary" id="joinRoomBtn">ODAYA KATIL</button>
+
+                <div id="menuError" class="error-msg" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- WAITING SCREEN (Host) -->
+        <div id="waitingScreen" class="screen">
+            <div class="card">
+                <h2>🔓 Oda Oluşturuldu</h2>
+
+                <div class="room-code-display">
+                    <p>Oda Kodunu Arkadaşınla Paylaş</p>
+                    <div class="code" id="roomCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Kopyala</button>
+                </div>
+
+                <div class="waiting">
+                    <div class="spinner"></div>
+                    <p>Rakip bekleniyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECRET INPUT SCREEN -->
+        <div id="secretScreen" class="screen">
+            <div class="card">
+                <h2>🔐 Gizli Şifreni Belirle</h2>
+                <p style="color: #888; text-align: center; margin-bottom: 20px; font-size: 14px;">
+                    3 farklı rakamdan oluşan bir şifre gir.<br>
+                    Rakibin bunu tahmin etmeye çalışacak!
+                </p>
+
+                <div class="input-group">
+                    <input type="text" id="secretInput" placeholder="_ _ _" maxlength="3" pattern="[0-9]*"
+                        inputmode="numeric">
+                </div>
+
+                <div id="secretError" class="error-msg" style="display: none;"></div>
+
+                <button class="btn btn-primary" id="confirmSecretBtn">ŞİFREYİ ONAYLA</button>
+
+                <div id="secretWaiting" class="waiting" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Rakip şifresini seçiyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="gameScreen" class="screen">
+            <div class="card">
+                <div class="game-info">
+                    <div class="player">
+                        <div class="player-name" id="player1Name">Sen</div>
+                        <div class="player-status" id="player1Status">-</div>
+                    </div>
+                    <div style="font-size: 24px;">⚔️</div>
+                    <div class="player">
+                        <div class="player-name" id="player2Name">Rakip</div>
+                        <div class="player-status" id="player2Status">-</div>
+                    </div>
+                </div>
+
+                <div class="your-secret">
+                    <p>Senin Şifren</p>
+                    <div class="secret-number" id="yourSecretDisplay">---</div>
+                </div>
+
+                <div class="guess-history" id="guessHistory">
+                    <!-- Tahminler buraya gelecek -->
+                </div>
+
+                <div class="guess-input-area">
+                    <input type="text" id="guessInput" placeholder="_ _ _" maxlength="3" pattern="[0-9]*"
+                        inputmode="numeric">
+                    <button id="guessBtn">TAHMİN</button>
+                </div>
+
+                <div id="gameError" class="error-msg" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div id="gameOverScreen" class="screen">
+            <div class="card">
+                <div class="game-over" id="gameOverContent">
+                    <h2>🎉 KAZANDIN!</h2>
+                    <p>Rakibinin şifresi: <strong id="opponentSecret">---</strong></p>
+                    <button class="btn btn-primary" onclick="location.reload()">YENİDEN OYNA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================
+        // DECODE - Online Şifre Kırma Oyunu
+        // PeerJS ile P2P Bağlantı
+        // ========================
+
+        // DOM Elements
+        const menuScreen = document.getElementById('menuScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
+        const secretScreen = document.getElementById('secretScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // State
+        let peer = null;
+        let conn = null;
+        let isHost = false;
+        let myName = '';
+        let opponentName = '';
+        let mySecret = '';
+        let opponentSecret = '';
+        let isMyTurn = false;
+        let gameStarted = false;
+
+        // Generate 6-character room code
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Validate secret number (3 unique digits)
+        function validateSecret(num) {
+            if (!/^\d{3}$/.test(num)) return false;
+            const digits = num.split('');
+            return new Set(digits).size === 3;
+        }
+
+        // Calculate result (+/-)
+        function calculateResult(secret, guess) {
+            let plus = 0;
+            let minus = 0;
+
+            for (let i = 0; i < 3; i++) {
+                if (guess[i] === secret[i]) {
+                    plus++;
+                } else if (secret.includes(guess[i])) {
+                    minus++;
+                }
+            }
+
+            return { plus, minus };
+        }
+
+        // Show screen
+        function showScreen(screen) {
+            [menuScreen, waitingScreen, secretScreen, gameScreen, gameOverScreen].forEach(s => {
+                s.classList.remove('active');
+            });
+            screen.classList.add('active');
+        }
+
+        // Show error
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            connectionStatus.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
+            connectionStatus.textContent = connected ? '🟢 Bağlı' : '🔴 Bağlantı Yok';
+        }
+
+        // Initialize PeerJS
+        function initPeer(id = null) {
+            return new Promise((resolve, reject) => {
+                peer = id ? new Peer(id) : new Peer();
+
+                peer.on('open', (peerId) => {
+                    console.log('Peer ID:', peerId);
+                    updateConnectionStatus(true);
+                    resolve(peerId);
+                });
+
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    if (err.type === 'unavailable-id') {
+                        reject(new Error('Bu oda kodu zaten kullanımda'));
+                    } else if (err.type === 'peer-unavailable') {
+                        reject(new Error('Oda bulunamadı'));
+                    } else {
+                        reject(err);
+                    }
+                });
+
+                peer.on('disconnected', () => {
+                    updateConnectionStatus(false);
+                });
+            });
+        }
+
+        // Setup connection handlers
+        function setupConnection(connection) {
+            conn = connection;
+
+            conn.on('open', () => {
+                console.log('Connection opened');
+                updateConnectionStatus(true);
+
+                // Send name
+                conn.send({ type: 'name', name: myName });
+
+                // Move to secret screen
+                showScreen(secretScreen);
+            });
+
+            conn.on('data', (data) => {
+                handleMessage(data);
+            });
+
+            conn.on('close', () => {
+                console.log('Connection closed');
+                updateConnectionStatus(false);
+                if (gameStarted) {
+                    alert('Rakip bağlantısı kesildi!');
+                    location.reload();
+                }
+            });
+
+            conn.on('error', (err) => {
+                console.error('Connection error:', err);
+            });
+        }
+
+        // Handle incoming messages
+        function handleMessage(data) {
+            console.log('Received:', data);
+
+            switch (data.type) {
+                case 'name':
+                    opponentName = data.name;
+                    document.getElementById('player2Name').textContent = opponentName;
+                    break;
+
+                case 'secret_ready':
+                    opponentSecret = data.secret;
+                    if (mySecret) {
+                        startGame();
+                    }
+                    break;
+
+                case 'guess':
+                    handleOpponentGuess(data.guess);
+                    break;
+
+                case 'game_over':
+                    endGame(false, data.secret);
+                    break;
+            }
+        }
+
+        // Start the game
+        function startGame() {
+            gameStarted = true;
+
+            document.getElementById('yourSecretDisplay').textContent = mySecret;
+            document.getElementById('player1Name').textContent = myName;
+
+            // Host goes first
+            isMyTurn = isHost;
+            updateTurnStatus();
+
+            showScreen(gameScreen);
+        }
+
+        // Update turn status UI
+        function updateTurnStatus() {
+            const p1Status = document.getElementById('player1Status');
+            const p2Status = document.getElementById('player2Status');
+            const guessBtn = document.getElementById('guessBtn');
+            const guessInput = document.getElementById('guessInput');
+
+            if (isMyTurn) {
+                p1Status.textContent = 'Senin Sıran';
+                p1Status.className = 'player-status status-your-turn';
+                p2Status.textContent = 'Bekliyor';
+                p2Status.className = 'player-status status-waiting';
+                guessBtn.disabled = false;
+                guessInput.disabled = false;
+                guessInput.focus();
+            } else {
+                p1Status.textContent = 'Bekliyor';
+                p1Status.className = 'player-status status-waiting';
+                p2Status.textContent = 'Oynuyor';
+                p2Status.className = 'player-status status-your-turn';
+                guessBtn.disabled = true;
+                guessInput.disabled = true;
+            }
+        }
+
+        // Add guess to history
+        function addGuessToHistory(guess, result, isYours) {
+            const history = document.getElementById('guessHistory');
+            const item = document.createElement('div');
+            item.className = 'guess-item ' + (isYours ? 'your-guess' : 'opponent-guess');
+            item.innerHTML = `
+                <span class="guess-number">${guess}</span>
+                <div class="guess-result">
+                    <span class="result-plus">+${result.plus}</span>
+                    <span class="result-minus">-${result.minus}</span>
+                </div>
+            `;
+            history.appendChild(item);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // Handle my guess
+        function makeGuess() {
+            const guessInput = document.getElementById('guessInput');
+            const guess = guessInput.value;
+
+            if (!validateSecret(guess)) {
+                showError('gameError', '3 farklı rakam girmelisin!');
+                return;
+            }
+
+            const result = calculateResult(opponentSecret, guess);
+            addGuessToHistory(guess, result, true);
+
+            guessInput.value = '';
+
+            // Check win
+            if (result.plus === 3) {
+                conn.send({ type: 'game_over', secret: mySecret });
+                endGame(true, opponentSecret);
+                return;
+            }
+
+            // Send guess to opponent (they see result against their secret)
+            conn.send({ type: 'guess', guess: guess });
+
+            // Switch turn
+            isMyTurn = false;
+            updateTurnStatus();
+        }
+
+        // Handle opponent's guess
+        function handleOpponentGuess(guess) {
+            const result = calculateResult(mySecret, guess);
+            addGuessToHistory(guess, result, false);
+
+            // Check if opponent guessed correctly
+            if (result.plus === 3) {
+                // Opponent will send game_over message
+            }
+
+            // My turn now
+            isMyTurn = true;
+            updateTurnStatus();
+        }
+
+        // End game
+        function endGame(won, oppSecret) {
+            const content = document.getElementById('gameOverContent');
+            document.getElementById('opponentSecret').textContent = oppSecret;
+
+            if (won) {
+                content.className = 'game-over win';
+                content.querySelector('h2').textContent = '🎉 KAZANDIN!';
+            } else {
+                content.className = 'game-over lose';
+                content.querySelector('h2').textContent = '😔 KAYBETTİN!';
+            }
+
+            showScreen(gameOverScreen);
+        }
+
+        // ========================
+        // EVENT LISTENERS
+        // ========================
+
+        // Create Room
+        document.getElementById('createRoomBtn').addEventListener('click', async () => {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = true;
+            const roomCode = generateRoomCode();
+
+            try {
+                await initPeer('DECODE_' + roomCode);
+                document.getElementById('roomCodeDisplay').textContent = roomCode;
+                showScreen(waitingScreen);
+
+                // Listen for connections
+                peer.on('connection', (connection) => {
+                    console.log('Guest connected');
+                    setupConnection(connection);
+                });
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        });
+
+        // Copy room code
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const code = document.getElementById('roomCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('copyCodeBtn').textContent = '✅ Kopyalandı!';
+                setTimeout(() => {
+                    document.getElementById('copyCodeBtn').textContent = '📋 Kopyala';
+                }, 2000);
+            });
+        });
+
+        // Join Room
+        document.getElementById('joinRoomBtn').addEventListener('click', async () => {
+            const name = document.getElementById('playerName').value.trim();
+            const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            if (!roomCode || roomCode.length !== 6) {
+                showError('menuError', 'Geçerli bir oda kodu girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = false;
+
+            try {
+                await initPeer();
+
+                const connection = peer.connect('DECODE_' + roomCode);
+                setupConnection(connection);
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        });
+
+        // Confirm Secret
+        document.getElementById('confirmSecretBtn').addEventListener('click', () => {
+            const secret = document.getElementById('secretInput').value;
+
+            if (!validateSecret(secret)) {
+                showError('secretError', '3 farklı rakamdan oluşan bir şifre gir! (örn: 123, 805, 462)');
+                return;
+            }
+
+            mySecret = secret;
+            document.getElementById('secretInput').disabled = true;
+            document.getElementById('confirmSecretBtn').disabled = true;
+            document.getElementById('secretWaiting').style.display = 'block';
+
+            // Send to opponent
+            conn.send({ type: 'secret_ready', secret: mySecret });
+
+            // Check if opponent is also ready
+            if (opponentSecret) {
+                startGame();
+            }
+        });
+
+        // Make Guess
+        document.getElementById('guessBtn').addEventListener('click', makeGuess);
+
+        document.getElementById('guessInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && isMyTurn) {
+                makeGuess();
+            }
+        });
+
+        // Input filters (only numbers)
+        ['secretInput', 'guessInput'].forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+        });
+
+        // Room code input (uppercase)
+        document.getElementById('roomCodeInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    </script>
+</body>
+
+</html>
