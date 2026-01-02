@@ -1670,3 +1670,196 @@ body {
         font-size: 16px;
     }
 }
+
+/* ========================================
+   OYUNLAR GALERİSİ MODAL STİLLERİ
+   ======================================== */
+
+.games-modal {
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    padding: 30px;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.game-card {
+    background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 50%, #1a1a1a 100%);
+    border: 2px solid #3a3a3a;
+    border-radius: 16px;
+    padding: 25px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Parlama efekti */
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: #ffd700;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.game-card-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-card-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.game-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-card-desc {
+    font-size: 14px;
+    color: #b0b0b0;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.game-card-status {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Durum renkleri */
+.status-active {
+    background: linear-gradient(135deg, #4BB543, #36802d);
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(75, 181, 67, 0.4);
+}
+
+.status-testing {
+    background: linear-gradient(135deg, #FFA500, #cc8400);
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.4);
+}
+
+.status-coming {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: #ffffff;
+}
+
+.status-secret {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.4);
+    animation: secretPulse 2s ease-in-out infinite;
+}
+
+@keyframes secretPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(155, 89, 182, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(155, 89, 182, 0.7);
+    }
+}
+
+/* Aktif oyun kartı efekti */
+.game-card[data-status="active"]:hover {
+    border-color: #4BB543;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(75, 181, 67, 0.3);
+}
+
+/* Test edilen oyun kartı efekti */
+.game-card[data-status="testing"]:hover {
+    border-color: #FFA500;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(255, 165, 0, 0.3);
+}
+
+/* Gizli oyun kartı efekti */
+.game-card[data-status="secret"]:hover {
+    border-color: #9b59b6;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(155, 89, 182, 0.4);
+}
+
+/* Logo tıklanabilir stili */
+.main-logo {
+    cursor: pointer;
+}
+
+/* Responsive oyun kartları */
+@media (max-width: 768px) {
+    .games-modal {
+        padding: 20px;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .game-card {
+        padding: 20px 15px;
+    }
+
+    .game-card-icon {
+        font-size: 36px;
+    }
+
+    .game-card-title {
+        font-size: 16px;
+    }
+
+    .game-card-desc {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+}
