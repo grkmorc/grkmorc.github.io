@@ -427,45 +427,87 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Tahmin Geçmişi */
-        .guess-history {
-            max-height: 250px;
-            overflow-y: auto;
+        /* Tahmin Geçmişi - İki Sütun */
+        .guess-history-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             margin-bottom: 20px;
-            padding-right: 10px;
         }
 
-        .guess-history::-webkit-scrollbar {
-            width: 6px;
+        .guess-column {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            max-height: 220px;
+            overflow-y: auto;
         }
 
-        .guess-history::-webkit-scrollbar-track {
+        .guess-column::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .guess-column::-webkit-scrollbar-track {
             background: #222;
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
-        .guess-history::-webkit-scrollbar-thumb {
+        .guess-column::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 2px;
+        }
+
+        .guess-column.my-guesses {
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .guess-column.my-guesses::-webkit-scrollbar-thumb {
             background: #00ff88;
-            border-radius: 3px;
+        }
+
+        .guess-column.opponent-guesses {
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .guess-column.opponent-guesses::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+        }
+
+        .guess-column-header {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .guess-column.my-guesses .guess-column-header {
+            color: #00ff88;
+        }
+
+        .guess-column.opponent-guesses .guess-column-header {
+            color: #ff6b6b;
         }
 
         .guess-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
+            padding: 10px 12px;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 3px solid #444;
+            border-radius: 8px;
+            margin-bottom: 8px;
         }
 
-        .guess-item.your-guess {
-            border-left-color: #00ff88;
+        .guess-column.my-guesses .guess-item {
+            border-left: 3px solid #00ff88;
         }
 
-        .guess-item.opponent-guess {
-            border-left-color: #ff6b6b;
+        .guess-column.opponent-guesses .guess-item {
+            border-left: 3px solid #ff6b6b;
         }
 
         .guess-number {
@@ -723,8 +765,15 @@
                     <div class="secret-number" id="yourSecretDisplay">---</div>
                 </div>
 
-                <div class="guess-history" id="guessHistory">
-                    <!-- Tahminler buraya gelecek -->
+                <div class="guess-history-container">
+                    <div class="guess-column my-guesses" id="myGuesses">
+                        <div class="guess-column-header">📤 Senin Tahminlerin</div>
+                        <!-- Senin tahminlerin buraya -->
+                    </div>
+                    <div class="guess-column opponent-guesses" id="opponentGuesses">
+                        <div class="guess-column-header">📥 Rakibin Tahminleri</div>
+                        <!-- Rakibin tahminleri buraya -->
+                    </div>
                 </div>
 
                 <div class="guess-input-area">
@@ -956,11 +1005,14 @@
             }
         }
 
-        // Add guess to history
+        // Add guess to history - ayrı sütunlara
         function addGuessToHistory(guess, result, isYours) {
-            const history = document.getElementById('guessHistory');
+            const container = isYours
+                ? document.getElementById('myGuesses')
+                : document.getElementById('opponentGuesses');
+
             const item = document.createElement('div');
-            item.className = 'guess-item ' + (isYours ? 'your-guess' : 'opponent-guess');
+            item.className = 'guess-item';
             item.innerHTML = `
                 <span class="guess-number">${guess}</span>
                 <div class="guess-result">
@@ -968,8 +1020,8 @@
                     <span class="result-minus">-${result.minus}</span>
                 </div>
             `;
-            history.appendChild(item);
-            history.scrollTop = history.scrollHeight;
+            container.appendChild(item);
+            container.scrollTop = container.scrollHeight;
         }
 
         // Handle my guess
