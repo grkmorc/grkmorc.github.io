@@ -17,10 +17,74 @@ creatorsModal.addEventListener('click', function (e) {
     }
 });
 
+// Oyunlar Modal Kontrolü
+const mainLogo = document.getElementById('mainLogo');
+const gamesModal = document.getElementById('gamesModal');
+const closeGamesModal = document.getElementById('closeGamesModal');
+const gameCards = document.querySelectorAll('.game-card');
+
+// Logo'ya tıklanınca modal aç
+mainLogo.addEventListener('click', function (e) {
+    e.stopPropagation(); // Alttaki game area'nın tıklamasını engelle
+    gamesModal.classList.add('active');
+});
+
+// X butonuna tıklanınca kapat
+closeGamesModal.addEventListener('click', function () {
+    gamesModal.classList.remove('active');
+});
+
+// Modal dışına tıklanınca kapat
+gamesModal.addEventListener('click', function (e) {
+    if (e.target === gamesModal) {
+        gamesModal.classList.remove('active');
+    }
+});
+
+// Oyun kartlarına tıklanınca ilgili oyunu aç
+gameCards.forEach(card => {
+    card.addEventListener('click', function () {
+        const gameType = this.dataset.game;
+        gamesModal.classList.remove('active');
+
+        switch (gameType) {
+            case 'theXII':
+                // Ana sayfadaki THE XII oyununu aç
+                mainContent.style.display = 'none';
+                gameScreen1.classList.add('active');
+                break;
+            case 'sherlock':
+                // Ana sayfadaki SHERLOCK oyununu aç
+                mainContent.style.display = 'none';
+                gameScreen2.classList.add('active');
+                break;
+            case 'uno':
+                // UNO sayfasına yönlendir
+                window.location.href = 'uno.html';
+                break;
+            case 'imposter':
+                // Imposter sayfasına yönlendir
+                window.location.href = 'imposter.html';
+                break;
+            case 'decode':
+                // DECODE sayfasına yönlendir
+                window.location.href = 'decode.html';
+                break;
+            case 'gizliyer':
+                // Gizli yer sayfasına yönlendir
+                window.location.href = 'gizliyer.html';
+                break;
+            default:
+                console.log('Bilinmeyen oyun:', gameType);
+        }
+    });
+});
+
 // ESC tuşu ile modal kapatma
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         creatorsModal.classList.remove('active');
+        gamesModal.classList.remove('active');
         document.getElementById('howToPlayModal1').classList.remove('active');
         document.getElementById('howToPlayModal2').classList.remove('active');
         document.getElementById('gameScreen1').classList.remove('active');
