@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕵️ Imposter - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow-x: hidden;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #050508 100%);
+        }
+
+        /* Animasyonlu Arka Plan */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(231, 76, 60, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 70% 80%, rgba(46, 204, 113, 0.1) 0%, transparent 25%);
+            animation: bgRotate 40s linear infinite;
+        }
+
+        @keyframes bgRotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Geri Butonu */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: translateX(-5px);
+        }
+
+        /* Logo */
+        .game-logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* Ekranlar */
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Oyuncu Seçimi */
+        .player-select {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-btn:hover {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            transform: scale(1.05);
+        }
+
+        .player-btn.selected {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.3);
+        }
+
+        .player-btn .number {
+            font-size: 36px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .player-btn .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* İsim Girişi */
+        .name-inputs {
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .name-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .player-avatar.p1 {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .player-avatar.p2 {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .player-avatar.p3 {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .player-avatar.p4 {
+            background: linear-gradient(135deg, #f1c40f, #d4ac0d);
+        }
+
+        .name-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .name-input:focus {
+            border-color: #e74c3c;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Butonlar */
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(231, 76, 60, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Rol Gösterimi */
+        .role-card {
+            background: linear-gradient(145deg, rgba(30, 30, 50, 0.9), rgba(20, 20, 35, 0.9));
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .role-player-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .role-player-actual {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .role-type {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+
+        .role-type.innocent {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+        }
+
+        .role-type.imposter {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+
+        .word-display {
+            margin: 30px 0;
+        }
+
+        .word-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .word-value {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .hint-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .role-warning {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .hidden-content {
+            filter: blur(20px);
+            user-select: none;
+            transition: filter 0.3s ease;
+        }
+
+        .reveal-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tur Ekranı */
+        .round-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .round-number {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .round-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .turn-info {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.1));
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 25px;
+        }
+
+        .turn-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .turn-player {
+            font-size: 28px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-top: 5px;
+        }
+
+        .answer-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 18px 22px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            border-color: #e74c3c;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .answer-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Cevaplar Listesi */
+        .answers-list {
+            width: 100%;
+            max-width: 450px;
+            margin: 20px 0;
+        }
+
+        .answer-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+        }
+
+        .answer-player {
+            font-weight: 600;
+            color: #fff;
+            min-width: 80px;
+        }
+
+        .answer-text {
+            flex: 1;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+        }
+
+        /* Oylama */
+        .vote-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 350px;
+            margin: 20px 0;
+        }
+
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 22px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn:hover {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            transform: translateX(5px);
+        }
+
+        .vote-btn.selected {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .vote-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .vote-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Sonuç Ekranı */
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .result-title.win {
+            color: #2ecc71;
+        }
+
+        .result-title.lose {
+            color: #e74c3c;
+        }
+
+        .result-message {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-reveal {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .result-reveal-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .result-reveal-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .vote-results {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+
+        .vote-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .vote-count {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <a href="gizliyer.html" class="back-btn">← Geri</a>
+
+    <div class="game-container">
+        <div class="game-logo">🕵️</div>
+        <h1 class="game-title">IMPOSTER</h1>
+        <p class="game-subtitle">Kim yalan söylüyor?</p>
+
+        <!-- EKRAN 1: Oyuncu Sayısı Seçimi -->
+        <div class="screen active" id="screenSetup">
+            <h2 style="margin-bottom: 25px; font-size: 20px;">Kaç Kişi Oynayacak?</h2>
+
+            <div class="player-select">
+                <div class="player-btn" data-count="3" onclick="selectPlayerCount(3)">
+                    <span class="number">3</span>
+                    <span class="label">Kişi</span>
+                </div>
+                <div class="player-btn" data-count="4" onclick="selectPlayerCount(4)">
+                    <span class="number">4</span>
+                    <span class="label">Kişi</span>
+                </div>
+            </div>
+
+            <div class="name-inputs" id="nameInputs"></div>
+
+            <button class="btn btn-primary" id="startBtn" disabled onclick="startGame()">
+                Oyunu Başlat
+            </button>
+        </div>
+
+        <!-- EKRAN 2: Rol Gösterimi -->
+        <div class="screen" id="screenRole">
+            <div class="role-card">
+                <div class="role-player-name">Sıra</div>
+                <div class="role-player-actual" id="rolePlayerName">Oyuncu 1</div>
+
+                <div id="roleContent" class="hidden-content">
+                    <div class="role-type" id="roleType">MASUM</div>
+
+                    <div class="word-display">
+                        <div class="word-label" id="wordLabel">Kelime</div>
+                        <div class="word-value" id="wordValue">Pizza</div>
+                    </div>
+                </div>
+
+                <button class="reveal-btn" id="revealBtn" onclick="toggleReveal()">
+                    👁️ Görmek için tıkla
+                </button>
+
+                <p class="role-warning">Ezberlediğinde "Devam"a tıkla</p>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 30px;" onclick="nextRole()">
+                Devam →
+            </button>
+        </div>
+
+        <!-- EKRAN 3: Tur -->
+        <div class="screen" id="screenRound">
+            <div class="round-header">
+                <div class="round-number">Tur <span id="roundNumber">1</span>/3</div>
+                <div class="round-title">Kelimeyi Anlat!</div>
+            </div>
+
+            <div class="turn-info">
+                <div class="turn-label">Sıra Kimde?</div>
+                <div class="turn-player" id="turnPlayerName">Oyuncu 1</div>
+            </div>
+
+            <input type="text" class="answer-input" id="answerInput" placeholder="Kelimeyle ilgili bir şey yaz..."
+                maxlength="50">
+
+            <button class="btn btn-primary" onclick="submitAnswer()">
+                Gönder
+            </button>
+        </div>
+
+        <!-- EKRAN 4: Tur Sonucu -->
+        <div class="screen" id="screenRoundResult">
+            <div class="round-header">
+                <div class="round-number">Tur <span id="roundResultNumber">1</span>/3 Tamamlandı</div>
+                <div class="round-title">Cevaplar</div>
+            </div>
+
+            <div class="answers-list" id="answersList"></div>
+
+            <button class="btn btn-primary" onclick="nextRound()">
+                <span id="nextRoundBtnText">Sonraki Tur →</span>
+            </button>
+        </div>
+
+        <!-- EKRAN 5: Oylama -->
+        <div class="screen" id="screenVote">
+            <div class="round-header">
+                <div class="round-number">Oylama</div>
+                <div class="round-title" id="voteTitle">Oyuncu 1 Oyluyor</div>
+            </div>
+
+            <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px; text-align: center;">
+                Imposter kim sence?
+            </p>
+
+            <div class="vote-options" id="voteOptions"></div>
+
+            <button class="btn btn-primary" id="voteBtn" disabled onclick="submitVote()">
+                Oyla
+            </button>
+        </div>
+
+        <!-- EKRAN 6: Sonuç -->
+        <div class="screen" id="screenResult">
+            <div class="result-icon" id="resultIcon">🏆</div>
+            <h2 class="result-title" id="resultTitle">MASUMLAR KAZANDI!</h2>
+            <p class="result-message" id="resultMessage">Imposter yakalandı!</p>
+
+            <div class="result-reveal">
+                <div class="result-reveal-label">Imposter</div>
+                <div class="result-reveal-value" id="imposterReveal" style="color: #e74c3c;">???</div>
+            </div>
+
+            <div class="result-reveal">
+                <div class="result-reveal-label">Kelime</div>
+                <div class="result-reveal-value" id="wordReveal" style="color: #ffd700;">???</div>
+            </div>
+
+            <div class="vote-results" id="voteResults"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="location.reload()">🔄 Yeni Oyun</button>
+                <a href="gizliyer.html" class="btn btn-secondary" style="text-decoration: none;">← Menü</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Kelime Havuzu
+        const WORDS = [
+            { word: "Pizza", hint: "Yiyecek" },
+            { word: "Köpek", hint: "Hayvan" },
+            { word: "Araba", hint: "Ulaşım" },
+            { word: "Telefon", hint: "Teknoloji" },
+            { word: "Futbol", hint: "Spor" },
+            { word: "Deniz", hint: "Doğa" },
+            { word: "Kitap", hint: "Eğlence" },
+            { word: "Güneş", hint: "Gökyüzü" },
+            { word: "Müzik", hint: "Sanat" },
+            { word: "Kahve", hint: "İçecek" },
+            { word: "Bilgisayar", hint: "Teknoloji" },
+            { word: "Çikolata", hint: "Tatlı" },
+            { word: "Uçak", hint: "Ulaşım" },
+            { word: "Dağ", hint: "Doğa" },
+            { word: "Film", hint: "Eğlence" },
+            { word: "Yıldız", hint: "Gökyüzü" },
+            { word: "Gitar", hint: "Müzik aleti" },
+            { word: "Kalem", hint: "Kırtasiye" },
+            { word: "Ayakkabı", hint: "Giyim" },
+            { word: "Elma", hint: "Meyve" },
+            { word: "Saat", hint: "Aksesuar" },
+            { word: "Kedi", hint: "Hayvan" },
+            { word: "Bisiklet", hint: "Ulaşım" },
+            { word: "Çanta", hint: "Aksesuar" },
+            { word: "Televizyon", hint: "Elektronik" },
+            { word: "Burger", hint: "Yiyecek" },
+            { word: "Basketbol", hint: "Spor" },
+            { word: "Kuş", hint: "Hayvan" },
+            { word: "Çiçek", hint: "Bitki" },
+            { word: "Tren", hint: "Ulaşım" }
+        ];
+
+        // Oyun Değişkenleri
+        let playerCount = 0;
+        let players = [];
+        let imposterIndex = -1;
+        let currentWord = null;
+        let currentRound = 1;
+        let currentPlayerIndex = 0;
+        let answers = [[], [], []]; // 3 tur için cevaplar
+        let votes = {};
+        let currentVoterIndex = 0;
+        let selectedVote = -1;
+
+        // Oyuncu Sayısı Seçimi
+        function selectPlayerCount(count) {
+            playerCount = count;
+
+            document.querySelectorAll('.player-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.count == count);
+            });
+
+            renderNameInputs();
+        }
+
+        function renderNameInputs() {
+            const container = document.getElementById('nameInputs');
+            container.innerHTML = '';
+
+            const avatars = ['p1', 'p2', 'p3', 'p4'];
+
+            for (let i = 0; i < playerCount; i++) {
+                const group = document.createElement('div');
+                group.className = 'name-input-group';
+                group.innerHTML = `
+                    <div class="player-avatar ${avatars[i]}">${i + 1}</div>
+                    <input type="text" class="name-input" 
+                           placeholder="Oyuncu ${i + 1} ismi" 
+                           maxlength="15"
+                           oninput="checkNames()">
+                `;
+                container.appendChild(group);
+            }
+
+            checkNames();
+        }
+
+        function checkNames() {
+            const inputs = document.querySelectorAll('.name-input');
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                if (input.value.trim() === '') allFilled = false;
+            });
+
+            document.getElementById('startBtn').disabled = !allFilled || playerCount === 0;
+        }
+
+        // Oyunu Başlat
+        function startGame() {
+            const inputs = document.querySelectorAll('.name-input');
+            players = Array.from(inputs).map(input => input.value.trim());
+
+            // Rastgele imposter seç
+            imposterIndex = Math.floor(Math.random() * playerCount);
+
+            // Rastgele kelime seç
+            currentWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+            currentPlayerIndex = 0;
+            showScreen('screenRole');
+            updateRoleScreen();
+        }
+
+        // Rol Gösterimi
+        function updateRoleScreen() {
+            document.getElementById('rolePlayerName').textContent = players[currentPlayerIndex];
+
+            const isImposter = currentPlayerIndex === imposterIndex;
+            const roleType = document.getElementById('roleType');
+            const wordLabel = document.getElementById('wordLabel');
+            const wordValue = document.getElementById('wordValue');
+
+            if (isImposter) {
+                roleType.textContent = 'IMPOSTER';
+                roleType.className = 'role-type imposter';
+                wordLabel.textContent = 'İpucu';
+                wordValue.textContent = currentWord.hint;
+                wordValue.className = 'hint-value';
+            } else {
+                roleType.textContent = 'MASUM';
+                roleType.className = 'role-type innocent';
+                wordLabel.textContent = 'Kelime';
+                wordValue.textContent = currentWord.word;
+                wordValue.className = 'word-value';
+            }
+
+            // İçeriği gizle
+            document.getElementById('roleContent').classList.add('hidden-content');
+            document.getElementById('revealBtn').style.display = 'block';
+            document.getElementById('revealBtn').textContent = '👁️ Görmek için tıkla';
+        }
+
+        function toggleReveal() {
+            const content = document.getElementById('roleContent');
+            const btn = document.getElementById('revealBtn');
+
+            if (content.classList.contains('hidden-content')) {
+                content.classList.remove('hidden-content');
+                btn.textContent = '🙈 Gizle';
+            } else {
+                content.classList.add('hidden-content');
+                btn.textContent = '👁️ Görmek için tıkla';
+            }
+        }
+
+        function nextRole() {
+            currentPlayerIndex++;
+
+            if (currentPlayerIndex >= playerCount) {
+                // Turları başlat
+                currentPlayerIndex = 0;
+                currentRound = 1;
+                showScreen('screenRound');
+                updateRoundScreen();
+            } else {
+                updateRoleScreen();
+            }
+        }
+
+        // Tur Ekranı
+        function updateRoundScreen() {
+            document.getElementById('roundNumber').textContent = currentRound;
+            document.getElementById('turnPlayerName').textContent = players[currentPlayerIndex];
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+        }
+
+        function submitAnswer() {
+            const input = document.getElementById('answerInput');
+            const answer = input.value.trim();
+
+            if (answer === '') return;
+
+            answers[currentRound - 1].push({
+                player: players[currentPlayerIndex],
+                playerIndex: currentPlayerIndex,
+                answer: answer
+            });
+
+            currentPlayerIndex++;
+
+            if (currentPlayerIndex >= playerCount) {
+                // Tur bitti, cevapları göster
+                showScreen('screenRoundResult');
+                showRoundResult();
+            } else {
+                updateRoundScreen();
+            }
+        }
+
+        function showRoundResult() {
+            document.getElementById('roundResultNumber').textContent = currentRound;
+
+            const list = document.getElementById('answersList');
+            list.innerHTML = '';
+
+            answers[currentRound - 1].forEach(a => {
+                const item = document.createElement('div');
+                item.className = 'answer-item';
+                item.innerHTML = `
+                    <span class="answer-player">${a.player}:</span>
+                    <span class="answer-text">"${a.answer}"</span>
+                `;
+                list.appendChild(item);
+            });
+
+            const btnText = document.getElementById('nextRoundBtnText');
+            if (currentRound >= 3) {
+                btnText.textContent = 'Oylamaya Geç →';
+            } else {
+                btnText.textContent = 'Sonraki Tur →';
+            }
+        }
+
+        function nextRound() {
+            if (currentRound >= 3) {
+                // Oylamaya geç
+                currentVoterIndex = 0;
+                selectedVote = -1;
+                showScreen('screenVote');
+                updateVoteScreen();
+            } else {
+                currentRound++;
+                currentPlayerIndex = 0;
+                showScreen('screenRound');
+                updateRoundScreen();
+            }
+        }
+
+        // Oylama
+        function updateVoteScreen() {
+            document.getElementById('voteTitle').textContent = players[currentVoterIndex] + ' Oyluyor';
+
+            const options = document.getElementById('voteOptions');
+            options.innerHTML = '';
+
+            const avatars = ['p1', 'p2', 'p3', 'p4'];
+
+            players.forEach((player, index) => {
+                if (index === currentVoterIndex) return; // Kendine oy veremez
+
+                const btn = document.createElement('div');
+                btn.className = 'vote-btn';
+                btn.onclick = () => selectVoteOption(index);
+                btn.innerHTML = `
+                    <div class="vote-avatar player-avatar ${avatars[index]}">${index + 1}</div>
+                    <span class="vote-name">${player}</span>
+                `;
+                options.appendChild(btn);
+            });
+
+            selectedVote = -1;
+            document.getElementById('voteBtn').disabled = true;
+        }
+
+        function selectVoteOption(index) {
+            selectedVote = index;
+
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            const buttons = document.querySelectorAll('.vote-btn');
+            let btnIndex = 0;
+            players.forEach((p, i) => {
+                if (i === currentVoterIndex) return;
+                if (i === index) {
+                    buttons[btnIndex].classList.add('selected');
+                }
+                btnIndex++;
+            });
+
+            document.getElementById('voteBtn').disabled = false;
+        }
+
+        function submitVote() {
+            if (selectedVote === -1) return;
+
+            if (!votes[selectedVote]) votes[selectedVote] = 0;
+            votes[selectedVote]++;
+
+            currentVoterIndex++;
+
+            if (currentVoterIndex >= playerCount) {
+                showResults();
+            } else {
+                selectedVote = -1;
+                updateVoteScreen();
+            }
+        }
+
+        // Sonuçlar
+        function showResults() {
+            showScreen('screenResult');
+
+            // En çok oy alanı bul
+            let maxVotes = 0;
+            let mostVoted = -1;
+            for (let i = 0; i < playerCount; i++) {
+                const v = votes[i] || 0;
+                if (v > maxVotes) {
+                    maxVotes = v;
+                    mostVoted = i;
+                }
+            }
+
+            const imposterCaught = mostVoted === imposterIndex;
+
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+
+            if (imposterCaught) {
+                icon.textContent = '🎉';
+                title.textContent = 'MASUMLAR KAZANDI!';
+                title.className = 'result-title win';
+                message.textContent = 'Imposter yakalandı!';
+            } else {
+                icon.textContent = '😈';
+                title.textContent = 'IMPOSTER KAZANDI!';
+                title.className = 'result-title lose';
+                message.textContent = 'Imposter kaçmayı başardı!';
+            }
+
+            document.getElementById('imposterReveal').textContent = players[imposterIndex];
+            document.getElementById('wordReveal').textContent = currentWord.word;
+
+            // Oy sonuçlarını göster
+            const voteResults = document.getElementById('voteResults');
+            voteResults.innerHTML = '<div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Oy Dağılımı</div>';
+
+            players.forEach((player, index) => {
+                const voteCount = votes[index] || 0;
+                const item = document.createElement('div');
+                item.className = 'vote-result-item';
+                item.innerHTML = `
+                    <span style="color: ${index === imposterIndex ? '#e74c3c' : '#fff'}; font-weight: 600;">
+                        ${player} ${index === imposterIndex ? '(Imposter)' : ''}
+                    </span>
+                    <span class="vote-count">${voteCount} oy</span>
+                `;
+                voteResults.appendChild(item);
+            });
+        }
+
+        // Yardımcı Fonksiyonlar
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
