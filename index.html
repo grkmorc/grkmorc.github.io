@@ -28,10 +28,62 @@
             </div>
         </div>
 
+        <!-- Oyunlar Modal -->
+        <div class="modal-overlay" id="gamesModal">
+            <div class="modal-content games-modal">
+                <button class="modal-close" id="closeGamesModal">&times;</button>
+                <h2 class="modal-title">🎮 TÜM OYUNLAR</h2>
+                <div class="games-grid">
+                    <!-- THE XII -->
+                    <div class="game-card" data-game="theXII" data-status="active">
+                        <div class="game-card-icon">💰</div>
+                        <h3 class="game-card-title">THE XII</h3>
+                        <p class="game-card-desc">12 Soru, Büyük Ödül!</p>
+                        <span class="game-card-status status-active">Aktif</span>
+                    </div>
+                    <!-- SHERLOCK -->
+                    <div class="game-card" data-game="sherlock" data-status="active">
+                        <div class="game-card-icon">🔍</div>
+                        <h3 class="game-card-title">SHERLOCK</h3>
+                        <p class="game-card-desc">Gizemi Çöz!</p>
+                        <span class="game-card-status status-active">Aktif</span>
+                    </div>
+                    <!-- UNO -->
+                    <div class="game-card" data-game="uno" data-status="testing">
+                        <div class="game-card-icon">🃏</div>
+                        <h3 class="game-card-title">UNO</h3>
+                        <p class="game-card-desc">Klasik Kart Oyunu</p>
+                        <span class="game-card-status status-testing">Test Ediliyor</span>
+                    </div>
+                    <!-- IMPOSTER -->
+                    <div class="game-card" data-game="imposter" data-status="testing">
+                        <div class="game-card-icon">🕵️</div>
+                        <h3 class="game-card-title">IMPOSTER</h3>
+                        <p class="game-card-desc">Sahtekarı Bul!</p>
+                        <span class="game-card-status status-testing">Test Ediliyor</span>
+                    </div>
+                    <!-- DECODE -->
+                    <div class="game-card" data-game="decode" data-status="active">
+                        <div class="game-card-icon">🔓</div>
+                        <h3 class="game-card-title">DECODE</h3>
+                        <p class="game-card-desc">Şifreyi Kır! (2 Kişi Online)</p>
+                        <span class="game-card-status status-active">Aktif</span>
+                    </div>
+                    <!-- GİZLİ OYUNLAR -->
+                    <div class="game-card" data-game="gizliyer" data-status="secret">
+                        <div class="game-card-icon">🔐</div>
+                        <h3 class="game-card-title">GİZLİ YER</h3>
+                        <p class="game-card-desc">Sürpriz Oyunlar</p>
+                        <span class="game-card-status status-secret">Gizli</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Ana İçerik -->
         <div class="main-content">
             <div class="title-section">
-                <img src="2klogo.png" alt="2K Gaming" class="main-logo">
+                <img src="2klogo.png" alt="2K Gaming" class="main-logo" id="mainLogo" title="Tüm Oyunları Gör">
             </div>
 
             <!-- Sol ve Sağ Tıklanabilir Alanlar -->
