@@ -870,9 +870,14 @@
                     <div class="stat-value" id="cardsOpenedResult">0</div>
                 </div>
 
-                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 25px;">
-                    🔄 Yeni Oyun
+                <button class="btn btn-primary" id="rematchBtn" style="margin-top: 25px;">
+                    🔄 Tekrar Oyna
                 </button>
+
+                <div id="rematchWaiting" class="waiting" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Rakip hazırlanıyor...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -1307,6 +1312,19 @@
                     revealCard(data.card, false);
                     break;
 
+                case 'rematch_request':
+                    // Rakip tekrar oynamak istiyor
+                    gameState.opponentWantsRematch = true;
+                    checkBothWantRematch();
+                    break;
+
+                case 'rematch_start':
+                    // Host yeni oyun başlattı
+                    gameState.currentTurn = data.firstTurn;
+                    resetGameState();
+                    showTrapSelection();
+                    break;
+
                 case 'error':
                     showError('menuError', data.message);
                     break;
@@ -1330,6 +1348,53 @@
         }
 
         // ========================
+        // REMATCH FUNCTIONS
+        // ========================
+
+        function resetGameState() {
+            gameState.myTrap = null;
+            gameState.opponentTrap = null;
+            gameState.revealedCards = [];
+            gameState.trapConfirmed = false;
+            gameState.opponentTrapConfirmed = false;
+            gameState.gameStarted = false;
+            gameState.myWantsRematch = false;
+            gameState.opponentWantsRematch = false;
+
+            // UI Reset
+            document.getElementById('confirmTrapBtn').style.display = 'block';
+            document.getElementById('confirmTrapBtn').disabled = true;
+            document.getElementById('trapWaiting').style.display = 'none';
+            document.getElementById('rematchBtn').style.display = 'block';
+            document.getElementById('rematchWaiting').style.display = 'none';
+        }
+
+        function requestRematch() {
+            gameState.myWantsRematch = true;
+            document.getElementById('rematchBtn').style.display = 'none';
+            document.getElementById('rematchWaiting').style.display = 'block';
+
+            sendMessage({ type: 'rematch_request' });
+            checkBothWantRematch();
+        }
+
+        function checkBothWantRematch() {
+            if (gameState.myWantsRematch && gameState.opponentWantsRematch) {
+                // İkisi de istedi, yeni oyun başlat
+                if (isHost) {
+                    // Host yeni tur ayarlar
+                    gameState.currentTurn = Math.floor(Math.random() * 2);
+                    sendMessage({
+                        type: 'rematch_start',
+                        firstTurn: gameState.currentTurn
+                    });
+                }
+                resetGameState();
+                showTrapSelection();
+            }
+        }
+
+        // ========================
         // EVENT LISTENERS
         // ========================
 
@@ -1337,6 +1402,7 @@
         document.getElementById('joinRoomBtn').onclick = joinRoom;
         document.getElementById('startGameBtn').onclick = startGame;
         document.getElementById('confirmTrapBtn').onclick = confirmTrap;
+        document.getElementById('rematchBtn').onclick = requestRematch;
 
         document.getElementById('copyCodeBtn').onclick = () => {
             navigator.clipboard.writeText(roomCode);
