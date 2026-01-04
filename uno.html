@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎴 UNO - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 40%, #0f0f1a 100%);
+        }
+
+        /* Animasyonlu Arka Plan - Pembe Tonları */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(231, 76, 60, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 80% 20%, rgba(52, 152, 219, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 70% 80%, rgba(46, 204, 113, 0.12) 0%, transparent 25%),
+                radial-gradient(circle at 30% 70%, rgba(241, 196, 15, 0.12) 0%, transparent 25%);
+            animation: bgRotate 90s linear infinite;
+        }
+
+        @keyframes bgRotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Parçacık efekti */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 182, 193, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Geri Butonu */
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, rgba(60, 30, 50, 0.9), rgba(40, 20, 35, 0.9));
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 100;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+            border-color: rgba(255, 182, 193, 0.6);
+            box-shadow: 0 12px 40px rgba(255, 105, 180, 0.3);
+        }
+
+        /* Oyun Başlığı */
+        .game-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #e74c3c, #f1c40f, #27ae60, #3498db);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            z-index: 100;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* SIRA GÖSTERGESİ - BÜYÜK VE NET */
+        .turn-indicator {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(145deg, rgba(60, 30, 50, 0.95), rgba(40, 20, 35, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            padding: 20px 30px;
+            z-index: 100;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .turn-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .turn-player {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: turnPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes turnPulse {
+
+            0%,
+            100% {
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                text-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 0 60px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        /* YÖN GÖSTERGESİ - ÜST KISIM */
+        .direction-display {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .direction-circle {
+            display: none;
+        }
+
+        .direction-arrow-big {
+            display: none;
+        }
+
+        .direction-text {
+            background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.95));
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            color: #ffd700;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Oyun Alanı */
+        .play-area {
+            position: relative;
+            width: 1000px;
+            height: 750px;
+        }
+
+        /* Masa Efekti - UNO Temaslı */
+        .table-surface {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 550px;
+            height: 350px;
+            background:
+                radial-gradient(ellipse at center,
+                    rgba(46, 204, 113, 0.15) 0%,
+                    rgba(52, 152, 219, 0.1) 25%,
+                    rgba(231, 76, 60, 0.08) 50%,
+                    rgba(241, 196, 15, 0.05) 75%,
+                    transparent 100%);
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: tablePulse 8s ease-in-out infinite;
+        }
+
+        @keyframes tablePulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        /* Orta Alan */
+        .center-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .deck {
+            width: 110px;
+            height: 154px;
+            background: linear-gradient(145deg, #1a1a2e, #0f0f1a);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                -3px 0 0 rgba(255, 255, 255, 0.2),
+                -6px 2px 0 rgba(200, 200, 200, 0.15),
+                -9px 4px 0 rgba(150, 150, 150, 0.1),
+                -12px 6px 0 rgba(100, 100, 100, 0.05),
+                inset 0 0 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deck::before {
+            content: 'UNO';
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f44336, #ffeb3b, #4caf50, #2196f3);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: none;
+        }
+
+        .deck::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 45%,
+                    rgba(255, 255, 255, 0.1) 48%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0.1) 52%,
+                    transparent 55%);
+            animation: deckShine 4s ease-in-out infinite;
+        }
+
+        @keyframes deckShine {
+
+            0%,
+            100% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            50% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        .deck:hover {
+            transform: scale(1.08) rotate(-3deg) translateY(-5px);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(244, 67, 54, 0.3),
+                0 0 60px rgba(33, 150, 243, 0.2);
+        }
+
+        .deck-count {
+            position: absolute;
+            bottom: -30px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .discard-pile {
+            width: 110px;
+            height: 154px;
+            position: relative;
+        }
+
+        /* Kart Stilleri - Premium UNO Design */
+        .card {
+            width: 90px;
+            height: 126px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.5),
+                0 4px 10px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            width: 140%;
+            height: 80%;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.25) 0%,
+                    rgba(255, 255, 255, 0.1) 50%,
+                    transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            pointer-events: none;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card.red {
+            background: linear-gradient(145deg, #ff5252 0%, #f44336 30%, #d32f2f 70%, #b71c1c 100%);
+            color: #fff;
+            border-color: rgba(255, 82, 82, 0.4);
+            box-shadow:
+                0 8px 25px rgba(244, 67, 54, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card.blue {
+            background: linear-gradient(145deg, #42a5f5 0%, #2196f3 30%, #1976d2 70%, #0d47a1 100%);
+            color: #fff;
+            border-color: rgba(66, 165, 245, 0.4);
+            box-shadow:
+                0 8px 25px rgba(33, 150, 243, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card.green {
+            background: linear-gradient(145deg, #66bb6a 0%, #4caf50 30%, #388e3c 70%, #1b5e20 100%);
+            color: #fff;
+            border-color: rgba(102, 187, 106, 0.4);
+            box-shadow:
+                0 8px 25px rgba(76, 175, 80, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card.yellow {
+            background: linear-gradient(145deg, #ffee58 0%, #ffeb3b 30%, #fdd835 70%, #f9a825 100%);
+            color: #1a1a1a;
+            border-color: rgba(255, 238, 88, 0.5);
+            box-shadow:
+                0 8px 25px rgba(255, 235, 59, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .card.wild {
+            background: linear-gradient(145deg, #424242 0%, #303030 30%, #212121 70%, #0a0a0a 100%);
+            color: #fff;
+            border-color: rgba(100, 100, 100, 0.4);
+        }
+
+        .card.wild::before {
+            background: conic-gradient(from 45deg,
+                    #f44336 0deg 90deg,
+                    #2196f3 90deg 180deg,
+                    #4caf50 180deg 270deg,
+                    #ffeb3b 270deg 360deg);
+            opacity: 0.5;
+            width: 85%;
+            height: 55%;
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: wildSpin 4s linear infinite;
+        }
+
+        @keyframes wildSpin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .card .card-value {
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            position: relative;
+        }
+
+        .card .card-corner {
+            position: absolute;
+            font-size: 14px;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .card .card-corner.top-left {
+            top: 8px;
+            left: 10px;
+        }
+
+        .card .card-corner.bottom-right {
+            bottom: 8px;
+            right: 10px;
+            transform: rotate(180deg);
+        }
+
+        .card .special-icon {
+            font-size: 28px;
+        }
+
+        /* Oyuncu Alanları */
+        .player-area {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .player-info {
+            background: linear-gradient(135deg, rgba(60, 30, 50, 0.9), rgba(40, 20, 35, 0.9));
+            padding: 12px 20px;
+            border-radius: 14px;
+            text-align: center;
+            min-width: 90px;
+            border: 2px solid transparent;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .player-name {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
+        .player-card-count {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* AKTİF OYUNCU - ÇOK BELİRGİN */
+        .player-area.active .player-info {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3);
+            animation: activePlayer 1s ease-in-out infinite;
+        }
+
+        @keyframes activePlayer {
+
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.9), 0 0 100px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        .player-area.active .player-name {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        /* Oyuncu Pozisyonları */
+        .player-bottom {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: column;
+        }
+
+        .player-top {
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: column;
+        }
+
+        .player-left {
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: row;
+        }
+
+        .player-right {
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: row-reverse;
+        }
+
+        /* Oyuncu Eli */
+        .hand {
+            display: flex;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .hand .card {
+            margin-left: -25px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: bottom center;
+        }
+
+        .hand .card:first-child {
+            margin-left: 0;
+        }
+
+        .hand .card:hover {
+            transform: translateY(-30px) scale(1.1);
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .hand .card.playable {
+            animation: glow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .hand .card.playable:hover {
+            transform: translateY(-40px) scale(1.15);
+            animation: none;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.9);
+        }
+
+        /* KART ÇEKİM ANİMASYONU */
+        .card-draw-animation {
+            position: fixed;
+            z-index: 2000;
+            animation: cardFly 0.5s ease-out forwards;
+        }
+
+        @keyframes cardFly {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Bot Kartları */
+        .bot-cards {
+            display: flex;
+        }
+
+        .bot-cards .card-back {
+            width: 55px;
+            height: 77px;
+            background: linear-gradient(145deg, #2d1528, #1a0d15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            margin-left: -35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .bot-cards .card-back::before {
+            content: 'U';
+            font-size: 16px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #e74c3c, #f1c40f, #27ae60, #3498db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bot-cards .card-back:first-child {
+            margin-left: 0;
+        }
+
+        .player-left .bot-cards,
+        .player-right .bot-cards {
+            flex-direction: column;
+        }
+
+        .player-left .bot-cards .card-back,
+        .player-right .bot-cards .card-back {
+            margin-left: 0;
+            margin-top: -55px;
+            transform: rotate(90deg);
+        }
+
+        .player-left .bot-cards .card-back:first-child,
+        .player-right .bot-cards .card-back:first-child {
+            margin-top: 0;
+        }
+
+        /* UNO Butonu */
+        .uno-btn {
+            position: absolute;
+            bottom: 200px;
+            right: 60px;
+            background: linear-gradient(145deg, #ff6b6b, #e74c3c, #c0392b);
+            color: #fff;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 60px;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.5);
+            transition: all 0.3s ease;
+            display: block;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .uno-btn:hover {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .uno-btn.should-call {
+            opacity: 1;
+            animation: unoPulse 0.8s infinite;
+            box-shadow: 0 10px 40px rgba(231, 76, 60, 0.8), 0 0 60px rgba(231, 76, 60, 0.5);
+        }
+
+        @keyframes unoPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 10px 40px rgba(231, 76, 60, 0.8), 0 0 60px rgba(231, 76, 60, 0.5);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 15px 50px rgba(231, 76, 60, 1), 0 0 80px rgba(231, 76, 60, 0.8);
+            }
+        }
+
+        /* Color Picker */
+        .color-picker-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .color-picker-overlay.active {
+            display: flex;
+        }
+
+        .color-picker {
+            background: linear-gradient(145deg, rgba(60, 30, 50, 0.98), rgba(40, 20, 35, 0.98));
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-picker h3 {
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .color-option {
+            width: 90px;
+            height: 90px;
+            border-radius: 16px;
+            cursor: pointer;
+            border: 4px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-option:hover {
+            transform: scale(1.15) rotate(5deg);
+            border-color: #fff;
+        }
+
+        .color-option.red {
+            background: linear-gradient(145deg, #ff6b6b, #e74c3c);
+        }
+
+        .color-option.blue {
+            background: linear-gradient(145deg, #74b9ff, #3498db);
+        }
+
+        .color-option.green {
+            background: linear-gradient(145deg, #55efc4, #27ae60);
+        }
+
+        .color-option.yellow {
+            background: linear-gradient(145deg, #ffeaa7, #f1c40f);
+        }
+
+        /* Win Modal */
+        .win-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .win-modal.active {
+            display: flex;
+        }
+
+        .win-content {
+            background: linear-gradient(145deg, rgba(60, 30, 50, 0.98), rgba(40, 20, 35, 0.98));
+            padding: 50px 70px;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .win-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .win-content h2 {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .win-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .win-btn {
+            background: linear-gradient(145deg, #ffd700, #ff8c00);
+            color: #000;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .win-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .win-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Mesaj */
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 60px;
+            border-radius: 20px;
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffd700;
+            z-index: 500;
+            display: none;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Discard Pile Card */
+        .discard-pile .card {
+            width: 110px;
+            height: 154px;
+            font-size: 42px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .discard-pile .card .card-corner {
+            font-size: 16px;
+        }
+
+        /* Renk göstergesi */
+        .current-color-indicator {
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .color-dot.red {
+            background: #e74c3c;
+        }
+
+        .color-dot.blue {
+            background: #3498db;
+        }
+
+        .color-dot.green {
+            background: #27ae60;
+        }
+
+        .color-dot.yellow {
+            background: #f1c40f;
+        }
+
+        /* RENK DEĞİŞİKLİĞİ BİLDİRİMİ */
+        .color-change-notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .color-change-notification.active {
+            opacity: 1;
+            animation: colorFlash 1.5s ease forwards;
+        }
+
+        .color-change-notification.red {
+            background: radial-gradient(circle, rgba(244, 67, 54, 0.9) 0%, rgba(244, 67, 54, 0.4) 50%, transparent 100%);
+        }
+
+        .color-change-notification.blue {
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.9) 0%, rgba(33, 150, 243, 0.4) 50%, transparent 100%);
+        }
+
+        .color-change-notification.green {
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.9) 0%, rgba(76, 175, 80, 0.4) 50%, transparent 100%);
+        }
+
+        .color-change-notification.yellow {
+            background: radial-gradient(circle, rgba(255, 235, 59, 0.9) 0%, rgba(255, 235, 59, 0.4) 50%, transparent 100%);
+        }
+
+        @keyframes colorFlash {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            20% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .color-change-icon {
+            font-size: 100px;
+            animation: bounceIcon 0.5s ease;
+        }
+
+        @keyframes bounceIcon {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+        }
+
+        .color-change-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+
+        .color-change-name {
+            font-size: 48px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            letter-spacing: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="game-container">
+        <a href="gizliyer.html" class="back-btn">← Geri Dön</a>
+
+        <div class="game-title">UNO</div>
+
+        <!-- SIRA GÖSTERGESİ -->
+        <div class="turn-indicator">
+            <div class="turn-label">Sıra Kimde?</div>
+            <div class="turn-player" id="turnPlayer">SEN</div>
+        </div>
+
+        <div class="play-area">
+            <div class="table-surface"></div>
+
+            <!-- YÖN GÖSTERGESİ -->
+            <div class="direction-display" id="directionDisplay">
+                <div class="direction-circle"></div>
+                <div class="direction-arrow-big top" id="arrowTop">→</div>
+                <div class="direction-arrow-big right" id="arrowRight">↓</div>
+                <div class="direction-arrow-big bottom" id="arrowBottom">←</div>
+                <div class="direction-arrow-big left" id="arrowLeft">↑</div>
+                <div class="direction-text" id="directionText">↻ SAAT YÖNÜ</div>
+            </div>
+
+            <!-- Üst Oyuncu (Bot 2) -->
+            <div class="player-area player-top" id="player2Area">
+                <div class="player-info">
+                    <div class="player-name">Bot 2</div>
+                    <div class="player-card-count" id="player2Count">7</div>
+                </div>
+                <div class="bot-cards" id="player2Cards"></div>
+            </div>
+
+            <!-- Sol Oyuncu (Bot 1) -->
+            <div class="player-area player-left" id="player1Area">
+                <div class="player-info">
+                    <div class="player-name">Bot 1</div>
+                    <div class="player-card-count" id="player1Count">7</div>
+                </div>
+                <div class="bot-cards" id="player1Cards"></div>
+            </div>
+
+            <!-- Sağ Oyuncu (Bot 3) -->
+            <div class="player-area player-right" id="player3Area">
+                <div class="player-info">
+                    <div class="player-name">Bot 3</div>
+                    <div class="player-card-count" id="player3Count">7</div>
+                </div>
+                <div class="bot-cards" id="player3Cards"></div>
+            </div>
+
+            <!-- Orta Alan -->
+            <div class="center-area">
+                <div class="deck" id="deck" onclick="drawCard()">
+                    <span class="deck-count" id="deckCount">76 kart</span>
+                </div>
+                <div class="discard-pile" id="discardPile">
+                    <div class="current-color-indicator">
+                        <div class="color-dot" id="colorDot"></div>
+                        <span id="colorName">Kırmızı</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Oyuncu (Sen) -->
+            <div class="player-area player-bottom active" id="player0Area">
+                <div class="hand" id="playerHand"></div>
+                <div class="player-info">
+                    <div class="player-name">Sen</div>
+                    <div class="player-card-count" id="player0Count">7</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="uno-btn" id="unoBtn" onclick="callUno()">UNO!</button>
+        <div class="game-message" id="gameMessage"></div>
+    </div>
+
+    <!-- Renk Seçici -->
+    <div class="color-picker-overlay" id="colorPicker">
+        <div class="color-picker">
+            <h3>🎨 Renk Seç</h3>
+            <div class="color-options">
+                <div class="color-option red" onclick="selectColor('red')"></div>
+                <div class="color-option blue" onclick="selectColor('blue')"></div>
+                <div class="color-option green" onclick="selectColor('green')"></div>
+                <div class="color-option yellow" onclick="selectColor('yellow')"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renk Değişikliği Bildirimi -->
+    <div class="color-change-notification" id="colorChangeNotification">
+        <div class="color-change-icon" id="colorChangeIcon">🔴</div>
+        <div class="color-change-text">RENK DEĞİŞTİ!</div>
+        <div class="color-change-name" id="colorChangeName">KIRMIZI</div>
+    </div>
+
+    <!-- Kazanma Modal -->
+    <div class="win-modal" id="winModal">
+        <div class="win-content">
+            <div class="win-icon" id="winIcon">🏆</div>
+            <h2 id="winTitle">TEBRİKLER!</h2>
+            <p id="winMessage">Oyunu kazandın!</p>
+            <button class="win-btn" onclick="restartGame()">🔄 Yeni Oyun</button>
+            <a href="gizliyer.html" class="win-btn secondary" style="text-decoration:none;">← Menü</a>
+        </div>
+    </div>
+
+    <script>
+        // Parçacıklar
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Oyun Değişkenleri
+        const COLORS = ['red', 'blue', 'green', 'yellow'];
+        const COLOR_NAMES = { red: 'Kırmızı', blue: 'Mavi', green: 'Yeşil', yellow: 'Sarı' };
+        const SPECIAL_DISPLAY = { 'skip': '⊘', 'reverse': '⟲', '+2': '+2', 'wild': '★', '+4': '+4' };
+
+        let deck = [];
+        let discardPile = [];
+        let players = [[], [], [], []];
+        let currentPlayer = 0;
+        let direction = 1;
+        let currentColor = null;
+        let pendingWildCard = null;
+        let gameOver = false;
+        let unoCalled = false;
+        let isAnimating = false;
+
+        function initGame() {
+            deck = createDeck();
+            shuffleDeck(deck);
+            discardPile = [];
+            players = [[], [], [], []];
+            currentPlayer = 0;
+            direction = 1;
+            gameOver = false;
+            unoCalled = false;
+            isAnimating = false;
+
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 7; j++) {
+                    players[i].push(deck.pop());
+                }
+            }
+
+            let firstCard;
+            do {
+                firstCard = deck.pop();
+                if (firstCard.type === 'wild') {
+                    deck.unshift(firstCard);
+                    shuffleDeck(deck);
+                }
+            } while (firstCard.type === 'wild');
+
+            discardPile.push(firstCard);
+            currentColor = firstCard.color;
+
+            if (firstCard.value === 'skip') {
+                currentPlayer = getNextPlayer();
+            } else if (firstCard.value === 'reverse') {
+                direction *= -1;
+            } else if (firstCard.value === '+2') {
+                animateDrawCards(0, 2, () => {
+                    currentPlayer = getNextPlayer();
+                    renderGame();
+                    updateUI();
+                    if (currentPlayer !== 0) setTimeout(botPlay, 1000);
+                });
+                renderGame();
+                updateUI();
+                return;
+            }
+
+            renderGame();
+            updateUI();
+
+            if (currentPlayer !== 0) {
+                setTimeout(botPlay, 1000);
+            }
+        }
+
+        function createDeck() {
+            const cards = [];
+            COLORS.forEach(color => {
+                cards.push({ color, value: '0', type: 'number' });
+                for (let i = 0; i < 2; i++) {
+                    for (let v = 1; v <= 9; v++) {
+                        cards.push({ color, value: v.toString(), type: 'number' });
+                    }
+                    cards.push({ color, value: 'skip', type: 'action' });
+                    cards.push({ color, value: 'reverse', type: 'action' });
+                    cards.push({ color, value: '+2', type: 'action' });
+                }
+            });
+            for (let i = 0; i < 4; i++) {
+                cards.push({ color: 'wild', value: 'wild', type: 'wild' });
+                cards.push({ color: 'wild', value: '+4', type: 'wild' });
+            }
+            return cards;
+        }
+
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function drawFromDeck() {
+            if (deck.length === 0) {
+                const topCard = discardPile.pop();
+                deck = discardPile;
+                discardPile = [topCard];
+                shuffleDeck(deck);
+            }
+            return deck.pop();
+        }
+
+        function getNextPlayer() {
+            return (currentPlayer + direction + 4) % 4;
+        }
+
+        function canPlayCard(card) {
+            const topCard = discardPile[discardPile.length - 1];
+            if (card.type === 'wild') return true;
+            if (card.color === currentColor) return true;
+            if (card.value === topCard.value) return true;
+            return false;
+        }
+
+        // Yavaş kart çekme animasyonu
+        function animateDrawCards(playerIndex, count, callback) {
+            isAnimating = true;
+            let drawn = 0;
+
+            function drawOne() {
+                if (drawn >= count) {
+                    isAnimating = false;
+                    if (callback) callback();
+                    return;
+                }
+
+                const card = drawFromDeck();
+                players[playerIndex].push(card);
+
+                // Animasyon için geçici kart göster
+                const deckEl = document.getElementById('deck');
+                const deckRect = deckEl.getBoundingClientRect();
+
+                const tempCard = document.createElement('div');
+                tempCard.className = 'card-draw-animation';
+                tempCard.style.left = deckRect.left + 'px';
+                tempCard.style.top = deckRect.top + 'px';
+                tempCard.style.width = '80px';
+                tempCard.style.height = '112px';
+                tempCard.style.background = 'linear-gradient(145deg, #2d1528, #1a0d15)';
+                tempCard.style.border = '3px solid #fff';
+                tempCard.style.borderRadius = '10px';
+                document.body.appendChild(tempCard);
+
+                // Hedef pozisyon
+                const playerAreas = [
+                    document.getElementById('player0Area'),
+                    document.getElementById('player1Area'),
+                    document.getElementById('player2Area'),
+                    document.getElementById('player3Area')
+                ];
+                const targetRect = playerAreas[playerIndex].getBoundingClientRect();
+
+                tempCard.style.animation = 'none';
+                tempCard.offsetHeight;
+
+                const targetX = targetRect.left + targetRect.width / 2 - 40;
+                const targetY = targetRect.top + targetRect.height / 2 - 56;
+
+                tempCard.animate([
+                    { left: deckRect.left + 'px', top: deckRect.top + 'px', opacity: 1 },
+                    { left: targetX + 'px', top: targetY + 'px', opacity: 0.5 }
+                ], {
+                    duration: 400,
+                    easing: 'ease-out'
+                }).onfinish = () => {
+                    tempCard.remove();
+                    renderGame();
+                    drawn++;
+                    setTimeout(drawOne, 300); // Her kart arası 300ms
+                };
+            }
+
+            drawOne();
+        }
+
+        function playCard(playerIndex, cardIndex) {
+            if (gameOver || playerIndex !== currentPlayer || isAnimating) return;
+
+            const card = players[playerIndex][cardIndex];
+            if (!canPlayCard(card)) return;
+
+            players[playerIndex].splice(cardIndex, 1);
+            discardPile.push(card);
+
+            if (card.type === 'wild') {
+                if (playerIndex === 0) {
+                    pendingWildCard = card;
+                    document.getElementById('colorPicker').classList.add('active');
+                    renderGame();
+                    return;
+                } else {
+                    currentColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+                    showColorChangeNotification(currentColor);
+                }
+            } else {
+                currentColor = card.color;
+            }
+
+            applyCardEffect(card);
+        }
+
+        function applyCardEffect(card) {
+            let skipNext = false;
+            let drawCards = 0;
+
+            // Oyuncu isimleri
+            const playerNames = ['Sen', 'Bot 1', 'Bot 2', 'Bot 3'];
+
+            if (card.value === 'skip') {
+                skipNext = true;
+                const skippedPlayer = getNextPlayer();
+                showMessage(`⊘ ${playerNames[skippedPlayer]} ENGELLENDİ!`);
+            } else if (card.value === 'reverse') {
+                direction *= -1;
+                updateDirectionDisplay();
+                showMessage('⟲ YÖN DEĞİŞTİ!');
+            } else if (card.value === '+2') {
+                drawCards = 2;
+                const targetPlayer = getNextPlayer();
+                showMessage(`+2 KART! ${playerNames[targetPlayer]}`);
+            } else if (card.value === '+4') {
+                drawCards = 4;
+                const targetPlayer = getNextPlayer();
+                showMessage(`+4 KART! ${playerNames[targetPlayer]}`);
+            }
+
+            currentPlayer = getNextPlayer();
+
+            if (drawCards > 0) {
+                const targetPlayer = currentPlayer;
+                renderGame();
+                updateUI();
+
+                // Yavaş yavaş kart çektir
+                animateDrawCards(targetPlayer, drawCards, () => {
+                    currentPlayer = getNextPlayer();
+
+                    // Kazanan kontrolü
+                    for (let i = 0; i < 4; i++) {
+                        if (players[i].length === 0) {
+                            endGame(i);
+                            return;
+                        }
+                    }
+
+                    checkUnoButton();
+                    updateUI();
+                    renderGame();
+
+                    if (currentPlayer !== 0 && !gameOver) {
+                        setTimeout(botPlay, 1000);
+                    }
+                });
+                return;
+            }
+
+            if (skipNext) {
+                currentPlayer = getNextPlayer();
+            }
+
+            for (let i = 0; i < 4; i++) {
+                if (players[i].length === 0) {
+                    endGame(i);
+                    return;
+                }
+            }
+
+            checkUnoButton();
+            renderGame();
+            updateUI();
+
+            if (currentPlayer !== 0 && !gameOver) {
+                setTimeout(botPlay, 1000);
+            } else if (currentPlayer === 0 && !gameOver) {
+                // Sıra oyuncuya geldi, UNO cezası kontrol et
+                checkUnoPenalty();
+            }
+        }
+
+        function selectColor(color) {
+            currentColor = color;
+            document.getElementById('colorPicker').classList.remove('active');
+            updateColorIndicator();
+
+            // Büyük renk değişikliği bildirimi göster
+            showColorChangeNotification(color);
+
+            const card = pendingWildCard;
+            pendingWildCard = null;
+
+            applyCardEffect(card);
+        }
+
+        function showColorChangeNotification(color) {
+            const notification = document.getElementById('colorChangeNotification');
+            const icon = document.getElementById('colorChangeIcon');
+            const name = document.getElementById('colorChangeName');
+
+            const colorData = {
+                red: { icon: '🔴', name: 'KIRMIZI' },
+                blue: { icon: '🔵', name: 'MAVİ' },
+                green: { icon: '🟢', name: 'YEŞİL' },
+                yellow: { icon: '🟡', name: 'SARI' }
+            };
+
+            notification.className = 'color-change-notification ' + color;
+            icon.textContent = colorData[color].icon;
+            name.textContent = colorData[color].name;
+
+            notification.classList.add('active');
+
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 1500);
+        }
+
+        function drawCard() {
+            if (gameOver || currentPlayer !== 0 || isAnimating) return;
+
+            const card = drawFromDeck();
+            players[0].push(card);
+
+            if (canPlayCard(card)) {
+                renderGame();
+            } else {
+                currentPlayer = getNextPlayer();
+                renderGame();
+                updateUI();
+
+                if (currentPlayer !== 0) {
+                    setTimeout(botPlay, 1000);
+                }
+            }
+        }
+
+        function botPlay() {
+            if (gameOver || currentPlayer === 0 || isAnimating) return;
+
+            const hand = players[currentPlayer];
+            let playableIndex = -1;
+
+            for (let i = 0; i < hand.length; i++) {
+                if (canPlayCard(hand[i])) {
+                    playableIndex = i;
+                    if (hand[i].type === 'action' || hand[i].type === 'wild') break;
+                }
+            }
+
+            if (playableIndex >= 0) {
+                playCard(currentPlayer, playableIndex);
+            } else {
+                const card = drawFromDeck();
+                players[currentPlayer].push(card);
+
+                if (canPlayCard(card)) {
+                    setTimeout(() => {
+                        playCard(currentPlayer, players[currentPlayer].length - 1);
+                    }, 500);
+                } else {
+                    currentPlayer = getNextPlayer();
+                    renderGame();
+                    updateUI();
+
+                    if (currentPlayer !== 0) {
+                        setTimeout(botPlay, 1000);
+                    } else {
+                        // Sıra oyuncuya geldi, UNO cezası kontrol et
+                        checkUnoPenalty();
+                    }
+                }
+            }
+        }
+
+        function callUno() {
+            if (players[0].length === 1 && !unoCalled) {
+                unoCalled = true;
+                document.getElementById('unoBtn').classList.remove('should-call');
+                showMessage('UNO! 🎉');
+            }
+        }
+
+        function checkUnoButton() {
+            const btn = document.getElementById('unoBtn');
+            // 1 kart kaldıysa ve UNO demediyse butonu parlat
+            if (players[0].length === 1 && !unoCalled) {
+                btn.classList.add('should-call');
+            } else {
+                btn.classList.remove('should-call');
+            }
+            // 2+ karta dönerse UNO durumunu sıfırla
+            if (players[0].length > 1) {
+                unoCalled = false;
+            }
+        }
+
+        // Oyuncunun sırası gelince UNO kontrolü
+        function checkUnoPenalty() {
+            // Eğer oyuncunun 1 kartı var ve UNO demeden sırası geldiyse ceza
+            if (players[0].length === 1 && !unoCalled && currentPlayer === 0) {
+                showMessage('UNO DEMEDİN! +2 CEZA!');
+                animateDrawCards(0, 2, () => {
+                    unoCalled = true; // Cezadan sonra tekrar ceza verme
+                    document.getElementById('unoBtn').classList.remove('should-call');
+                    renderGame();
+                    updateUI();
+                });
+                return true; // Ceza verildi
+            }
+            return false;
+        }
+
+        function endGame(winnerIndex) {
+            gameOver = true;
+            const modal = document.getElementById('winModal');
+            const icon = document.getElementById('winIcon');
+            const title = document.getElementById('winTitle');
+            const message = document.getElementById('winMessage');
+
+            if (winnerIndex === 0) {
+                icon.textContent = '🏆';
+                title.textContent = 'TEBRİKLER!';
+                message.textContent = 'Oyunu kazandın!';
+            } else {
+                icon.textContent = '😔';
+                title.textContent = 'Kaybettin!';
+                message.textContent = `Bot ${winnerIndex} oyunu kazandı.`;
+            }
+            modal.classList.add('active');
+        }
+
+        function restartGame() {
+            document.getElementById('winModal').classList.remove('active');
+            initGame();
+        }
+
+        function showMessage(text) {
+            const msg = document.getElementById('gameMessage');
+            msg.textContent = text;
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 1500);
+        }
+
+        function updateUI() {
+            updateTurnIndicator();
+            updateDirectionDisplay();
+            updateColorIndicator();
+        }
+
+        function updateTurnIndicator() {
+            const names = ['SEN', 'BOT 1', 'BOT 2', 'BOT 3'];
+            document.getElementById('turnPlayer').textContent = names[currentPlayer];
+
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`player${i}Area`).classList.toggle('active', i === currentPlayer);
+            }
+        }
+
+        function updateDirectionDisplay() {
+            const text = document.getElementById('directionText');
+            const arrowTop = document.getElementById('arrowTop');
+            const arrowRight = document.getElementById('arrowRight');
+            const arrowBottom = document.getElementById('arrowBottom');
+            const arrowLeft = document.getElementById('arrowLeft');
+
+            if (direction === 1) {
+                text.textContent = '↻ SAAT YÖNÜ';
+                arrowTop.textContent = '→';
+                arrowRight.textContent = '↓';
+                arrowBottom.textContent = '←';
+                arrowLeft.textContent = '↑';
+            } else {
+                text.textContent = '↺ TERS YÖN';
+                arrowTop.textContent = '←';
+                arrowRight.textContent = '↑';
+                arrowBottom.textContent = '→';
+                arrowLeft.textContent = '↓';
+            }
+        }
+
+        function updateColorIndicator() {
+            const dot = document.getElementById('colorDot');
+            const name = document.getElementById('colorName');
+            dot.className = 'color-dot ' + currentColor;
+            name.textContent = COLOR_NAMES[currentColor] || '';
+        }
+
+        function renderGame() {
+            // Oyuncu eli
+            const handEl = document.getElementById('playerHand');
+            handEl.innerHTML = '';
+            players[0].forEach((card, index) => {
+                const cardEl = createCardElement(card);
+                if (currentPlayer === 0 && canPlayCard(card) && !isAnimating) {
+                    cardEl.classList.add('playable');
+                }
+                cardEl.onclick = () => playCard(0, index);
+                handEl.appendChild(cardEl);
+            });
+            document.getElementById('player0Count').textContent = players[0].length;
+
+            // Bot kartları
+            for (let i = 1; i <= 3; i++) {
+                const botCards = document.getElementById(`player${i}Cards`);
+                botCards.innerHTML = '';
+                for (let j = 0; j < Math.min(players[i].length, 10); j++) {
+                    const back = document.createElement('div');
+                    back.className = 'card-back';
+                    botCards.appendChild(back);
+                }
+                document.getElementById(`player${i}Count`).textContent = players[i].length;
+            }
+
+            // Atılmış kart
+            const discardEl = document.getElementById('discardPile');
+            const existingCard = discardEl.querySelector('.card');
+            if (existingCard) existingCard.remove();
+
+            if (discardPile.length > 0) {
+                const topCard = discardPile[discardPile.length - 1];
+                const cardEl = createCardElement(topCard);
+                if (topCard.type === 'wild' && currentColor) {
+                    cardEl.style.boxShadow = `0 15px 40px rgba(0, 0, 0, 0.5), 0 0 40px ${getColorHex(currentColor)}80`;
+                }
+                discardEl.insertBefore(cardEl, discardEl.firstChild);
+            }
+
+            document.getElementById('deckCount').textContent = `${deck.length} kart`;
+        }
+
+        function createCardElement(card) {
+            const el = document.createElement('div');
+            el.className = `card ${card.color}`;
+
+            const value = document.createElement('span');
+            value.className = 'card-value';
+            if (card.type === 'wild' || card.type === 'action') {
+                value.textContent = SPECIAL_DISPLAY[card.value] || card.value;
+                value.classList.add('special-icon');
+            } else {
+                value.textContent = card.value;
+            }
+            el.appendChild(value);
+
+            const cornerValue = SPECIAL_DISPLAY[card.value] || card.value;
+            const topLeft = document.createElement('span');
+            topLeft.className = 'card-corner top-left';
+            topLeft.textContent = cornerValue;
+            el.appendChild(topLeft);
+
+            const bottomRight = document.createElement('span');
+            bottomRight.className = 'card-corner bottom-right';
+            bottomRight.textContent = cornerValue;
+            el.appendChild(bottomRight);
+
+            return el;
+        }
+
+        function getColorHex(color) {
+            return { 'red': '#e74c3c', 'blue': '#3498db', 'green': '#27ae60', 'yellow': '#f1c40f' }[color] || '#fff';
+        }
+
+        initGame();
+    </script>
+</body>
+
+</html>
