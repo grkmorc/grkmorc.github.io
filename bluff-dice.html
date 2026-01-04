@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Liar's Dice - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            background: radial-gradient(ellipse at center, #2a2a1a 0%, #1a1a0f 50%, #0a0a05 100%);
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 200, 50, 0.08) 0%, transparent 30%), radial-gradient(circle at 70% 80%, rgba(200, 150, 50, 0.06) 0%, transparent 30%);
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .connection-status.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: rgba(255, 200, 50, 0.3);
+            border: 1px solid #f1c40f;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 100;
+        }
+
+        .game-logo {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .online-badge {
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-ui {
+            background: linear-gradient(145deg, rgba(50, 50, 30, 0.95), rgba(30, 30, 15, 0.95));
+            border: 2px solid rgba(241, 196, 15, 0.3);
+            border-radius: 20px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card-ui h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #f1c40f;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #f1c40f;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            color: #000;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 13px;
+        }
+
+        .room-code-display {
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px dashed #f1c40f;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .room-code-display .code {
+            font-size: 32px;
+            font-weight: 900;
+            color: #f1c40f;
+            letter-spacing: 6px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: rgba(241, 196, 15, 0.2);
+            border: 1px solid #f1c40f;
+            color: #f1c40f;
+            padding: 6px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .player-list {
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .player-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 14px;
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            color: #000;
+        }
+
+        .player-name {
+            flex: 1;
+        }
+
+        .player-dice {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .player-dice.eliminated {
+            background: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .waiting {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #f1c40f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-msg {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 13px;
+            display: none;
+        }
+
+        /* Game Area */
+        .game-area {
+            width: 100%;
+        }
+
+        .turn-indicator {
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .turn-indicator.my-turn {
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            color: #000;
+            animation: pulse 1.5s infinite;
+        }
+
+        .turn-indicator.waiting {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(241, 196, 15, 0.8);
+            }
+        }
+
+        /* Current Bid */
+        .current-bid {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .bid-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+        }
+
+        .bid-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #f1c40f;
+        }
+
+        .bid-player {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        /* Table */
+        .table-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .players-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .table-player {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .table-player.active {
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
+        }
+
+        .table-player.eliminated {
+            opacity: 0.4;
+        }
+
+        .table-player-name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .table-player-dice {
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* My Dice */
+        .my-dice-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .my-dice-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .my-dice {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .dice {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #fff, #ddd);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #2c3e50;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Actions */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bid-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bid-row select,
+        .bid-row input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .bid-row select option {
+            background: #2a2a1a;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        /* Chat */
+        .chat-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .chat-messages {
+            height: 80px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .chat-msg {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-msg .sender {
+            color: #f1c40f;
+            font-weight: 600;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .chat-input-row button {
+            padding: 8px 15px;
+            background: #f1c40f;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Result */
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .result-title.win {
+            color: #2ecc71;
+        }
+
+        .result-title.lose {
+            color: #e74c3c;
+        }
+
+        .result-message {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        /* Reveal */
+        .reveal-area {
+            background: rgba(241, 196, 15, 0.1);
+            border: 1px solid #f1c40f;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .reveal-title {
+            font-size: 14px;
+            color: #f1c40f;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .reveal-players {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .reveal-player {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .reveal-player-name {
+            font-size: 13px;
+        }
+
+        .reveal-player-dice {
+            font-size: 18px;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <a href="gizliyer.html" class="back-btn">← Geri</a>
+    <div id="connectionStatus" class="connection-status disconnected">Bağlanıyor...</div>
+    <button id="soundToggle" class="sound-toggle">🔊 Ses Açık</button>
+
+    <div class="game-container">
+        <div class="game-logo">🎲</div>
+        <h1 class="game-title">LIAR'S DICE</h1>
+        <div class="online-badge">🌐 2-6 OYUNCU</div>
+        <p class="game-subtitle">Zar at, iddia et, challenge yap!</p>
+
+        <!-- MENU SCREEN -->
+        <div id="menuScreen" class="screen active">
+            <div class="card-ui">
+                <h2>🎮 Oyuna Katıl</h2>
+                <div class="input-group">
+                    <label>Oyuncu Adı</label>
+                    <input type="text" id="playerName" placeholder="İsminizi girin" maxlength="12">
+                </div>
+                <button class="btn btn-primary" id="createRoomBtn">ODA OLUŞTUR</button>
+                <div class="divider"><span>veya</span></div>
+                <div class="input-group">
+                    <label>Oda Kodu</label>
+                    <input type="text" id="roomCodeInput" placeholder="6 haneli kod" maxlength="6"
+                        style="text-transform:uppercase;text-align:center;letter-spacing:4px;">
+                </div>
+                <button class="btn btn-secondary" id="joinRoomBtn">ODAYA KATIL</button>
+                <div id="menuError" class="error-msg"></div>
+            </div>
+        </div>
+
+        <!-- LOBBY SCREEN -->
+        <div id="lobbyScreen" class="screen">
+            <div class="card-ui">
+                <h2>🏠 Oyun Lobisi</h2>
+                <div class="room-code-display">
+                    <p style="color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:5px;">Oda Kodu</p>
+                    <div class="code" id="roomCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Kopyala</button>
+                </div>
+                <div class="player-list" id="playerList"></div>
+                <p style="text-align:center;color:rgba(255,255,255,0.5);font-size:12px;margin:10px 0;">Minimum 2,
+                    maksimum 6 oyuncu</p>
+                <button class="btn btn-primary" id="startGameBtn" disabled>OYUNU BAŞLAT</button>
+            </div>
+        </div>
+
+        <!-- WAITING SCREEN -->
+        <div id="waitingScreen" class="screen">
+            <div class="card-ui">
+                <div class="waiting">
+                    <div class="spinner"></div>
+                    <p>Odaya katıldın!</p>
+                    <p style="margin-top:8px;font-weight:600;">Host'un oyunu başlatması bekleniyor...</p>
+                </div>
+                <div class="player-list" id="guestPlayerList"></div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="gameScreen" class="screen">
+            <div class="card-ui game-area">
+                <div class="turn-indicator" id="turnIndicator">SENİN SIRAN!</div>
+
+                <div class="current-bid" id="currentBidArea">
+                    <div class="bid-label">Mevcut İddia</div>
+                    <div class="bid-value" id="currentBidValue">-</div>
+                    <div class="bid-player" id="currentBidPlayer"></div>
+                </div>
+
+                <div class="reveal-area" id="revealArea">
+                    <div class="reveal-title">🎲 Tüm Zarlar Açıldı!</div>
+                    <div class="reveal-players" id="revealPlayers"></div>
+                </div>
+
+                <div class="table-area">
+                    <div class="players-table" id="playersTable"></div>
+                </div>
+
+                <div class="my-dice-area">
+                    <div class="my-dice-label">Senin Zarların</div>
+                    <div class="my-dice" id="myDice"></div>
+                </div>
+
+                <div class="action-area" id="actionArea">
+                    <div class="bid-row">
+                        <input type="number" id="bidCount" min="1" value="1" placeholder="Adet">
+                        <select id="bidFace">
+                            <option value="1">⚀ (1)</option>
+                            <option value="2">⚁ (2)</option>
+                            <option value="3">⚂ (3)</option>
+                            <option value="4">⚃ (4)</option>
+                            <option value="5">⚄ (5)</option>
+                            <option value="6">⚅ (6)</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="raiseBidBtn">İDDİA ET</button>
+                        <button class="btn btn-secondary" id="challengeBtn" disabled>CHALLENGE!</button>
+                    </div>
+                </div>
+
+                <div class="chat-area">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Mesaj yaz..." maxlength="100">
+                        <button id="chatSendBtn">Gönder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="screen">
+            <div class="card-ui" style="text-align:center;">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <h2 class="result-title" id="resultTitle">KAZANDIN!</h2>
+                <p class="result-message" id="resultMessage">Son kalan sen oldun!</p>
+                <button class="btn btn-primary" id="rematchBtn">🔄 Tekrar Oyna</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sound
+        let soundEnabled = true;
+        const notifSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleVYsNYPZ2r6OW0swZJ/X2r2EUjspXJrXzJthKSA0kdrl2K9nMC5Jj9/ozqNhLTJFjN3gxpNTIyxCkt3mzJlZJi5Fj+Lu2a1vPTlBkuft2qtwPTQ+jejs0pZdKSRAle7y46xqNzI8lfPz5K1sPTE3k/T09bNzOzI0kPX19bp5PTExjvb29sB+PzAqifj5+ceGRTYmg/r6+syLSjkhfPz8998kE6LwGv/61MTz98Xy98Xz+MXy+MXz+Mby+Mby+cfy98jz+Mjy+cjz+cnz+Mnz+cnz+snz+8r0+8r0+8v0/Mv0/Mr0/Mv1/cv1/cv1/cz1/sz2/s32/s33/s73/874/879/8/+');
+        document.getElementById('soundToggle').onclick = () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 Ses Açık' : '🔇 Ses Kapalı';
+        };
+        function playNotification() { if (soundEnabled) { notifSound.currentTime = 0; notifSound.play().catch(() => { }); } }
+
+        const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+        // DOM
+        const menuScreen = document.getElementById('menuScreen');
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // State
+        let peer = null, connections = [], isHost = false, myName = '', myId = '', roomCode = '';
+        let players = [];
+        let gameState = {
+            myDice: [],
+            currentTurn: 0,
+            currentBid: null, // {count, face, playerId}
+            diceCount: {}, // playerId -> count
+            allDice: {} // for reveal
+        };
+
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            return code;
+        }
+
+        function showScreen(screen) {
+            [menuScreen, lobbyScreen, waitingScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg; el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function updateConnectionStatus(connected) {
+            connectionStatus.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
+            connectionStatus.textContent = connected ? '🟢 Bağlı' : '🔴 Bağlantı Yok';
+        }
+
+        function initPeer(id = null) {
+            return new Promise((resolve, reject) => {
+                peer = id ? new Peer(id) : new Peer();
+                peer.on('open', (peerId) => { myId = peerId; updateConnectionStatus(true); resolve(peerId); });
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') reject(new Error('Oda kodu kullanımda'));
+                    else if (err.type === 'peer-unavailable') reject(new Error('Oda bulunamadı'));
+                    else reject(err);
+                });
+                peer.on('disconnected', () => updateConnectionStatus(false));
+            });
+        }
+
+        function renderPlayerList(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = players.map((p, i) => {
+                const diceCount = gameState.diceCount[p.id] ?? 5;
+                const eliminated = diceCount === 0;
+                return `<div class="player-item">
+                    <div class="player-avatar">${i + 1}</div>
+                    <span class="player-name">${p.name}</span>
+                    <span class="player-dice ${eliminated ? 'eliminated' : ''}">${eliminated ? 'Elendi' : `🎲 ${diceCount}`}</span>
+                    ${p.isHost ? '<span style="color:#f1c40f;font-size:11px;">Host</span>' : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function broadcast(data, excludeId = null) {
+            connections.forEach(conn => { if (conn.open && conn.peer !== excludeId) conn.send(data); });
+        }
+        function sendToHost(data) { if (connections[0] && connections[0].open) connections[0].send(data); }
+
+        // Render
+        function renderMyDice() {
+            const container = document.getElementById('myDice');
+            container.innerHTML = gameState.myDice.map(d => `<div class="dice">${DICE_FACES[d - 1]}</div>`).join('');
+        }
+
+        function renderTable() {
+            const container = document.getElementById('playersTable');
+            container.innerHTML = players.map(p => {
+                const count = gameState.diceCount[p.id] ?? 5;
+                const isActive = players[gameState.currentTurn]?.id === p.id;
+                const eliminated = count === 0;
+                return `<div class="table-player ${isActive ? 'active' : ''} ${eliminated ? 'eliminated' : ''}">
+                    <div class="table-player-name">${p.name}</div>
+                    <div class="table-player-dice">${eliminated ? '❌' : '🎲'.repeat(Math.min(count, 5))}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function updateBidDisplay() {
+            if (gameState.currentBid) {
+                document.getElementById('currentBidValue').textContent =
+                    `${gameState.currentBid.count}x ${DICE_FACES[gameState.currentBid.face - 1]}`;
+                const bidder = players.find(p => p.id === gameState.currentBid.playerId);
+                document.getElementById('currentBidPlayer').textContent = `${bidder?.name || '?'} tarafından`;
+            } else {
+                document.getElementById('currentBidValue').textContent = '-';
+                document.getElementById('currentBidPlayer').textContent = 'İlk iddiayı yap!';
+            }
+        }
+
+        function updateTurnIndicator() {
+            const indicator = document.getElementById('turnIndicator');
+            const activePlayers = players.filter(p => (gameState.diceCount[p.id] ?? 5) > 0);
+            const myTurnIndex = activePlayers.findIndex(p => p.id === myId);
+            const currentActiveIdx = gameState.currentTurn % activePlayers.length;
+            const isMyTurn = activePlayers[currentActiveIdx]?.id === myId;
+
+            if (isMyTurn) {
+                indicator.textContent = 'SENİN SIRAN!';
+                indicator.className = 'turn-indicator my-turn';
+                playNotification();
+            } else {
+                indicator.textContent = `${activePlayers[currentActiveIdx]?.name || 'Oyuncu'}'nin sırası`;
+                indicator.className = 'turn-indicator waiting';
+            }
+            updateActions(isMyTurn);
+        }
+
+        function updateActions(isMyTurn) {
+            document.getElementById('raiseBidBtn').disabled = !isMyTurn;
+            document.getElementById('challengeBtn').disabled = !isMyTurn || !gameState.currentBid;
+
+            // Set minimum bid
+            if (gameState.currentBid) {
+                document.getElementById('bidCount').min = gameState.currentBid.count;
+                document.getElementById('bidCount').value = gameState.currentBid.count;
+            }
+        }
+
+        // Chat
+        function addChatMsg(sender, msg) {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `<div class="chat-msg"><span class="sender">${sender}:</span> ${msg}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        document.getElementById('chatSendBtn').onclick = () => {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            addChatMsg(myName, msg);
+            if (isHost) broadcast({ type: 'chat', sender: myName, msg });
+            else sendToHost({ type: 'chat', sender: myName, msg });
+            input.value = '';
+        };
+        document.getElementById('chatInput').onkeypress = (e) => { if (e.key === 'Enter') document.getElementById('chatSendBtn').click(); };
+
+        // Host
+        async function createRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) { showError('menuError', 'İsim girin'); return; }
+            myName = name; isHost = true; roomCode = 'LDC-' + generateRoomCode();
+            try {
+                await initPeer(roomCode);
+                players = [{ id: myId, name: myName, isHost: true }];
+                renderPlayerList('playerList');
+                document.getElementById('roomCodeDisplay').textContent = roomCode.replace('LDC-', '');
+                showScreen(lobbyScreen);
+                peer.on('connection', (conn) => {
+                    if (players.length >= 6) { conn.close(); return; }
+                    connections.push(conn);
+                    setupHostConnection(conn);
+                });
+            } catch (err) { showError('menuError', err.message); }
+        }
+
+        function setupHostConnection(conn) {
+            conn.on('data', (data) => handleHostMessage(data, conn));
+            conn.on('close', () => {
+                players = players.filter(p => p.id !== conn.peer);
+                connections = connections.filter(c => c !== conn);
+                renderPlayerList('playerList');
+                document.getElementById('startGameBtn').disabled = players.length < 2;
+            });
+        }
+
+        function handleHostMessage(data, fromConn) {
+            switch (data.type) {
+                case 'join':
+                    players.push({ id: data.id, name: data.name, isHost: false });
+                    renderPlayerList('playerList');
+                    document.getElementById('startGameBtn').disabled = players.length < 2;
+                    broadcast({ type: 'players', players });
+                    break;
+                case 'raise_bid': processRaiseBid(data); break;
+                case 'challenge': processChallenge(data); break;
+                case 'chat':
+                    addChatMsg(data.sender, data.msg);
+                    broadcast({ type: 'chat', sender: data.sender, msg: data.msg }, fromConn.peer);
+                    break;
+            }
+        }
+
+        // Guest
+        async function joinRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+            if (!name) { showError('menuError', 'İsim girin'); return; }
+            if (!code || code.length !== 6) { showError('menuError', 'Geçerli kod girin'); return; }
+            myName = name; isHost = false; roomCode = 'LDC-' + code;
+            try {
+                await initPeer();
+                const conn = peer.connect(roomCode);
+                connections = [conn];
+                conn.on('open', () => { conn.send({ type: 'join', name: myName, id: myId }); });
+                conn.on('data', handleGuestMessage);
+                showScreen(waitingScreen);
+            } catch (err) { showError('menuError', err.message); }
+        }
+
+        function handleGuestMessage(data) {
+            switch (data.type) {
+                case 'players': players = data.players; renderPlayerList('guestPlayerList'); break;
+                case 'round_start': case 'game_update':
+                    gameState.myDice = data.myDice;
+                    gameState.currentTurn = data.currentTurn;
+                    gameState.currentBid = data.currentBid;
+                    gameState.diceCount = data.diceCount;
+                    document.getElementById('revealArea').style.display = 'none';
+                    renderMyDice(); renderTable(); updateBidDisplay(); updateTurnIndicator();
+                    if (data.type === 'round_start') showScreen(gameScreen);
+                    break;
+                case 'reveal':
+                    showReveal(data.allDice, data.result, data.loser);
+                    break;
+                case 'game_over':
+                    document.getElementById('resultIcon').textContent = data.winner === myName ? '🎉' : '😔';
+                    document.getElementById('resultTitle').textContent = data.winner === myName ? 'KAZANDIN!' : 'KAYBETTİN';
+                    document.getElementById('resultTitle').className = 'result-title ' + (data.winner === myName ? 'win' : 'lose');
+                    document.getElementById('resultMessage').textContent = `${data.winner} son kalan oldu!`;
+                    showScreen(resultScreen);
+                    break;
+                case 'chat': addChatMsg(data.sender, data.msg); break;
+            }
+        }
+
+        // Game logic (Host)
+        let allDice = {};
+
+        function rollDice(count) {
+            const dice = [];
+            for (let i = 0; i < count; i++) dice.push(Math.floor(Math.random() * 6) + 1);
+            return dice;
+        }
+
+        function startGame() {
+            if (players.length < 2) return;
+            players.forEach(p => { gameState.diceCount[p.id] = 5; });
+            startRound();
+        }
+
+        function startRound() {
+            gameState.currentBid = null;
+            allDice = {};
+
+            players.forEach(p => {
+                const count = gameState.diceCount[p.id] || 0;
+                if (count > 0) allDice[p.id] = rollDice(count);
+            });
+
+            gameState.myDice = allDice[myId] || [];
+
+            // Find first active player
+            const activePlayers = players.filter(p => (gameState.diceCount[p.id] ?? 0) > 0);
+            gameState.currentTurn = 0;
+
+            document.getElementById('revealArea').style.display = 'none';
+            renderMyDice(); renderTable(); updateBidDisplay(); updateTurnIndicator();
+            showScreen(gameScreen);
+
+            connections.forEach(conn => {
+                conn.send({
+                    type: 'round_start',
+                    myDice: allDice[conn.peer] || [],
+                    currentTurn: gameState.currentTurn,
+                    currentBid: null,
+                    diceCount: gameState.diceCount
+                });
+            });
+        }
+
+        function getActivePlayers() {
+            return players.filter(p => (gameState.diceCount[p.id] ?? 0) > 0);
+        }
+
+        function processRaiseBid(data) {
+            const activePlayers = getActivePlayers();
+            const currentIdx = gameState.currentTurn % activePlayers.length;
+            if (activePlayers[currentIdx]?.id !== data.playerId) return;
+
+            // Validate bid
+            if (gameState.currentBid) {
+                if (data.count < gameState.currentBid.count) return;
+                if (data.count === gameState.currentBid.count && data.face <= gameState.currentBid.face) return;
+            }
+
+            gameState.currentBid = { count: data.count, face: data.face, playerId: data.playerId };
+            gameState.currentTurn = (gameState.currentTurn + 1) % activePlayers.length;
+
+            const bidder = players.find(p => p.id === data.playerId);
+            addChatMsg('Sistem', `${bidder.name}: ${data.count}x ${DICE_FACES[data.face - 1]}`);
+
+            updateBidDisplay(); renderTable(); updateTurnIndicator();
+
+            connections.forEach(conn => {
+                conn.send({
+                    type: 'game_update',
+                    myDice: allDice[conn.peer] || [],
+                    currentTurn: gameState.currentTurn,
+                    currentBid: gameState.currentBid,
+                    diceCount: gameState.diceCount
+                });
+            });
+        }
+
+        function processChallenge(data) {
+            const activePlayers = getActivePlayers();
+            const currentIdx = gameState.currentTurn % activePlayers.length;
+            if (activePlayers[currentIdx]?.id !== data.playerId) return;
+            if (!gameState.currentBid) return;
+
+            // Count all dice
+            let totalCount = 0;
+            Object.values(allDice).forEach(dice => {
+                dice.forEach(d => {
+                    if (d === gameState.currentBid.face || d === 1) totalCount++; // 1 is wild
+                });
+            });
+
+            const bidIsTrue = totalCount >= gameState.currentBid.count;
+            let loser;
+
+            if (bidIsTrue) {
+                loser = data.playerId; // Challenger loses
+            } else {
+                loser = gameState.currentBid.playerId; // Bidder loses
+            }
+
+            gameState.diceCount[loser]--;
+
+            const result = bidIsTrue ?
+                `İddia doğru! (${totalCount}x ${DICE_FACES[gameState.currentBid.face - 1]} var)` :
+                `İddia yanlış! (Sadece ${totalCount}x ${DICE_FACES[gameState.currentBid.face - 1]} var)`;
+
+            addChatMsg('Sistem', result);
+            addChatMsg('Sistem', `${players.find(p => p.id === loser).name} 1 zar kaybetti!`);
+
+            // Show reveal
+            showReveal(allDice, result, loser);
+
+            connections.forEach(conn => {
+                conn.send({ type: 'reveal', allDice, result, loser });
+            });
+
+            // Check game end
+            const remaining = getActivePlayers();
+            if (remaining.length <= 1) {
+                const winner = remaining[0];
+                setTimeout(() => {
+                    broadcast({ type: 'game_over', winner: winner.name });
+                    document.getElementById('resultIcon').textContent = winner.name === myName ? '🎉' : '😔';
+                    document.getElementById('resultTitle').textContent = winner.name === myName ? 'KAZANDIN!' : 'KAYBETTİN';
+                    document.getElementById('resultMessage').textContent = `${winner.name} son kalan oldu!`;
+                    showScreen(resultScreen);
+                }, 3000);
+                return;
+            }
+
+            // Start new round after delay
+            setTimeout(() => startRound(), 3000);
+        }
+
+        function showReveal(allDiceData, result, loserId) {
+            const revealArea = document.getElementById('revealArea');
+            const revealPlayers = document.getElementById('revealPlayers');
+
+            revealPlayers.innerHTML = players.map(p => {
+                const dice = allDiceData[p.id] || [];
+                if (dice.length === 0) return '';
+                return `<div class="reveal-player">
+                    <span class="reveal-player-name">${p.name}</span>
+                    <span class="reveal-player-dice">${dice.map(d => DICE_FACES[d - 1]).join(' ')}</span>
+                </div>`;
+            }).join('');
+
+            revealArea.style.display = 'block';
+            addChatMsg('Sistem', result);
+        }
+
+        // Actions
+        document.getElementById('raiseBidBtn').onclick = () => {
+            const count = parseInt(document.getElementById('bidCount').value);
+            const face = parseInt(document.getElementById('bidFace').value);
+
+            if (isHost) processRaiseBid({ playerId: myId, count, face });
+            else sendToHost({ type: 'raise_bid', playerId: myId, count, face });
+        };
+
+        document.getElementById('challengeBtn').onclick = () => {
+            if (isHost) processChallenge({ playerId: myId });
+            else sendToHost({ type: 'challenge', playerId: myId });
+        };
+
+        // Event listeners
+        document.getElementById('createRoomBtn').onclick = createRoom;
+        document.getElementById('joinRoomBtn').onclick = joinRoom;
+        document.getElementById('startGameBtn').onclick = startGame;
+        document.getElementById('copyCodeBtn').onclick = () => {
+            navigator.clipboard.writeText(roomCode.replace('LDC-', ''));
+            document.getElementById('copyCodeBtn').textContent = '✓ Kopyalandı!';
+            setTimeout(() => document.getElementById('copyCodeBtn').textContent = '📋 Kopyala', 2000);
+        };
+        document.getElementById('rematchBtn').onclick = () => { if (isHost) startGame(); };
+        document.getElementById('roomCodeInput').onkeypress = (e) => { if (e.key === 'Enter') joinRoom(); };
+    </script>
+</body>
+
+</html>
