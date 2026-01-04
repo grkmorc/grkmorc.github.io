@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 Saf Blöf - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            background: radial-gradient(ellipse at center, #2a1a3a 0%, #1a0f25 50%, #0a0510 100%);
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 30% 20%, rgba(150, 50, 200, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 70% 80%, rgba(255, 100, 150, 0.08) 0%, transparent 30%);
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .connection-status.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: rgba(150, 50, 200, 0.3);
+            border: 1px solid #9932cc;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 100;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(150, 50, 200, 0.5);
+        }
+
+        .game-logo {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9932cc, #ff69b4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .online-badge {
+            background: linear-gradient(135deg, #9932cc, #ff69b4);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(50, 30, 70, 0.95), rgba(30, 15, 45, 0.95));
+            border: 2px solid rgba(150, 50, 200, 0.3);
+            border-radius: 20px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #9932cc;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #9932cc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9932cc, #ff69b4);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(150, 50, 200, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 13px;
+        }
+
+        .room-code-display {
+            background: rgba(150, 50, 200, 0.1);
+            border: 2px dashed #9932cc;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .room-code-display .code {
+            font-size: 32px;
+            font-weight: 900;
+            color: #9932cc;
+            letter-spacing: 6px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: rgba(150, 50, 200, 0.2);
+            border: 1px solid #9932cc;
+            color: #9932cc;
+            padding: 6px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .player-list {
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .player-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 14px;
+            background: linear-gradient(135deg, #9932cc, #ff69b4);
+        }
+
+        .player-name {
+            flex: 1;
+        }
+
+        .player-cards {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .waiting {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #9932cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-msg {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 13px;
+            display: none;
+        }
+
+        /* Game Area */
+        .game-area {
+            width: 100%;
+        }
+
+        .turn-indicator {
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .turn-indicator.my-turn {
+            background: linear-gradient(135deg, #9932cc, #ff69b4);
+            animation: pulse 1.5s infinite;
+        }
+
+        .turn-indicator.waiting {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(150, 50, 200, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(150, 50, 200, 0.8);
+            }
+        }
+
+        .pile-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            min-height: 120px;
+        }
+
+        .pile-count {
+            font-size: 40px;
+            font-weight: 900;
+            color: #9932cc;
+        }
+
+        .pile-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .last-claim {
+            background: rgba(150, 50, 200, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .hand-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .hand-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .hand-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .playing-card {
+            width: 50px;
+            height: 70px;
+            background: #fff;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .playing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .playing-card.selected {
+            border-color: #9932cc;
+            box-shadow: 0 0 15px rgba(150, 50, 200, 0.6);
+            transform: translateY(-8px);
+        }
+
+        .playing-card.red {
+            color: #e74c3c;
+        }
+
+        .playing-card.black {
+            color: #2c3e50;
+        }
+
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .claim-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .claim-row select {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .claim-row select option {
+            background: #2a1a3a;
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        /* Chat */
+        .chat-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .chat-messages {
+            height: 100px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .chat-msg {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-msg .sender {
+            color: #9932cc;
+            font-weight: 600;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .chat-input-row button {
+            padding: 8px 15px;
+            background: #9932cc;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        /* Result */
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .result-title.win {
+            color: #2ecc71;
+        }
+
+        .result-title.lose {
+            color: #e74c3c;
+        }
+
+        .result-message {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <a href="gizliyer.html" class="back-btn">← Geri</a>
+    <div id="connectionStatus" class="connection-status disconnected">Bağlanıyor...</div>
+    <button id="soundToggle" class="sound-toggle">🔊 Ses Açık</button>
+
+    <div class="game-container">
+        <div class="game-logo">🃏</div>
+        <h1 class="game-title">SAF BLÖF</h1>
+        <div class="online-badge">🌐 4-8 OYUNCU</div>
+        <p class="game-subtitle">Kart at, iddia et, blöf yap veya yakala!</p>
+
+        <!-- MENU SCREEN -->
+        <div id="menuScreen" class="screen active">
+            <div class="card">
+                <h2>🎮 Oyuna Katıl</h2>
+                <div class="input-group">
+                    <label>Oyuncu Adı</label>
+                    <input type="text" id="playerName" placeholder="İsminizi girin" maxlength="12">
+                </div>
+                <button class="btn btn-primary" id="createRoomBtn">ODA OLUŞTUR</button>
+                <div class="divider"><span>veya</span></div>
+                <div class="input-group">
+                    <label>Oda Kodu</label>
+                    <input type="text" id="roomCodeInput" placeholder="6 haneli kod" maxlength="6"
+                        style="text-transform:uppercase;text-align:center;letter-spacing:4px;">
+                </div>
+                <button class="btn btn-secondary" id="joinRoomBtn">ODAYA KATIL</button>
+                <div id="menuError" class="error-msg"></div>
+            </div>
+        </div>
+
+        <!-- LOBBY SCREEN -->
+        <div id="lobbyScreen" class="screen">
+            <div class="card">
+                <h2>🏠 Oyun Lobisi</h2>
+                <div class="room-code-display">
+                    <p style="color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:5px;">Oda Kodu</p>
+                    <div class="code" id="roomCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Kopyala</button>
+                </div>
+                <div class="player-list" id="playerList"></div>
+                <p style="text-align:center;color:rgba(255,255,255,0.5);font-size:12px;margin:10px 0;">Minimum 4,
+                    maksimum 8 oyuncu</p>
+                <button class="btn btn-primary" id="startGameBtn" disabled>OYUNU BAŞLAT</button>
+            </div>
+        </div>
+
+        <!-- WAITING SCREEN -->
+        <div id="waitingScreen" class="screen">
+            <div class="card">
+                <div class="waiting">
+                    <div class="spinner"></div>
+                    <p>Odaya katıldın!</p>
+                    <p style="margin-top:8px;font-weight:600;">Host'un oyunu başlatması bekleniyor...</p>
+                </div>
+                <div class="player-list" id="guestPlayerList"></div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="gameScreen" class="screen">
+            <div class="card game-area">
+                <div class="turn-indicator" id="turnIndicator">SENİN SIRAN!</div>
+
+                <div class="pile-area">
+                    <div class="pile-count" id="pileCount">0</div>
+                    <div class="pile-label">Masadaki Kart</div>
+                    <div class="last-claim" id="lastClaim" style="display:none;">
+                        Son iddia: <strong id="lastClaimText">-</strong>
+                    </div>
+                </div>
+
+                <div class="hand-area">
+                    <div class="hand-label">Kartların (<span id="handCount">0</span>)</div>
+                    <div class="hand-cards" id="handCards"></div>
+                </div>
+
+                <div class="action-area" id="actionArea">
+                    <div class="claim-row">
+                        <select id="claimCount">
+                            <option value="1">1 kart</option>
+                            <option value="2">2 kart</option>
+                            <option value="3">3 kart</option>
+                            <option value="4">4 kart</option>
+                        </select>
+                        <select id="claimRank">
+                            <option value="A">As</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="J">Vale</option>
+                            <option value="Q">Kız</option>
+                            <option value="K">Papaz</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="playCardsBtn" disabled>KART AT</button>
+                        <button class="btn btn-secondary" id="callBluffBtn" disabled>BLÖF!</button>
+                    </div>
+                </div>
+
+                <div class="chat-area">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Mesaj yaz..." maxlength="100">
+                        <button id="chatSendBtn">Gönder</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="screen">
+            <div class="card" style="text-align:center;">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <h2 class="result-title" id="resultTitle">KAZANDIN!</h2>
+                <p class="result-message" id="resultMessage">Tüm kartlarını bitirdin!</p>
+                <button class="btn btn-primary" id="rematchBtn">🔄 Tekrar Oyna</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sound system
+        let soundEnabled = true;
+        const notifSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleVYsNYPZ2r6OW0swZJ/X2r2EUjspXJrXzJthKSA0kdrl2K9nMC5Jj9/ozqNhLTJFjN3gxpNTIyxCkt3mzJlZJi5Fj+Lu2a1vPTlBkuft2qtwPTQ+jejs0pZdKSRAle7y46xqNzI8lfPz5K1sPTE3k/T09bNzOzI0kPX19bp5PTExjvb29sB+PzAqifj5+ceGRTYmg/r6+syLSjkhfPz8998kE6LwGv/61MTz98Xy98Xz+MXy+MXz+Mby+Mby+cfy98jz+Mjy+cjz+cnz+Mnz+cnz+snz+8r0+8r0+8v0/Mv0/Mr0/Mv1/cv1/cv1/cz1/sz2/s32/s33/s73/874/879/8/+');
+
+        document.getElementById('soundToggle').onclick = () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 Ses Açık' : '🔇 Ses Kapalı';
+        };
+
+        function playNotification() {
+            if (soundEnabled) {
+                notifSound.currentTime = 0;
+                notifSound.play().catch(() => { });
+            }
+        }
+
+        // DOM Elements
+        const menuScreen = document.getElementById('menuScreen');
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // State
+        let peer = null;
+        let connections = [];
+        let isHost = false;
+        let myName = '';
+        let myId = '';
+        let roomCode = '';
+
+        // Game State
+        let players = [];
+        let gameState = {
+            myHand: [],
+            selectedCards: [],
+            pile: [],
+            currentTurn: 0,
+            lastClaim: null,
+            lastPlayer: null
+        };
+
+        const SUITS = ['♠', '♥', '♦', '♣'];
+        const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            return code;
+        }
+
+        function showScreen(screen) {
+            [menuScreen, lobbyScreen, waitingScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function updateConnectionStatus(connected) {
+            connectionStatus.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
+            connectionStatus.textContent = connected ? '🟢 Bağlı' : '🔴 Bağlantı Yok';
+        }
+
+        function initPeer(id = null) {
+            return new Promise((resolve, reject) => {
+                peer = id ? new Peer(id) : new Peer();
+                peer.on('open', (peerId) => { myId = peerId; updateConnectionStatus(true); resolve(peerId); });
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') reject(new Error('Bu oda kodu kullanımda'));
+                    else if (err.type === 'peer-unavailable') reject(new Error('Oda bulunamadı'));
+                    else reject(err);
+                });
+                peer.on('disconnected', () => updateConnectionStatus(false));
+            });
+        }
+
+        function renderPlayerList(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = players.map((p, i) => `
+                <div class="player-item">
+                    <div class="player-avatar">${i + 1}</div>
+                    <span class="player-name">${p.name}</span>
+                    ${p.cardCount !== undefined ? `<span class="player-cards">${p.cardCount} kart</span>` : ''}
+                    ${p.isHost ? '<span style="color:#9932cc;font-size:11px;">Host</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function broadcast(data, excludeId = null) {
+            connections.forEach(conn => {
+                if (conn.open && conn.peer !== excludeId) conn.send(data);
+            });
+        }
+
+        function sendToHost(data) {
+            if (connections[0] && connections[0].open) connections[0].send(data);
+        }
+
+        // Card functions
+        function createDeck() {
+            const deck = [];
+            for (const suit of SUITS) {
+                for (const rank of RANKS) {
+                    deck.push({ suit, rank });
+                }
+            }
+            return deck.sort(() => Math.random() - 0.5);
+        }
+
+        function renderHand() {
+            const container = document.getElementById('handCards');
+            document.getElementById('handCount').textContent = gameState.myHand.length;
+            container.innerHTML = gameState.myHand.map((card, i) => {
+                const isRed = card.suit === '♥' || card.suit === '♦';
+                const isSelected = gameState.selectedCards.includes(i);
+                return `<div class="playing-card ${isRed ? 'red' : 'black'} ${isSelected ? 'selected' : ''}" onclick="toggleCard(${i})">
+                    <span>${card.rank}</span>
+                    <span>${card.suit}</span>
+                </div>`;
+            }).join('');
+            updateActionButtons();
+        }
+
+        function toggleCard(index) {
+            const myTurnIndex = players.findIndex(p => p.id === myId);
+            if (gameState.currentTurn !== myTurnIndex) return;
+
+            const idx = gameState.selectedCards.indexOf(index);
+            if (idx > -1) {
+                gameState.selectedCards.splice(idx, 1);
+            } else if (gameState.selectedCards.length < 4) {
+                gameState.selectedCards.push(index);
+            }
+            renderHand();
+        }
+
+        function updateActionButtons() {
+            const myTurnIndex = players.findIndex(p => p.id === myId);
+            const isMyTurn = gameState.currentTurn === myTurnIndex;
+
+            document.getElementById('playCardsBtn').disabled = !isMyTurn || gameState.selectedCards.length === 0;
+            document.getElementById('callBluffBtn').disabled = !isMyTurn || !gameState.lastClaim || gameState.lastPlayer === myId;
+            document.getElementById('claimCount').disabled = !isMyTurn;
+            document.getElementById('claimRank').disabled = !isMyTurn;
+        }
+
+        function updateTurnIndicator() {
+            const indicator = document.getElementById('turnIndicator');
+            const myTurnIndex = players.findIndex(p => p.id === myId);
+            const isMyTurn = gameState.currentTurn === myTurnIndex;
+
+            if (isMyTurn) {
+                indicator.textContent = 'SENİN SIRAN!';
+                indicator.className = 'turn-indicator my-turn';
+                playNotification();
+            } else {
+                const currentPlayer = players[gameState.currentTurn];
+                indicator.textContent = `${currentPlayer?.name || 'Oyuncu'}'nin sırası`;
+                indicator.className = 'turn-indicator waiting';
+            }
+            updateActionButtons();
+        }
+
+        // Chat
+        function addChatMsg(sender, msg) {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `<div class="chat-msg"><span class="sender">${sender}:</span> ${msg}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        document.getElementById('chatSendBtn').onclick = () => {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addChatMsg(myName, msg);
+            if (isHost) {
+                broadcast({ type: 'chat', sender: myName, msg });
+            } else {
+                sendToHost({ type: 'chat', sender: myName, msg });
+            }
+            input.value = '';
+        };
+
+        document.getElementById('chatInput').onkeypress = (e) => {
+            if (e.key === 'Enter') document.getElementById('chatSendBtn').click();
+        };
+
+        // Host functions
+        async function createRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) { showError('menuError', 'İsim girin'); return; }
+
+            myName = name;
+            isHost = true;
+            roomCode = 'BLF-' + generateRoomCode();
+
+            try {
+                await initPeer(roomCode);
+                players = [{ id: myId, name: myName, isHost: true }];
+                renderPlayerList('playerList');
+                document.getElementById('roomCodeDisplay').textContent = roomCode.replace('BLF-', '');
+                showScreen(lobbyScreen);
+
+                peer.on('connection', (conn) => {
+                    if (players.length >= 8) { conn.close(); return; }
+                    connections.push(conn);
+                    setupHostConnection(conn);
+                });
+            } catch (err) { showError('menuError', err.message); }
+        }
+
+        function setupHostConnection(conn) {
+            conn.on('open', () => { });
+            conn.on('data', (data) => handleHostMessage(data, conn));
+            conn.on('close', () => {
+                const idx = players.findIndex(p => p.id === conn.peer);
+                if (idx > -1) { players.splice(idx, 1); renderPlayerList('playerList'); }
+                connections = connections.filter(c => c !== conn);
+                document.getElementById('startGameBtn').disabled = players.length < 4;
+            });
+        }
+
+        function handleHostMessage(data, fromConn) {
+            switch (data.type) {
+                case 'join':
+                    players.push({ id: data.id, name: data.name, isHost: false });
+                    renderPlayerList('playerList');
+                    document.getElementById('startGameBtn').disabled = players.length < 4;
+                    broadcast({ type: 'players', players });
+                    break;
+                case 'play_cards':
+                    processPlayCards(data);
+                    break;
+                case 'call_bluff':
+                    processCallBluff(data);
+                    break;
+                case 'chat':
+                    addChatMsg(data.sender, data.msg);
+                    broadcast({ type: 'chat', sender: data.sender, msg: data.msg }, fromConn.peer);
+                    break;
+            }
+        }
+
+        // Guest functions
+        async function joinRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+            if (!name) { showError('menuError', 'İsim girin'); return; }
+            if (!code || code.length !== 6) { showError('menuError', 'Geçerli kod girin'); return; }
+
+            myName = name;
+            isHost = false;
+            roomCode = 'BLF-' + code;
+
+            try {
+                await initPeer();
+                const conn = peer.connect(roomCode);
+                connections = [conn];
+
+                conn.on('open', () => { conn.send({ type: 'join', name: myName, id: myId }); });
+                conn.on('data', handleGuestMessage);
+                showScreen(waitingScreen);
+            } catch (err) { showError('menuError', err.message); }
+        }
+
+        function handleGuestMessage(data) {
+            switch (data.type) {
+                case 'players':
+                    players = data.players;
+                    renderPlayerList('guestPlayerList');
+                    break;
+                case 'game_start':
+                    gameState.myHand = data.hand;
+                    gameState.currentTurn = data.currentTurn;
+                    gameState.pile = [];
+                    gameState.lastClaim = null;
+                    renderHand();
+                    updateTurnIndicator();
+                    document.getElementById('pileCount').textContent = '0';
+                    document.getElementById('lastClaim').style.display = 'none';
+                    showScreen(gameScreen);
+                    break;
+                case 'game_update':
+                    gameState.currentTurn = data.currentTurn;
+                    gameState.pile = data.pile || gameState.pile;
+                    gameState.lastClaim = data.lastClaim;
+                    gameState.lastPlayer = data.lastPlayer;
+                    document.getElementById('pileCount').textContent = data.pileCount;
+                    if (data.lastClaim) {
+                        document.getElementById('lastClaim').style.display = 'block';
+                        document.getElementById('lastClaimText').textContent = `${data.lastClaim.count} ${data.lastClaim.rank}`;
+                    }
+                    updateTurnIndicator();
+                    if (data.myHand) { gameState.myHand = data.myHand; renderHand(); }
+                    break;
+                case 'bluff_result':
+                    addChatMsg('Sistem', data.message);
+                    if (data.myHand) { gameState.myHand = data.myHand; renderHand(); }
+                    break;
+                case 'game_over':
+                    showGameOver(data.winner);
+                    break;
+                case 'chat':
+                    addChatMsg(data.sender, data.msg);
+                    break;
+            }
+        }
+
+        // Game logic (Host)
+        let allHands = {};
+
+        function startGame() {
+            if (players.length < 4) return;
+
+            const deck = createDeck();
+            const cardsPerPlayer = Math.floor(deck.length / players.length);
+            allHands = {};
+
+            players.forEach((p, i) => {
+                allHands[p.id] = deck.slice(i * cardsPerPlayer, (i + 1) * cardsPerPlayer);
+            });
+
+            gameState.currentTurn = 0;
+            gameState.pile = [];
+            gameState.lastClaim = null;
+            gameState.lastPlayer = null;
+            gameState.myHand = allHands[myId];
+
+            // Send to all
+            connections.forEach(conn => {
+                const playerId = conn.peer;
+                conn.send({ type: 'game_start', hand: allHands[playerId], currentTurn: 0 });
+            });
+
+            renderHand();
+            updateTurnIndicator();
+            document.getElementById('pileCount').textContent = '0';
+            document.getElementById('lastClaim').style.display = 'none';
+            showScreen(gameScreen);
+        }
+
+        function processPlayCards(data) {
+            const playerIdx = players.findIndex(p => p.id === data.playerId);
+            if (playerIdx !== gameState.currentTurn) return;
+
+            // Remove cards from player's hand
+            const hand = allHands[data.playerId];
+            data.cardIndices.sort((a, b) => b - a).forEach(i => hand.splice(i, 1));
+
+            // Add to pile
+            gameState.pile.push(...data.cards);
+            gameState.lastClaim = data.claim;
+            gameState.lastPlayer = data.playerId;
+
+            // Check win
+            if (hand.length === 0) {
+                const winner = players.find(p => p.id === data.playerId);
+                broadcast({ type: 'game_over', winner: winner.name });
+                showGameOver(winner.name);
+                return;
+            }
+
+            // Next turn
+            gameState.currentTurn = (gameState.currentTurn + 1) % players.length;
+
+            // Update host
+            if (data.playerId !== myId) {
+                updateTurnIndicator();
+                document.getElementById('pileCount').textContent = gameState.pile.length;
+                document.getElementById('lastClaim').style.display = 'block';
+                document.getElementById('lastClaimText').textContent = `${data.claim.count} ${data.claim.rank}`;
+            }
+
+            // Broadcast
+            connections.forEach(conn => {
+                conn.send({
+                    type: 'game_update',
+                    currentTurn: gameState.currentTurn,
+                    pileCount: gameState.pile.length,
+                    lastClaim: gameState.lastClaim,
+                    lastPlayer: gameState.lastPlayer,
+                    myHand: allHands[conn.peer]
+                });
+            });
+        }
+
+        function processCallBluff(data) {
+            const callerIdx = players.findIndex(p => p.id === data.callerId);
+            if (callerIdx !== gameState.currentTurn) return;
+
+            // Check if bluff is true
+            const lastCards = gameState.pile.slice(-gameState.lastClaim.count);
+            const isBluff = !lastCards.every(c => c.rank === gameState.lastClaim.rank);
+
+            let loser, msg;
+            if (isBluff) {
+                loser = gameState.lastPlayer;
+                msg = `${players.find(p => p.id === data.callerId).name} haklı! ${players.find(p => p.id === loser).name} blöf yaptı ve kartları aldı.`;
+            } else {
+                loser = data.callerId;
+                msg = `${players.find(p => p.id === data.callerId).name} yanıldı! Kartları aldı.`;
+            }
+
+            // Give pile to loser
+            allHands[loser].push(...gameState.pile);
+            gameState.pile = [];
+            gameState.lastClaim = null;
+            gameState.lastPlayer = null;
+
+            // Find loser's turn index
+            const loserIdx = players.findIndex(p => p.id === loser);
+            gameState.currentTurn = loserIdx;
+
+            // Update all
+            addChatMsg('Sistem', msg);
+            updateTurnIndicator();
+            document.getElementById('pileCount').textContent = '0';
+            document.getElementById('lastClaim').style.display = 'none';
+            if (loser === myId) { gameState.myHand = allHands[myId]; renderHand(); }
+
+            connections.forEach(conn => {
+                conn.send({
+                    type: 'bluff_result',
+                    message: msg,
+                    myHand: allHands[conn.peer]
+                });
+                conn.send({
+                    type: 'game_update',
+                    currentTurn: gameState.currentTurn,
+                    pileCount: 0,
+                    lastClaim: null,
+                    lastPlayer: null
+                });
+            });
+        }
+
+        function showGameOver(winnerName) {
+            document.getElementById('resultIcon').textContent = winnerName === myName ? '🎉' : '😔';
+            document.getElementById('resultTitle').textContent = winnerName === myName ? 'KAZANDIN!' : 'KAYBETTİN';
+            document.getElementById('resultTitle').className = 'result-title ' + (winnerName === myName ? 'win' : 'lose');
+            document.getElementById('resultMessage').textContent = `${winnerName} tüm kartlarını bitirdi!`;
+            showScreen(resultScreen);
+        }
+
+        // Action handlers
+        document.getElementById('playCardsBtn').onclick = () => {
+            if (gameState.selectedCards.length === 0) return;
+
+            const cards = gameState.selectedCards.map(i => gameState.myHand[i]);
+            const claim = {
+                count: parseInt(document.getElementById('claimCount').value),
+                rank: document.getElementById('claimRank').value
+            };
+
+            if (isHost) {
+                processPlayCards({
+                    playerId: myId,
+                    cards,
+                    cardIndices: [...gameState.selectedCards],
+                    claim
+                });
+                gameState.myHand = allHands[myId];
+            } else {
+                sendToHost({
+                    type: 'play_cards',
+                    playerId: myId,
+                    cards,
+                    cardIndices: [...gameState.selectedCards],
+                    claim
+                });
+                // Remove locally
+                gameState.selectedCards.sort((a, b) => b - a).forEach(i => gameState.myHand.splice(i, 1));
+            }
+
+            gameState.selectedCards = [];
+            renderHand();
+        };
+
+        document.getElementById('callBluffBtn').onclick = () => {
+            if (!gameState.lastClaim) return;
+
+            if (isHost) {
+                processCallBluff({ callerId: myId });
+            } else {
+                sendToHost({ type: 'call_bluff', callerId: myId });
+            }
+        };
+
+        // Event listeners
+        document.getElementById('createRoomBtn').onclick = createRoom;
+        document.getElementById('joinRoomBtn').onclick = joinRoom;
+        document.getElementById('startGameBtn').onclick = startGame;
+        document.getElementById('copyCodeBtn').onclick = () => {
+            navigator.clipboard.writeText(roomCode.replace('BLF-', ''));
+            document.getElementById('copyCodeBtn').textContent = '✓ Kopyalandı!';
+            setTimeout(() => document.getElementById('copyCodeBtn').textContent = '📋 Kopyala', 2000);
+        };
+        document.getElementById('rematchBtn').onclick = () => {
+            if (isHost) startGame();
+        };
+        document.getElementById('roomCodeInput').onkeypress = (e) => { if (e.key === 'Enter') joinRoom(); };
+    </script>
+</body>
+
+</html>
