@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Fake Artist Online - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(155, 89, 182, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(241, 196, 15, 0.1) 0%, transparent 40%);
+            animation: bgRotate 40s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgRotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 700px;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .connection-status.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        /* Logo */
+        .game-logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9b59b6, #f1c40f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Inputs */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #9b59b6;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(155, 89, 182, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: #000;
+            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 13px;
+        }
+
+        /* Room Code */
+        .room-code-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .room-code-display .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .room-code-display .code {
+            font-size: 36px;
+            font-weight: 900;
+            color: #9b59b6;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background: rgba(155, 89, 182, 0.2);
+            border: 1px solid #9b59b6;
+            color: #9b59b6;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #9b59b6;
+            color: #fff;
+        }
+
+        /* Player List */
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .player-avatar.p1 {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .player-avatar.p2 {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .player-avatar.p3 {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .player-avatar.p4 {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .player-avatar.p5 {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .player-avatar.p6 {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+
+        .player-avatar.p7 {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+        }
+
+        .player-avatar.p8 {
+            background: linear-gradient(135deg, #00bcd4, #0097a7);
+        }
+
+        .player-colors {
+            --p1: #e74c3c;
+            --p2: #3498db;
+            --p3: #2ecc71;
+            --p4: #f39c12;
+            --p5: #9b59b6;
+            --p6: #1abc9c;
+            --p7: #e91e63;
+            --p8: #00bcd4;
+        }
+
+        .player-name {
+            flex: 1;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .player-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+        .status-host {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+
+        .status-ready {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .status-drawing {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Role Display */
+        .role-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .role-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .role-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .role-title.artist {
+            color: #2ecc71;
+        }
+
+        .role-title.fake {
+            color: #e74c3c;
+        }
+
+        .role-word {
+            font-size: 36px;
+            font-weight: 700;
+            color: #f1c40f;
+            margin: 20px 0;
+            padding: 15px 30px;
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px solid rgba(241, 196, 15, 0.3);
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .role-hint {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 10px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        #drawCanvas {
+            display: block;
+            border-radius: 10px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        #drawCanvas.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Turn Info */
+        .turn-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .turn-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .turn-player {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1c40f;
+        }
+
+        .turn-round {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
+        }
+
+        .your-turn {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.2));
+            border: 2px solid #2ecc71;
+            border-radius: 15px;
+            padding: 15px;
+            animation: glowGreen 1.5s infinite;
+        }
+
+        @keyframes glowGreen {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(46, 204, 113, 0.5);
+            }
+        }
+
+        /* Color Palette */
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.selected {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Brush Size */
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .brush-size label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .brush-size input[type="range"] {
+            width: 150px;
+            accent-color: #9b59b6;
+        }
+
+        /* Vote Options */
+        .vote-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn:hover {
+            border-color: rgba(155, 89, 182, 0.5);
+            background: rgba(155, 89, 182, 0.1);
+        }
+
+        .vote-btn.selected {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .vote-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .result-title.win {
+            color: #2ecc71;
+        }
+
+        .result-title.lose {
+            color: #e74c3c;
+        }
+
+        .result-reveal {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Waiting */
+        .waiting {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #9b59b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .waiting p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Error */
+        .error-msg {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Done Button */
+        .done-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .done-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+        }
+
+        .done-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Player Turn List */
+        .turn-order {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .turn-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .turn-dot.current {
+            opacity: 1;
+            transform: scale(1.2);
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .turn-dot.done {
+            opacity: 0.7;
+        }
+
+        .turn-dot.done::after {
+            content: '✓';
+            position: absolute;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .vote-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .canvas-container {
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">🔴 Bağlantı Yok</div>
+
+    <div class="game-container player-colors">
+        <div class="game-logo">🎨</div>
+        <h1 class="game-title">Fake Artist</h1>
+        <p class="game-subtitle">Online Çizim Oyunu</p>
+
+        <!-- MENU SCREEN -->
+        <div id="menuScreen" class="screen active">
+            <div class="card">
+                <div class="input-group">
+                    <label>İsmin</label>
+                    <input type="text" id="playerName" placeholder="İsmini gir..." maxlength="15">
+                </div>
+
+                <button class="btn btn-primary" id="createRoomBtn">🎮 ODA OLUŞTUR</button>
+
+                <div class="divider"><span>veya</span></div>
+
+                <div class="input-group">
+                    <label>Oda Kodu</label>
+                    <input type="text" id="roomCodeInput" placeholder="6 haneli kod" maxlength="6">
+                </div>
+
+                <button class="btn btn-secondary" id="joinRoomBtn">🚪 ODAYA KATIL</button>
+
+                <div class="error-msg" id="menuError"></div>
+            </div>
+        </div>
+
+        <!-- HOST LOBBY -->
+        <div id="lobbyScreen" class="screen">
+            <div class="card">
+                <div class="room-code-display">
+                    <div class="label">Oda Kodu</div>
+                    <div class="code" id="roomCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Kopyala</button>
+                </div>
+
+                <div style="font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">Oyuncular (min 4, max
+                    8)</div>
+                <div id="playerList"></div>
+
+                <button class="btn btn-primary" id="startGameBtn" disabled>
+                    OYUNU BAŞLAT (4 kişi gerekli)
+                </button>
+            </div>
+        </div>
+
+        <!-- GUEST WAITING -->
+        <div id="waitingScreen" class="screen">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: rgba(255,255,255,0.5);">Lobiye Katıldın!</div>
+                </div>
+
+                <div style="font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">Oyuncular</div>
+                <div id="guestPlayerList"></div>
+
+                <div class="waiting">
+                    <div class="spinner"></div>
+                    <p>Host oyunu başlatmayı bekliyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROLE REVEAL -->
+        <div id="roleScreen" class="screen">
+            <div class="card role-card">
+                <div class="role-icon" id="roleIcon">🎨</div>
+                <h2 class="role-title" id="roleTitle">SANATÇI</h2>
+
+                <div id="wordRevealArea">
+                    <p style="color: rgba(255,255,255,0.6); margin-bottom: 10px;">Çizilecek kelime:</p>
+                    <div class="role-word" id="roleWord">???</div>
+                </div>
+
+                <p class="role-hint" id="roleHint">Sırayla herkes tek çizgi çizecek. Fake Artist'i bulmaya çalışın!</p>
+
+                <button class="btn btn-primary" id="roleReadyBtn">HAZIRIM ✓</button>
+            </div>
+        </div>
+
+        <!-- DRAWING SCREEN -->
+        <div id="gameScreen" class="screen">
+            <div class="card">
+                <div class="turn-info" id="turnInfo">
+                    <div class="turn-label">Sıra</div>
+                    <div class="turn-player" id="currentPlayerName">Oyuncu 1</div>
+                    <div class="turn-round">Round <span id="currentRound">1</span>/2</div>
+                </div>
+
+                <div class="turn-order" id="turnOrder"></div>
+
+                <div class="canvas-container">
+                    <canvas id="drawCanvas" width="400" height="400"></canvas>
+                </div>
+
+                <div id="drawingControls" style="display: none;">
+                    <div class="color-palette" id="colorPalette"></div>
+                    <div class="brush-size">
+                        <label>Kalınlık:</label>
+                        <input type="range" id="brushSize" min="2" max="15" value="5">
+                    </div>
+                    <button class="done-btn" id="doneDrawingBtn">✓ ÇİZİMİ BİTİR</button>
+                </div>
+
+                <div id="watchingInfo" class="waiting" style="display: none;">
+                    <p id="watchingText">Diğer oyuncu çiziyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VOTE SCREEN -->
+        <div id="voteScreen" class="screen">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div
+                        style="font-size: 14px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px;">
+                        Oylama</div>
+                    <h2 style="color: #fff; font-size: 24px;">Fake Artist Kim?</h2>
+                </div>
+
+                <div class="canvas-container" style="margin-bottom: 20px;">
+                    <canvas id="voteCanvas" width="400" height="400"></canvas>
+                </div>
+
+                <div class="vote-grid" id="voteOptions"></div>
+
+                <button class="btn btn-primary" id="submitVoteBtn" disabled>OYLA</button>
+
+                <div id="voteWaiting" class="waiting" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Diğer oyuncular oyluyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="screen">
+            <div class="card" style="text-align: center;">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <h2 class="result-title" id="resultTitle">SANATÇILAR KAZANDI!</h2>
+                <p id="resultMessage" style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Fake Artist yakalandı!
+                </p>
+
+                <div class="result-reveal">
+                    <div class="result-label">Fake Artist</div>
+                    <div class="result-value" id="fakeReveal" style="color: #e74c3c;">???</div>
+                </div>
+
+                <div class="result-reveal">
+                    <div class="result-label">Kelime</div>
+                    <div class="result-value" id="wordResultReveal" style="color: #f1c40f;">???</div>
+                </div>
+
+                <div id="voteResults" style="margin-top: 20px;"></div>
+
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 20px;">
+                    🔄 Yeni Oyun
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================
+        // FAKE ARTIST ONLINE
+        // PeerJS P2P Multiplayer
+        // ========================
+
+        // Word Pool
+        const WORDS = [
+            "Kedi", "Köpek", "Ev", "Araba", "Ağaç", "Güneş", "Ay", "Yıldız",
+            "Çiçek", "Balık", "Kuş", "Kalp", "Pizza", "Hamburger", "Dondurma",
+            "Bisiklet", "Uçak", "Gemi", "Tren", "Otobüs", "Telefon", "Bilgisayar",
+            "Gökkuşağı", "Bulut", "Yağmur", "Kar", "Şemsiye", "Bardak", "Sandalye",
+            "Masa", "Yatak", "Televizyon", "Kitap", "Kalem", "Top", "Balon",
+            "Muz", "Elma", "Portakal", "Karpuz", "Pasta", "Kek", "Şeker",
+            "Gözlük", "Şapka", "Ayakkabı", "Çanta", "Saat", "Anahtar", "Kapı",
+            "Pencere", "Merdiven", "Köprü", "Dağ", "Deniz", "Nehir", "Orman"
+        ];
+
+        // Colors for drawing
+        const DRAW_COLORS = [
+            '#000000', '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
+            '#9b59b6', '#1abc9c', '#e91e63', '#795548'
+        ];
+
+        // DOM Elements
+        const menuScreen = document.getElementById('menuScreen');
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
+        const roleScreen = document.getElementById('roleScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const voteScreen = document.getElementById('voteScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // Canvas
+        const drawCanvas = document.getElementById('drawCanvas');
+        const drawCtx = drawCanvas.getContext('2d');
+        const voteCanvas = document.getElementById('voteCanvas');
+        const voteCtx = voteCanvas.getContext('2d');
+
+        // State
+        let peer = null;
+        let connections = [];
+        let hostConnection = null;
+        let isHost = false;
+        let myName = '';
+        let myId = '';
+        let roomCode = '';
+
+        // Game State
+        let players = [];
+        let gameState = {
+            word: '',
+            fakeArtistIndex: -1,
+            currentPlayerIndex: 0,
+            currentRound: 1,
+            totalRounds: 2,
+            readyPlayers: [],
+            votes: {},
+            drawingData: []
+        };
+
+        // Drawing State
+        let currentColor = '#000000';
+        let brushSize = 5;
+        let isDrawing = false;
+        let currentStroke = [];
+        let myTurnActive = false;
+
+        // Utilities
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function showScreen(screen) {
+            [menuScreen, lobbyScreen, waitingScreen, roleScreen, gameScreen, voteScreen, resultScreen]
+                .forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        function updateConnectionStatus(connected) {
+            connectionStatus.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
+            connectionStatus.textContent = connected ? '🟢 Bağlı' : '🔴 Bağlantı Yok';
+        }
+
+        function initPeer(id = null) {
+            return new Promise((resolve, reject) => {
+                peer = id ? new Peer(id) : new Peer();
+
+                peer.on('open', (peerId) => {
+                    console.log('Peer ID:', peerId);
+                    myId = peerId;
+                    updateConnectionStatus(true);
+                    resolve(peerId);
+                });
+
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    if (err.type === 'unavailable-id') {
+                        reject(new Error('Bu oda kodu kullanımda'));
+                    } else if (err.type === 'peer-unavailable') {
+                        reject(new Error('Oda bulunamadı'));
+                    } else {
+                        reject(err);
+                    }
+                });
+
+                peer.on('disconnected', () => updateConnectionStatus(false));
+            });
+        }
+
+        function renderPlayerList(containerId) {
+            const container = document.getElementById(containerId);
+            const avatars = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
+
+            container.innerHTML = players.map((p, i) => `
+                <div class="player-item">
+                    <div class="player-avatar ${avatars[i]}">${i + 1}</div>
+                    <span class="player-name">${p.name}</span>
+                    <span class="player-status ${p.isHost ? 'status-host' : 'status-ready'}">
+                        ${p.isHost ? 'Host' : 'Hazır'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function broadcast(data) {
+            connections.forEach(conn => {
+                if (conn.open) conn.send(data);
+            });
+        }
+
+        function sendToHost(data) {
+            if (hostConnection && hostConnection.open) {
+                hostConnection.send(data);
+            }
+        }
+
+        // Initialize color palette
+        function initColorPalette() {
+            const palette = document.getElementById('colorPalette');
+            palette.innerHTML = DRAW_COLORS.map((color, i) => `
+                <div class="color-btn ${i === 0 ? 'selected' : ''}" 
+                     style="background: ${color};" 
+                     data-color="${color}"
+                     onclick="selectColor('${color}', this)"></div>
+            `).join('');
+        }
+
+        function selectColor(color, element) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // ========================
+        // HOST FUNCTIONS
+        // ========================
+
+        async function createRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = true;
+            roomCode = generateRoomCode();
+
+            try {
+                await initPeer('FAKEARTIST_' + roomCode);
+
+                players = [{ id: myId, name: myName, isHost: true }];
+
+                document.getElementById('roomCodeDisplay').textContent = roomCode;
+                renderPlayerList('playerList');
+                showScreen(lobbyScreen);
+
+                peer.on('connection', handleNewConnection);
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        }
+
+        function handleNewConnection(conn) {
+            if (players.length >= 8) {
+                conn.on('open', () => {
+                    conn.send({ type: 'error', message: 'Oda dolu!' });
+                    setTimeout(() => conn.close(), 500);
+                });
+                return;
+            }
+
+            conn.on('open', () => console.log('New player connected'));
+
+            conn.on('data', (data) => {
+                if (data.type === 'join') {
+                    const newPlayer = { id: conn.peer, name: data.name, isHost: false };
+                    players.push(newPlayer);
+                    connections.push(conn);
+
+                    broadcast({ type: 'players_update', players: players });
+                    renderPlayerList('playerList');
+                    updateStartButton();
+                }
+
+                if (data.type === 'role_ready') {
+                    handleRoleReady(data.playerId);
+                }
+
+                if (data.type === 'stroke_complete') {
+                    handleStrokeComplete(data.playerId, data.stroke);
+                }
+
+                if (data.type === 'vote_submit') {
+                    handleVoteSubmit(data.playerId, data.votedIndex);
+                }
+            });
+
+            conn.on('close', () => {
+                players = players.filter(p => p.id !== conn.peer);
+                connections = connections.filter(c => c !== conn);
+                broadcast({ type: 'players_update', players: players });
+                renderPlayerList('playerList');
+                updateStartButton();
+            });
+        }
+
+        function updateStartButton() {
+            const btn = document.getElementById('startGameBtn');
+            btn.disabled = players.length < 4;
+            btn.textContent = players.length < 4
+                ? `OYUNU BAŞLAT (${players.length}/4 minimum)`
+                : 'OYUNU BAŞLAT';
+        }
+
+        function startGame() {
+            if (players.length < 4) return;
+
+            // Pick random word and fake artist
+            gameState.word = WORDS[Math.floor(Math.random() * WORDS.length)];
+            gameState.fakeArtistIndex = Math.floor(Math.random() * players.length);
+            gameState.currentPlayerIndex = 0;
+            gameState.currentRound = 1;
+            gameState.totalRounds = 2;
+            gameState.readyPlayers = [];
+            gameState.votes = {};
+            gameState.drawingData = [];
+
+            broadcast({
+                type: 'game_start',
+                word: gameState.word,
+                fakeArtistIndex: gameState.fakeArtistIndex,
+                players: players
+            });
+
+            showRoleScreen();
+        }
+
+        function handleRoleReady(playerId) {
+            if (!gameState.readyPlayers.includes(playerId)) {
+                gameState.readyPlayers.push(playerId);
+            }
+
+            if (gameState.readyPlayers.length >= players.length) {
+                gameState.readyPlayers = [];
+                broadcast({ type: 'start_drawing' });
+                startDrawingPhase();
+            }
+        }
+
+        function handleStrokeComplete(playerId, stroke) {
+            // Add stroke to drawing data
+            gameState.drawingData.push({
+                playerId: playerId,
+                playerIndex: players.findIndex(p => p.id === playerId),
+                stroke: stroke
+            });
+
+            // Broadcast stroke to all
+            broadcast({ type: 'draw_stroke', stroke: stroke, playerIndex: players.findIndex(p => p.id === playerId) });
+
+            // Draw on host canvas too
+            drawStroke(stroke, players.findIndex(p => p.id === playerId));
+
+            // Move to next player
+            advanceTurn();
+        }
+
+        function advanceTurn() {
+            gameState.currentPlayerIndex++;
+
+            if (gameState.currentPlayerIndex >= players.length) {
+                gameState.currentPlayerIndex = 0;
+                gameState.currentRound++;
+
+                if (gameState.currentRound > gameState.totalRounds) {
+                    // Start voting
+                    broadcast({ type: 'start_voting' });
+                    startVoting();
+                    return;
+                }
+            }
+
+            broadcast({
+                type: 'next_turn',
+                playerIndex: gameState.currentPlayerIndex,
+                round: gameState.currentRound
+            });
+
+            updateTurnUI();
+        }
+
+        function handleVoteSubmit(playerId, votedIndex) {
+            gameState.votes[playerId] = votedIndex;
+
+            if (Object.keys(gameState.votes).length >= players.length) {
+                calculateResults();
+            }
+        }
+
+        function calculateResults() {
+            const voteCounts = {};
+            Object.values(gameState.votes).forEach(v => {
+                voteCounts[v] = (voteCounts[v] || 0) + 1;
+            });
+
+            let maxVotes = 0;
+            let mostVoted = -1;
+            Object.entries(voteCounts).forEach(([idx, count]) => {
+                if (count > maxVotes) {
+                    maxVotes = count;
+                    mostVoted = parseInt(idx);
+                }
+            });
+
+            const fakeCaught = mostVoted === gameState.fakeArtistIndex;
+
+            broadcast({
+                type: 'game_result',
+                fakeCaught: fakeCaught,
+                fakeArtistIndex: gameState.fakeArtistIndex,
+                fakeArtistName: players[gameState.fakeArtistIndex].name,
+                word: gameState.word,
+                voteCounts: voteCounts
+            });
+
+            showResults(fakeCaught, voteCounts);
+        }
+
+        // ========================
+        // GUEST FUNCTIONS
+        // ========================
+
+        async function joinRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            if (!code || code.length !== 6) {
+                showError('menuError', 'Geçerli bir oda kodu girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = false;
+            roomCode = code;
+
+            try {
+                await initPeer();
+
+                hostConnection = peer.connect('FAKEARTIST_' + code);
+
+                hostConnection.on('open', () => {
+                    hostConnection.send({ type: 'join', name: myName });
+                    showScreen(waitingScreen);
+                });
+
+                hostConnection.on('data', handleHostMessage);
+
+                hostConnection.on('close', () => {
+                    alert('Bağlantı koptu!');
+                    location.reload();
+                });
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        }
+
+        function handleHostMessage(data) {
+            console.log('From host:', data);
+
+            switch (data.type) {
+                case 'error':
+                    alert(data.message);
+                    location.reload();
+                    break;
+
+                case 'players_update':
+                    players = data.players;
+                    renderPlayerList('guestPlayerList');
+                    break;
+
+                case 'game_start':
+                    players = data.players;
+                    gameState.word = data.word;
+                    gameState.fakeArtistIndex = data.fakeArtistIndex;
+                    gameState.currentPlayerIndex = 0;
+                    gameState.currentRound = 1;
+                    gameState.totalRounds = 2;
+                    showRoleScreen();
+                    break;
+
+                case 'start_drawing':
+                    startDrawingPhase();
+                    break;
+
+                case 'draw_stroke':
+                    drawStroke(data.stroke, data.playerIndex);
+                    break;
+
+                case 'next_turn':
+                    gameState.currentPlayerIndex = data.playerIndex;
+                    gameState.currentRound = data.round;
+                    updateTurnUI();
+                    break;
+
+                case 'start_voting':
+                    startVoting();
+                    break;
+
+                case 'game_result':
+                    showResults(data.fakeCaught, data.voteCounts, data);
+                    break;
+            }
+        }
+
+        // ========================
+        // SHARED GAME FUNCTIONS
+        // ========================
+
+        function showRoleScreen() {
+            const myIndex = players.findIndex(p => p.id === myId);
+            const isFake = myIndex === gameState.fakeArtistIndex;
+
+            const roleIcon = document.getElementById('roleIcon');
+            const roleTitle = document.getElementById('roleTitle');
+            const roleWord = document.getElementById('roleWord');
+            const roleHint = document.getElementById('roleHint');
+
+            if (isFake) {
+                roleIcon.textContent = '🎭';
+                roleTitle.textContent = 'FAKE ARTIST';
+                roleTitle.className = 'role-title fake';
+                roleWord.textContent = '???';
+                roleWord.style.background = 'rgba(231, 76, 60, 0.1)';
+                roleWord.style.borderColor = 'rgba(231, 76, 60, 0.3)';
+                roleWord.style.color = '#e74c3c';
+                roleHint.textContent = 'Kelimeyi bilmiyorsun! Diğerlerini taklit et ve yakalanma!';
+            } else {
+                roleIcon.textContent = '🎨';
+                roleTitle.textContent = 'SANATÇI';
+                roleTitle.className = 'role-title artist';
+                roleWord.textContent = gameState.word;
+                roleWord.style.background = 'rgba(241, 196, 15, 0.1)';
+                roleWord.style.borderColor = 'rgba(241, 196, 15, 0.3)';
+                roleWord.style.color = '#f1c40f';
+                roleHint.textContent = 'Sırayla herkes tek çizgi çizecek. Fake Artist\'i bulmaya çalışın!';
+            }
+
+            document.getElementById('roleReadyBtn').disabled = false;
+            showScreen(roleScreen);
+        }
+
+        function roleReady() {
+            document.getElementById('roleReadyBtn').disabled = true;
+            document.getElementById('roleReadyBtn').textContent = 'Bekleniyor...';
+
+            if (isHost) {
+                handleRoleReady(myId);
+            } else {
+                sendToHost({ type: 'role_ready', playerId: myId });
+            }
+        }
+
+        function startDrawingPhase() {
+            // Clear canvas
+            drawCtx.fillStyle = '#ffffff';
+            drawCtx.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+
+            initColorPalette();
+            updateTurnUI();
+            showScreen(gameScreen);
+        }
+
+        function updateTurnUI() {
+            const myIndex = players.findIndex(p => p.id === myId);
+            const isMyTurn = gameState.currentPlayerIndex === myIndex;
+            const currentPlayer = players[gameState.currentPlayerIndex];
+
+            document.getElementById('currentPlayerName').textContent = currentPlayer.name;
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+
+            const turnInfo = document.getElementById('turnInfo');
+            const drawingControls = document.getElementById('drawingControls');
+            const watchingInfo = document.getElementById('watchingInfo');
+
+            if (isMyTurn) {
+                turnInfo.className = 'turn-info your-turn';
+                drawingControls.style.display = 'block';
+                watchingInfo.style.display = 'none';
+                drawCanvas.classList.remove('disabled');
+                myTurnActive = true;
+                document.getElementById('doneDrawingBtn').disabled = true;
+            } else {
+                turnInfo.className = 'turn-info';
+                drawingControls.style.display = 'none';
+                watchingInfo.style.display = 'block';
+                document.getElementById('watchingText').textContent = `${currentPlayer.name} çiziyor...`;
+                drawCanvas.classList.add('disabled');
+                myTurnActive = false;
+            }
+
+            // Update turn order dots
+            const avatars = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'];
+
+            document.getElementById('turnOrder').innerHTML = players.map((p, i) => {
+                let classes = 'turn-dot';
+                if (i === gameState.currentPlayerIndex) classes += ' current';
+                return `<div class="${classes}" style="background: ${colors[i]};">${i + 1}</div>`;
+            }).join('');
+        }
+
+        // Canvas Drawing
+        function getCanvasPos(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const scaleX = drawCanvas.width / rect.width;
+            const scaleY = drawCanvas.height / rect.height;
+
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function startDraw(e) {
+            if (!myTurnActive) return;
+            e.preventDefault();
+
+            isDrawing = true;
+            currentStroke = [];
+            const pos = getCanvasPos(e);
+            currentStroke.push({ x: pos.x, y: pos.y, color: currentColor, size: brushSize });
+
+            drawCtx.beginPath();
+            drawCtx.moveTo(pos.x, pos.y);
+
+            document.getElementById('doneDrawingBtn').disabled = false;
+        }
+
+        function draw(e) {
+            if (!isDrawing || !myTurnActive) return;
+            e.preventDefault();
+
+            const pos = getCanvasPos(e);
+            currentStroke.push({ x: pos.x, y: pos.y, color: currentColor, size: brushSize });
+
+            drawCtx.lineTo(pos.x, pos.y);
+            drawCtx.strokeStyle = currentColor;
+            drawCtx.lineWidth = brushSize;
+            drawCtx.lineCap = 'round';
+            drawCtx.lineJoin = 'round';
+            drawCtx.stroke();
+        }
+
+        function endDraw(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+        }
+
+        function drawStroke(stroke, playerIndex) {
+            if (!stroke || stroke.length < 2) return;
+
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'];
+
+            drawCtx.beginPath();
+            drawCtx.moveTo(stroke[0].x, stroke[0].y);
+
+            for (let i = 1; i < stroke.length; i++) {
+                drawCtx.lineTo(stroke[i].x, stroke[i].y);
+            }
+
+            drawCtx.strokeStyle = stroke[0].color || colors[playerIndex];
+            drawCtx.lineWidth = stroke[0].size || 5;
+            drawCtx.lineCap = 'round';
+            drawCtx.lineJoin = 'round';
+            drawCtx.stroke();
+        }
+
+        function doneDrawing() {
+            if (!myTurnActive || currentStroke.length < 2) return;
+
+            myTurnActive = false;
+            document.getElementById('doneDrawingBtn').disabled = true;
+
+            if (isHost) {
+                handleStrokeComplete(myId, currentStroke);
+            } else {
+                sendToHost({ type: 'stroke_complete', playerId: myId, stroke: currentStroke });
+            }
+
+            currentStroke = [];
+        }
+
+        // Voting
+        function startVoting() {
+            // Copy drawing to vote canvas
+            voteCtx.drawImage(drawCanvas, 0, 0);
+
+            // Create vote buttons (excluding self)
+            const myIndex = players.findIndex(p => p.id === myId);
+            const avatars = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
+
+            const voteOptions = document.getElementById('voteOptions');
+            voteOptions.innerHTML = players.map((p, i) => {
+                if (i === myIndex) return '';
+                return `
+                    <div class="vote-btn" data-index="${i}" onclick="selectVote(${i})">
+                        <div class="player-avatar ${avatars[i]}" style="width:35px;height:35px;font-size:14px;">${i + 1}</div>
+                        <span style="color:#fff; font-weight:600;">${p.name}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('submitVoteBtn').disabled = true;
+            document.getElementById('voteWaiting').style.display = 'none';
+            showScreen(voteScreen);
+        }
+
+        let selectedVoteIndex = -1;
+
+        function selectVote(index) {
+            selectedVoteIndex = index;
+
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (parseInt(btn.dataset.index) === index) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            document.getElementById('submitVoteBtn').disabled = false;
+        }
+
+        function submitVote() {
+            if (selectedVoteIndex === -1) return;
+
+            document.querySelectorAll('.vote-btn').forEach(btn => btn.classList.add('disabled'));
+            document.getElementById('submitVoteBtn').disabled = true;
+            document.getElementById('voteWaiting').style.display = 'block';
+
+            if (isHost) {
+                handleVoteSubmit(myId, selectedVoteIndex);
+            } else {
+                sendToHost({ type: 'vote_submit', playerId: myId, votedIndex: selectedVoteIndex });
+            }
+        }
+
+        function showResults(fakeCaught, voteCounts, data = null) {
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+
+            const myIndex = players.findIndex(p => p.id === myId);
+            const isFake = myIndex === (data ? data.fakeArtistIndex : gameState.fakeArtistIndex);
+
+            if (fakeCaught) {
+                if (isFake) {
+                    icon.textContent = '😢';
+                    title.textContent = 'YAKALANDIN!';
+                    title.className = 'result-title lose';
+                    message.textContent = 'Seni buldular!';
+                } else {
+                    icon.textContent = '🎉';
+                    title.textContent = 'SANATÇILAR KAZANDI!';
+                    title.className = 'result-title win';
+                    message.textContent = 'Fake Artist yakalandı!';
+                }
+            } else {
+                if (isFake) {
+                    icon.textContent = '🎭';
+                    title.textContent = 'KAÇTIN!';
+                    title.className = 'result-title win';
+                    message.textContent = 'Kimse seni bulamadı!';
+                } else {
+                    icon.textContent = '😈';
+                    title.textContent = 'FAKE ARTIST KAZANDI!';
+                    title.className = 'result-title lose';
+                    message.textContent = 'Yanlış kişiyi oyladınız!';
+                }
+            }
+
+            const fakeName = data ? data.fakeArtistName : players[gameState.fakeArtistIndex].name;
+            const word = data ? data.word : gameState.word;
+
+            document.getElementById('fakeReveal').textContent = fakeName;
+            document.getElementById('wordResultReveal').textContent = word;
+
+            // Vote results
+            const voteResultsDiv = document.getElementById('voteResults');
+            const fakeIdx = data ? data.fakeArtistIndex : gameState.fakeArtistIndex;
+
+            voteResultsDiv.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:15px;">OY DAĞILIMI</div>';
+
+            players.forEach((p, i) => {
+                const count = voteCounts[i] || 0;
+                const isFakeP = i === fakeIdx;
+                voteResultsDiv.innerHTML += `
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span style="color: ${isFakeP ? '#e74c3c' : '#fff'}; font-weight: 600;">
+                            ${p.name} ${isFakeP ? '(Fake)' : ''}
+                        </span>
+                        <span style="color: #9b59b6; font-weight: 700;">${count} oy</span>
+                    </div>
+                `;
+            });
+
+            showScreen(resultScreen);
+        }
+
+        // ========================
+        // EVENT LISTENERS
+        // ========================
+
+        document.getElementById('createRoomBtn').addEventListener('click', createRoom);
+        document.getElementById('joinRoomBtn').addEventListener('click', joinRoom);
+        document.getElementById('startGameBtn').addEventListener('click', startGame);
+        document.getElementById('roleReadyBtn').addEventListener('click', roleReady);
+        document.getElementById('doneDrawingBtn').addEventListener('click', doneDrawing);
+        document.getElementById('submitVoteBtn').addEventListener('click', submitVote);
+
+        // Canvas events
+        drawCanvas.addEventListener('mousedown', startDraw);
+        drawCanvas.addEventListener('mousemove', draw);
+        drawCanvas.addEventListener('mouseup', endDraw);
+        drawCanvas.addEventListener('mouseout', endDraw);
+
+        drawCanvas.addEventListener('touchstart', startDraw);
+        drawCanvas.addEventListener('touchmove', draw);
+        drawCanvas.addEventListener('touchend', endDraw);
+
+        document.getElementById('brushSize').addEventListener('input', (e) => {
+            brushSize = parseInt(e.target.value);
+        });
+
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const code = document.getElementById('roomCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('copyCodeBtn').textContent = '✅ Kopyalandı!';
+                setTimeout(() => {
+                    document.getElementById('copyCodeBtn').textContent = '📋 Kopyala';
+                }, 2000);
+            });
+        });
+
+        document.getElementById('roomCodeInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+
+        document.getElementById('playerName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const roomCode = document.getElementById('roomCodeInput').value.trim();
+                if (roomCode) {
+                    joinRoom();
+                } else {
+                    createRoom();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
