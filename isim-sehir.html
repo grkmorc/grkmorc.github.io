@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 İsim Şehir Online - 2K Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(80, 227, 194, 0.1) 0%, transparent 40%);
+            animation: bgRotate 40s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgRotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .connection-status.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        /* Logo */
+        .game-logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4a90e2, #50e3c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Inputs */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 15px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #4a90e2;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #50e3c2, #3dc4a7);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(80, 227, 194, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-size: 13px;
+        }
+
+        /* Room Code */
+        .room-code-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .room-code-display .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .room-code-display .code {
+            font-size: 36px;
+            font-weight: 900;
+            color: #4a90e2;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4a90e2;
+            color: #4a90e2;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #4a90e2;
+            color: #fff;
+        }
+
+        /* Player List */
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .player-avatar.p1 {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+        }
+
+        .player-avatar.p2 {
+            background: linear-gradient(135deg, #50e3c2, #3dc4a7);
+        }
+
+        .player-avatar.p3 {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .player-avatar.p4 {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .player-avatar.p5 {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .player-avatar.p6 {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+
+        .player-avatar.p7 {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+        }
+
+        .player-avatar.p8 {
+            background: linear-gradient(135deg, #00bcd4, #0097a7);
+        }
+
+        .player-name {
+            flex: 1;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .player-score {
+            font-weight: 700;
+            color: #50e3c2;
+            font-size: 18px;
+        }
+
+        .player-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+        .status-host {
+            background: rgba(74, 144, 226, 0.2);
+            color: #4a90e2;
+        }
+
+        .status-ready {
+            background: rgba(80, 227, 194, 0.2);
+            color: #50e3c2;
+        }
+
+        /* Settings */
+        .settings-section {
+            margin: 20px 0;
+        }
+
+        .settings-title {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .settings-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-chip {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .category-chip:hover {
+            border-color: rgba(74, 144, 226, 0.5);
+        }
+
+        .category-chip.selected {
+            background: rgba(74, 144, 226, 0.2);
+            border-color: #4a90e2;
+            color: #fff;
+        }
+
+        .category-chip.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Letter Display */
+        .letter-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .letter-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .letter-value {
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4a90e2, #50e3c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        /* Timer */
+        .timer-display {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .timer-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .timer-value.warning {
+            color: #f39c12;
+            animation: pulse 0.5s infinite;
+        }
+
+        .timer-value.danger {
+            color: #e74c3c;
+            animation: pulse 0.3s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Answer Inputs */
+        .answers-container {
+            margin: 20px 0;
+        }
+
+        .answer-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .answer-category {
+            width: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            border-color: #4a90e2;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .answer-input.valid {
+            border-color: #50e3c2;
+        }
+
+        .answer-input.invalid {
+            border-color: #e74c3c;
+        }
+
+        /* Round Results */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .results-table th {
+            padding: 12px 8px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+
+        .results-table td {
+            padding: 12px 8px;
+            font-size: 14px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .results-table .answer-cell {
+            font-weight: 600;
+        }
+
+        .results-table .answer-cell.unique {
+            color: #50e3c2;
+        }
+
+        .results-table .answer-cell.shared {
+            color: #f39c12;
+        }
+
+        .results-table .answer-cell.empty {
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+        }
+
+        .results-table .score-cell {
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .results-table .score-cell.plus {
+            color: #50e3c2;
+        }
+
+        .results-table .score-cell.zero {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Round Header */
+        .round-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .round-number {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .round-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Waiting Spinner */
+        .waiting {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .waiting p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Final Scoreboard */
+        .final-player {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .final-player.winner {
+            background: linear-gradient(135deg, rgba(80, 227, 194, 0.2), rgba(74, 144, 226, 0.2));
+            border-color: #50e3c2;
+            animation: winnerGlow 2s infinite;
+        }
+
+        @keyframes winnerGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(80, 227, 194, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(80, 227, 194, 0.5);
+            }
+        }
+
+        .final-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .final-rank.gold {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #000;
+        }
+
+        .final-rank.silver {
+            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+            color: #000;
+        }
+
+        .final-rank.bronze {
+            background: linear-gradient(135deg, #cd7f32, #a0522d);
+            color: #fff;
+        }
+
+        .final-rank.normal {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .final-info {
+            flex: 1;
+        }
+
+        .final-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .final-score {
+            font-weight: 900;
+            font-size: 24px;
+            color: #50e3c2;
+        }
+
+        /* Error Message */
+        .error-msg {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Settings Display (for guests) */
+        .settings-display {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .settings-display-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-display-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-display-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .settings-display-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .categories-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .letter-value {
+                font-size: 60px;
+            }
+
+            .answer-category {
+                width: 80px;
+                font-size: 12px;
+            }
+
+            .settings-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">🔴 Bağlantı Yok</div>
+
+    <div class="game-container">
+        <div class="game-logo">📝</div>
+        <h1 class="game-title">İsim Şehir</h1>
+        <p class="game-subtitle">Online Multiplayer</p>
+
+        <!-- MENU SCREEN -->
+        <div id="menuScreen" class="screen active">
+            <div class="card">
+                <div class="input-group">
+                    <label>İsmin</label>
+                    <input type="text" id="playerName" placeholder="İsmini gir..." maxlength="15">
+                </div>
+
+                <button class="btn btn-primary" id="createRoomBtn">🎮 ODA OLUŞTUR</button>
+
+                <div class="divider"><span>veya</span></div>
+
+                <div class="input-group">
+                    <label>Oda Kodu</label>
+                    <input type="text" id="roomCodeInput" placeholder="6 haneli kod" maxlength="6">
+                </div>
+
+                <button class="btn btn-secondary" id="joinRoomBtn">🚪 ODAYA KATIL</button>
+
+                <div class="error-msg" id="menuError"></div>
+            </div>
+        </div>
+
+        <!-- HOST LOBBY SCREEN -->
+        <div id="lobbyScreen" class="screen">
+            <div class="card">
+                <div class="room-code-display">
+                    <div class="label">Oda Kodu</div>
+                    <div class="code" id="roomCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Kopyala</button>
+                </div>
+
+                <div class="settings-title">Oyuncular</div>
+                <div id="playerList"></div>
+
+                <div class="settings-section">
+                    <div class="settings-title">Oyun Ayarları</div>
+
+                    <div class="settings-row">
+                        <div class="input-group">
+                            <label>Round Sayısı</label>
+                            <select id="roundCount">
+                                <option value="1">1 Round</option>
+                                <option value="2">2 Round</option>
+                                <option value="3" selected>3 Round</option>
+                                <option value="4">4 Round</option>
+                                <option value="5">5 Round</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Round Süresi</label>
+                            <select id="roundTime">
+                                <option value="30">30 Saniye</option>
+                                <option value="45" selected>45 Saniye</option>
+                                <option value="60">60 Saniye</option>
+                                <option value="90">90 Saniye</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-title">Kategoriler (En az 3 seç)</div>
+                    <div class="categories-grid" id="categoriesGrid"></div>
+                </div>
+
+                <button class="btn btn-primary" id="startGameBtn" disabled>
+                    OYUNU BAŞLAT (2 kişi gerekli)
+                </button>
+            </div>
+        </div>
+
+        <!-- GUEST WAITING SCREEN -->
+        <div id="waitingScreen" class="screen">
+            <div class="card">
+                <div class="round-header">
+                    <div class="round-title">Lobiye Katıldın!</div>
+                </div>
+
+                <div class="settings-title">Oyuncular</div>
+                <div id="guestPlayerList"></div>
+
+                <div class="settings-display" id="guestSettingsDisplay">
+                    <div class="settings-display-item">
+                        <span class="settings-display-label">Round Sayısı</span>
+                        <span class="settings-display-value" id="guestRoundCount">-</span>
+                    </div>
+                    <div class="settings-display-item">
+                        <span class="settings-display-label">Round Süresi</span>
+                        <span class="settings-display-value" id="guestRoundTime">-</span>
+                    </div>
+                    <div class="settings-display-item">
+                        <span class="settings-display-label">Kategoriler</span>
+                        <span class="settings-display-value" id="guestCategories">-</span>
+                    </div>
+                </div>
+
+                <div class="waiting">
+                    <div class="spinner"></div>
+                    <p>Host oyunu başlatmayı bekliyor...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN (PLAYING ROUND) -->
+        <div id="gameScreen" class="screen">
+            <div class="card">
+                <div class="round-header">
+                    <div class="round-number">Round <span id="currentRound">1</span>/<span id="totalRounds">3</span>
+                    </div>
+                </div>
+
+                <div class="letter-display">
+                    <div class="letter-label">Harf</div>
+                    <div class="letter-value" id="currentLetter">A</div>
+                </div>
+
+                <div class="timer-display">
+                    <div class="timer-value" id="timerValue">45</div>
+                </div>
+
+                <div class="answers-container" id="answersContainer">
+                    <!-- Category inputs will be generated here -->
+                </div>
+
+                <button class="btn btn-primary" id="submitAnswersBtn">✓ CEVAPLARI GÖNDER</button>
+
+                <div class="waiting" id="gameWaiting" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Diğer oyuncular yazıyor...</p>
+                    <div id="submitProgress" style="margin-top: 10px; font-weight: 600; color: #50e3c2;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROUND RESULTS SCREEN -->
+        <div id="resultsScreen" class="screen">
+            <div class="card">
+                <div class="round-header">
+                    <div class="round-number">Round <span id="resultsRound">1</span> Sonuçları</div>
+                    <div class="round-title">Harf: <span id="resultsLetter">A</span></div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="results-table" id="resultsTable">
+                        <!-- Results will be generated here -->
+                    </table>
+                </div>
+
+                <div class="settings-title" style="margin-top: 20px;">Güncel Skorlar</div>
+                <div id="currentScores"></div>
+
+                <button class="btn btn-primary" id="nextRoundBtn">
+                    <span id="nextRoundBtnText">Sonraki Round →</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- FINAL RESULTS SCREEN -->
+        <div id="finalScreen" class="screen">
+            <div class="card" style="text-align: center;">
+                <div class="game-logo">🏆</div>
+                <h2 style="color: #50e3c2; font-size: 28px; margin-bottom: 5px;">OYUN BİTTİ!</h2>
+                <p style="color: rgba(255,255,255,0.5); margin-bottom: 25px;">Final Sıralaması</p>
+
+                <div id="finalScoreboard"></div>
+
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 20px;">
+                    🔄 Yeni Oyun
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================
+        // İSİM ŞEHİR ONLINE
+        // PeerJS ile P2P Multiplayer
+        // ========================
+
+        // Available Categories
+        const ALL_CATEGORIES = [
+            { id: 'isim', name: 'İsim', emoji: '👤' },
+            { id: 'sehir', name: 'Şehir', emoji: '🏙️' },
+            { id: 'hayvan', name: 'Hayvan', emoji: '🐾' },
+            { id: 'bitki', name: 'Bitki', emoji: '🌿' },
+            { id: 'ulke', name: 'Ülke', emoji: '🌍' },
+            { id: 'esya', name: 'Eşya', emoji: '🛋️' },
+            { id: 'yiyecek', name: 'Yiyecek', emoji: '🍕' },
+            { id: 'meslek', name: 'Meslek', emoji: '👔' },
+            { id: 'film', name: 'Film/Dizi', emoji: '🎬' },
+            { id: 'marka', name: 'Marka', emoji: '🏷️' }
+        ];
+
+        // Turkish alphabet (excluding hard letters)
+        const LETTERS = ['A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'H', 'I', 'İ', 'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U', 'Ü', 'V', 'Y', 'Z'];
+
+        // DOM Elements
+        const menuScreen = document.getElementById('menuScreen');
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const finalScreen = document.getElementById('finalScreen');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // State
+        let peer = null;
+        let connections = [];
+        let hostConnection = null;
+        let isHost = false;
+        let myName = '';
+        let myId = '';
+        let roomCode = '';
+
+        // Game State
+        let players = [];
+        let gameSettings = {
+            roundCount: 3,
+            roundTime: 45,
+            categories: []
+        };
+        let gameState = {
+            currentRound: 1,
+            currentLetter: '',
+            usedLetters: [],
+            scores: {},
+            roundAnswers: {},
+            submittedPlayers: []
+        };
+
+        let timerInterval = null;
+        let selectedCategories = new Set(['isim', 'sehir', 'hayvan']); // Default
+
+        // Generate room code
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Show screen
+        function showScreen(screen) {
+            [menuScreen, lobbyScreen, waitingScreen, gameScreen, resultsScreen, finalScreen]
+                .forEach(s => s.classList.remove('active'));
+            screen.classList.add('active');
+        }
+
+        // Show error
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            connectionStatus.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
+            connectionStatus.textContent = connected ? '🟢 Bağlı' : '🔴 Bağlantı Yok';
+        }
+
+        // Initialize Peer
+        function initPeer(id = null) {
+            return new Promise((resolve, reject) => {
+                peer = id ? new Peer(id) : new Peer();
+
+                peer.on('open', (peerId) => {
+                    console.log('Peer ID:', peerId);
+                    myId = peerId;
+                    updateConnectionStatus(true);
+                    resolve(peerId);
+                });
+
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    if (err.type === 'unavailable-id') {
+                        reject(new Error('Bu oda kodu kullanımda'));
+                    } else if (err.type === 'peer-unavailable') {
+                        reject(new Error('Oda bulunamadı'));
+                    } else {
+                        reject(err);
+                    }
+                });
+
+                peer.on('disconnected', () => updateConnectionStatus(false));
+            });
+        }
+
+        // Render player list
+        function renderPlayerList(containerId, showScores = false) {
+            const container = document.getElementById(containerId);
+            const avatars = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
+
+            container.innerHTML = players.map((p, i) => `
+                <div class="player-item">
+                    <div class="player-avatar ${avatars[i]}">${i + 1}</div>
+                    <span class="player-name">${p.name}</span>
+                    ${showScores ? `<span class="player-score">${gameState.scores[p.id] || 0}</span>` : ''}
+                    <span class="player-status ${p.isHost ? 'status-host' : 'status-ready'}">
+                        ${p.isHost ? 'Host' : 'Hazır'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Broadcast message (Host only)
+        function broadcast(data) {
+            connections.forEach(conn => {
+                if (conn.open) conn.send(data);
+            });
+        }
+
+        // Send to host (Guest only)
+        function sendToHost(data) {
+            if (hostConnection && hostConnection.open) {
+                hostConnection.send(data);
+            }
+        }
+
+        // Initialize categories grid
+        function initCategoriesGrid() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = ALL_CATEGORIES.map(cat => `
+                <div class="category-chip ${selectedCategories.has(cat.id) ? 'selected' : ''}" 
+                     data-category="${cat.id}" onclick="toggleCategory('${cat.id}')">
+                    ${cat.emoji} ${cat.name}
+                </div>
+            `).join('');
+        }
+
+        function toggleCategory(catId) {
+            if (selectedCategories.has(catId)) {
+                if (selectedCategories.size > 3) {
+                    selectedCategories.delete(catId);
+                }
+            } else {
+                selectedCategories.add(catId);
+            }
+            initCategoriesGrid();
+            broadcastSettings();
+        }
+
+        function broadcastSettings() {
+            if (!isHost) return;
+
+            const settings = {
+                roundCount: parseInt(document.getElementById('roundCount').value),
+                roundTime: parseInt(document.getElementById('roundTime').value),
+                categories: Array.from(selectedCategories)
+            };
+
+            broadcast({ type: 'settings_update', settings: settings });
+        }
+
+        // ========================
+        // HOST FUNCTIONS
+        // ========================
+
+        async function createRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = true;
+            roomCode = generateRoomCode();
+
+            try {
+                await initPeer('ISIMSEHIR_' + roomCode);
+
+                players = [{ id: myId, name: myName, isHost: true }];
+                gameState.scores[myId] = 0;
+
+                document.getElementById('roomCodeDisplay').textContent = roomCode;
+                renderPlayerList('playerList');
+                initCategoriesGrid();
+                showScreen(lobbyScreen);
+
+                peer.on('connection', handleNewConnection);
+
+                // Listen for settings changes
+                document.getElementById('roundCount').addEventListener('change', broadcastSettings);
+                document.getElementById('roundTime').addEventListener('change', broadcastSettings);
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        }
+
+        function handleNewConnection(conn) {
+            if (players.length >= 8) {
+                conn.on('open', () => {
+                    conn.send({ type: 'error', message: 'Oda dolu!' });
+                    setTimeout(() => conn.close(), 500);
+                });
+                return;
+            }
+
+            conn.on('open', () => {
+                console.log('New player connected');
+            });
+
+            conn.on('data', (data) => {
+                if (data.type === 'join') {
+                    const newPlayer = { id: conn.peer, name: data.name, isHost: false };
+                    players.push(newPlayer);
+                    connections.push(conn);
+                    gameState.scores[conn.peer] = 0;
+
+                    broadcast({ type: 'players_update', players: players });
+                    broadcastSettings();
+                    renderPlayerList('playerList');
+                    updateStartButton();
+                }
+
+                if (data.type === 'answers_submit') {
+                    handleAnswersSubmit(data.playerId, data.answers);
+                }
+
+                if (data.type === 'next_round_ready') {
+                    handleNextRoundReady(data.playerId);
+                }
+            });
+
+            conn.on('close', () => {
+                players = players.filter(p => p.id !== conn.peer);
+                connections = connections.filter(c => c !== conn);
+                broadcast({ type: 'players_update', players: players });
+                renderPlayerList('playerList');
+                updateStartButton();
+            });
+        }
+
+        function updateStartButton() {
+            const btn = document.getElementById('startGameBtn');
+            const catCount = selectedCategories.size;
+            btn.disabled = players.length < 2 || catCount < 3;
+
+            if (players.length < 2) {
+                btn.textContent = `OYUNU BAŞLAT (${players.length}/2 minimum)`;
+            } else if (catCount < 3) {
+                btn.textContent = `OYUNU BAŞLAT (${catCount}/3 kategori seç)`;
+            } else {
+                btn.textContent = 'OYUNU BAŞLAT';
+            }
+        }
+
+        function startGame() {
+            if (players.length < 2 || selectedCategories.size < 3) return;
+
+            gameSettings = {
+                roundCount: parseInt(document.getElementById('roundCount').value),
+                roundTime: parseInt(document.getElementById('roundTime').value),
+                categories: Array.from(selectedCategories)
+            };
+
+            gameState.currentRound = 1;
+            gameState.usedLetters = [];
+
+            // Reset scores
+            players.forEach(p => gameState.scores[p.id] = 0);
+
+            // Pick first letter
+            const letter = pickRandomLetter();
+            gameState.currentLetter = letter;
+            gameState.usedLetters.push(letter);
+
+            broadcast({
+                type: 'game_start',
+                settings: gameSettings,
+                players: players,
+                letter: letter
+            });
+
+            startRound(letter);
+        }
+
+        function pickRandomLetter() {
+            const available = LETTERS.filter(l => !gameState.usedLetters.includes(l));
+            if (available.length === 0) {
+                gameState.usedLetters = [];
+                return LETTERS[Math.floor(Math.random() * LETTERS.length)];
+            }
+            return available[Math.floor(Math.random() * available.length)];
+        }
+
+        function handleAnswersSubmit(playerId, answers) {
+            gameState.roundAnswers[playerId] = answers;
+            gameState.submittedPlayers.push(playerId);
+
+            const submitted = gameState.submittedPlayers.length;
+            broadcast({ type: 'submit_progress', submitted: submitted, total: players.length });
+
+            if (submitted >= players.length) {
+                calculateRoundScores();
+            }
+        }
+
+        function calculateRoundScores() {
+            // Stop timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            const roundScores = {};
+            const answerCounts = {};
+            const letter = gameState.currentLetter.toUpperCase();
+
+            // Initialize
+            players.forEach(p => roundScores[p.id] = {});
+            gameSettings.categories.forEach(cat => answerCounts[cat] = {});
+
+            // Count answers per category
+            gameSettings.categories.forEach(cat => {
+                players.forEach(p => {
+                    const answer = (gameState.roundAnswers[p.id]?.[cat] || '').trim().toLowerCase();
+                    if (answer && answer.charAt(0).toUpperCase() === letter) {
+                        answerCounts[cat][answer] = (answerCounts[cat][answer] || 0) + 1;
+                    }
+                });
+            });
+
+            // Calculate scores
+            gameSettings.categories.forEach(cat => {
+                players.forEach(p => {
+                    const rawAnswer = (gameState.roundAnswers[p.id]?.[cat] || '').trim();
+                    const answer = rawAnswer.toLowerCase();
+
+                    if (!answer || answer.charAt(0).toUpperCase() !== letter) {
+                        roundScores[p.id][cat] = { answer: rawAnswer || '-', score: 0, type: 'empty' };
+                    } else if (answerCounts[cat][answer] === 1) {
+                        roundScores[p.id][cat] = { answer: rawAnswer, score: 10, type: 'unique' };
+                        gameState.scores[p.id] = (gameState.scores[p.id] || 0) + 10;
+                    } else {
+                        roundScores[p.id][cat] = { answer: rawAnswer, score: 5, type: 'shared' };
+                        gameState.scores[p.id] = (gameState.scores[p.id] || 0) + 5;
+                    }
+                });
+            });
+
+            broadcast({
+                type: 'round_results',
+                round: gameState.currentRound,
+                letter: gameState.currentLetter,
+                roundScores: roundScores,
+                totalScores: gameState.scores,
+                isLastRound: gameState.currentRound >= gameSettings.roundCount
+            });
+
+            showRoundResults(roundScores, gameState.currentRound >= gameSettings.roundCount);
+        }
+
+        function handleNextRoundReady(playerId) {
+            if (!gameState.readyForNext) gameState.readyForNext = [];
+            if (!gameState.readyForNext.includes(playerId)) {
+                gameState.readyForNext.push(playerId);
+            }
+
+            if (gameState.readyForNext.length >= players.length) {
+                gameState.readyForNext = [];
+
+                if (gameState.currentRound >= gameSettings.roundCount) {
+                    // Game over
+                    broadcast({ type: 'game_over', scores: gameState.scores, players: players });
+                    showFinalResults();
+                } else {
+                    // Next round
+                    gameState.currentRound++;
+                    const letter = pickRandomLetter();
+                    gameState.currentLetter = letter;
+                    gameState.usedLetters.push(letter);
+                    gameState.roundAnswers = {};
+                    gameState.submittedPlayers = [];
+
+                    broadcast({ type: 'next_round', round: gameState.currentRound, letter: letter });
+                    startRound(letter);
+                }
+            }
+        }
+
+        // ========================
+        // GUEST FUNCTIONS
+        // ========================
+
+        async function joinRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+
+            if (!name) {
+                showError('menuError', 'Lütfen isminizi girin!');
+                return;
+            }
+
+            if (!code || code.length !== 6) {
+                showError('menuError', 'Geçerli bir oda kodu girin!');
+                return;
+            }
+
+            myName = name;
+            isHost = false;
+            roomCode = code;
+
+            try {
+                await initPeer();
+
+                hostConnection = peer.connect('ISIMSEHIR_' + code);
+
+                hostConnection.on('open', () => {
+                    hostConnection.send({ type: 'join', name: myName });
+                    showScreen(waitingScreen);
+                });
+
+                hostConnection.on('data', handleHostMessage);
+
+                hostConnection.on('close', () => {
+                    alert('Bağlantı koptu!');
+                    location.reload();
+                });
+
+            } catch (err) {
+                showError('menuError', err.message);
+            }
+        }
+
+        function handleHostMessage(data) {
+            console.log('From host:', data);
+
+            switch (data.type) {
+                case 'error':
+                    alert(data.message);
+                    location.reload();
+                    break;
+
+                case 'players_update':
+                    players = data.players;
+                    renderPlayerList('guestPlayerList');
+                    break;
+
+                case 'settings_update':
+                    updateGuestSettings(data.settings);
+                    break;
+
+                case 'game_start':
+                    gameSettings = data.settings;
+                    players = data.players;
+                    gameState.currentRound = 1;
+                    gameState.currentLetter = data.letter;
+                    players.forEach(p => gameState.scores[p.id] = 0);
+                    startRound(data.letter);
+                    break;
+
+                case 'submit_progress':
+                    document.getElementById('submitProgress').textContent =
+                        `${data.submitted}/${data.total} oyuncu gönderdi`;
+                    break;
+
+                case 'round_results':
+                    gameState.currentRound = data.round;
+                    gameState.currentLetter = data.letter;
+                    gameState.scores = data.totalScores;
+                    showRoundResults(data.roundScores, data.isLastRound);
+                    break;
+
+                case 'next_round':
+                    gameState.currentRound = data.round;
+                    gameState.currentLetter = data.letter;
+                    startRound(data.letter);
+                    break;
+
+                case 'game_over':
+                    gameState.scores = data.scores;
+                    players = data.players;
+                    showFinalResults();
+                    break;
+            }
+        }
+
+        function updateGuestSettings(settings) {
+            document.getElementById('guestRoundCount').textContent = settings.roundCount + ' Round';
+            document.getElementById('guestRoundTime').textContent = settings.roundTime + ' Saniye';
+
+            const catNames = settings.categories.map(catId => {
+                const cat = ALL_CATEGORIES.find(c => c.id === catId);
+                return cat ? cat.name : catId;
+            });
+            document.getElementById('guestCategories').textContent = catNames.join(', ');
+        }
+
+        // ========================
+        // SHARED GAME FUNCTIONS
+        // ========================
+
+        function startRound(letter) {
+            gameState.submittedPlayers = [];
+            gameState.roundAnswers = {};
+
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+            document.getElementById('totalRounds').textContent = gameSettings.roundCount;
+            document.getElementById('currentLetter').textContent = letter;
+
+            // Generate answer inputs
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = gameSettings.categories.map(catId => {
+                const cat = ALL_CATEGORIES.find(c => c.id === catId);
+                return `
+                    <div class="answer-row">
+                        <span class="answer-category">${cat.emoji} ${cat.name}</span>
+                        <input type="text" class="answer-input" id="answer_${catId}" 
+                               placeholder="${letter} ile başlayan ${cat.name.toLowerCase()}..."
+                               oninput="validateAnswer(this, '${letter}')">
+                    </div>
+                `;
+            }).join('');
+
+            // Enable submit button
+            document.getElementById('submitAnswersBtn').disabled = false;
+            document.getElementById('submitAnswersBtn').style.display = 'block';
+            document.getElementById('gameWaiting').style.display = 'none';
+
+            // Start timer
+            let timeLeft = gameSettings.roundTime;
+            const timerEl = document.getElementById('timerValue');
+            timerEl.textContent = timeLeft;
+            timerEl.className = 'timer-value';
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+
+                if (timeLeft <= 10) {
+                    timerEl.className = 'timer-value danger';
+                } else if (timeLeft <= 20) {
+                    timerEl.className = 'timer-value warning';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitAnswers();
+                }
+            }, 1000);
+
+            showScreen(gameScreen);
+
+            // Focus first input
+            setTimeout(() => {
+                const firstInput = container.querySelector('.answer-input');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function validateAnswer(input, letter) {
+            const value = input.value.trim();
+            if (!value) {
+                input.className = 'answer-input';
+            } else if (value.charAt(0).toUpperCase() === letter) {
+                input.className = 'answer-input valid';
+            } else {
+                input.className = 'answer-input invalid';
+            }
+        }
+
+        function submitAnswers() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            const answers = {};
+            gameSettings.categories.forEach(catId => {
+                const input = document.getElementById('answer_' + catId);
+                answers[catId] = input ? input.value.trim() : '';
+            });
+
+            document.getElementById('submitAnswersBtn').disabled = true;
+            document.getElementById('submitAnswersBtn').style.display = 'none';
+            document.getElementById('gameWaiting').style.display = 'block';
+
+            // Disable inputs
+            document.querySelectorAll('.answer-input').forEach(input => input.disabled = true);
+
+            if (isHost) {
+                handleAnswersSubmit(myId, answers);
+            } else {
+                sendToHost({ type: 'answers_submit', playerId: myId, answers: answers });
+            }
+        }
+
+        function autoSubmitAnswers() {
+            submitAnswers();
+        }
+
+        function showRoundResults(roundScores, isLastRound) {
+            document.getElementById('resultsRound').textContent = gameState.currentRound;
+            document.getElementById('resultsLetter').textContent = gameState.currentLetter;
+
+            // Build results table
+            const table = document.getElementById('resultsTable');
+
+            // Header
+            let headerRow = '<tr><th>Oyuncu</th>';
+            gameSettings.categories.forEach(catId => {
+                const cat = ALL_CATEGORIES.find(c => c.id === catId);
+                headerRow += `<th>${cat.emoji}</th>`;
+            });
+            headerRow += '<th>+Puan</th></tr>';
+
+            // Player rows
+            let rows = '';
+            players.forEach(p => {
+                let row = `<tr><td style="font-weight:600;">${p.name}</td>`;
+                let roundTotal = 0;
+
+                gameSettings.categories.forEach(catId => {
+                    const result = roundScores[p.id]?.[catId] || { answer: '-', score: 0, type: 'empty' };
+                    roundTotal += result.score;
+                    row += `<td class="answer-cell ${result.type}">${result.answer}</td>`;
+                });
+
+                row += `<td class="score-cell ${roundTotal > 0 ? 'plus' : 'zero'}">+${roundTotal}</td></tr>`;
+                rows += row;
+            });
+
+            table.innerHTML = headerRow + rows;
+
+            // Current scores
+            const scoresContainer = document.getElementById('currentScores');
+            const sortedPlayers = [...players].sort((a, b) =>
+                (gameState.scores[b.id] || 0) - (gameState.scores[a.id] || 0)
+            );
+
+            const avatars = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'];
+            scoresContainer.innerHTML = sortedPlayers.map((p, i) => `
+                <div class="player-item">
+                    <div class="player-avatar ${avatars[players.indexOf(p)]}">${players.indexOf(p) + 1}</div>
+                    <span class="player-name">${p.name}</span>
+                    <span class="player-score">${gameState.scores[p.id] || 0}</span>
+                </div>
+            `).join('');
+
+            // Button text
+            const btnText = document.getElementById('nextRoundBtnText');
+            btnText.textContent = isLastRound ? 'Final Sonuçları →' : 'Sonraki Round →';
+            document.getElementById('nextRoundBtn').disabled = false;
+
+            showScreen(resultsScreen);
+        }
+
+        function nextRound() {
+            document.getElementById('nextRoundBtn').disabled = true;
+
+            if (isHost) {
+                handleNextRoundReady(myId);
+            } else {
+                sendToHost({ type: 'next_round_ready', playerId: myId });
+            }
+        }
+
+        function showFinalResults() {
+            const scoreboard = document.getElementById('finalScoreboard');
+            const sortedPlayers = [...players].sort((a, b) =>
+                (gameState.scores[b.id] || 0) - (gameState.scores[a.id] || 0)
+            );
+
+            scoreboard.innerHTML = sortedPlayers.map((p, rank) => {
+                const rankClass = rank === 0 ? 'gold' : rank === 1 ? 'silver' : rank === 2 ? 'bronze' : 'normal';
+                const isWinner = rank === 0;
+
+                return `
+                    <div class="final-player ${isWinner ? 'winner' : ''}">
+                        <div class="final-rank ${rankClass}">${rank + 1}</div>
+                        <div class="final-info">
+                            <div class="final-name">${isWinner ? '👑 ' : ''}${p.name}</div>
+                        </div>
+                        <div class="final-score">${gameState.scores[p.id] || 0}</div>
+                    </div>
+                `;
+            }).join('');
+
+            showScreen(finalScreen);
+        }
+
+        // ========================
+        // EVENT LISTENERS
+        // ========================
+
+        document.getElementById('createRoomBtn').addEventListener('click', createRoom);
+        document.getElementById('joinRoomBtn').addEventListener('click', joinRoom);
+        document.getElementById('startGameBtn').addEventListener('click', startGame);
+        document.getElementById('submitAnswersBtn').addEventListener('click', submitAnswers);
+        document.getElementById('nextRoundBtn').addEventListener('click', nextRound);
+
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const code = document.getElementById('roomCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('copyCodeBtn').textContent = '✅ Kopyalandı!';
+                setTimeout(() => {
+                    document.getElementById('copyCodeBtn').textContent = '📋 Kopyala';
+                }, 2000);
+            });
+        });
+
+        // Room code uppercase
+        document.getElementById('roomCodeInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+
+        // Enter key for name input
+        document.getElementById('playerName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const roomCode = document.getElementById('roomCodeInput').value.trim();
+                if (roomCode) {
+                    joinRoom();
+                } else {
+                    createRoom();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
