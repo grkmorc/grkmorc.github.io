@@ -560,6 +560,11 @@
             font-style: italic;
         }
 
+        .results-table .answer-cell.challenged {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+
         .results-table .score-cell {
             font-weight: 700;
             text-align: center;
@@ -571,6 +576,187 @@
 
         .results-table .score-cell.zero {
             color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Challenge Screen Styles */
+        .challenge-timer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .challenge-timer-value {
+            font-size: 36px;
+            font-weight: 900;
+            color: #f39c12;
+        }
+
+        .challenge-timer-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .challenge-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .challenge-table th {
+            padding: 10px 6px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+
+        .challenge-table td {
+            padding: 10px 6px;
+            font-size: 13px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .challenge-answer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .challenge-answer-text {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .challenge-answer-text.invalid {
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+        }
+
+        .challenge-answer-text.challenged {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+
+        .challenge-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .challenge-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .challenge-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .challenge-btn.challenged {
+            background: #e74c3c;
+            color: #fff;
+            cursor: default;
+        }
+
+        .challenge-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .challenge-status.pending {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .challenge-status.rejected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .challenge-status.accepted {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .challenge-info {
+            text-align: center;
+            padding: 15px;
+            background: rgba(241, 196, 15, 0.1);
+            border: 1px solid rgba(241, 196, 15, 0.3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        /* Vote Buttons */
+        .vote-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .vote-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .vote-btn.approve {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .vote-btn.approve:hover {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .vote-btn.reject {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .vote-btn.reject:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .vote-btn.voted {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .challenge-count {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 10px;
+        }
+
+        .challenge-count span {
+            color: #e74c3c;
+            font-weight: 700;
         }
 
         /* Round Header */
@@ -901,7 +1087,39 @@
             </div>
         </div>
 
+        <!-- CHALLENGE SCREEN -->
+        <div id="challengeScreen" class="screen">
+            <div class="card">
+                <div class="round-header">
+                    <div class="round-number">Round <span id="challengeRound">1</span> - İtiraz Aşaması</div>
+                    <div class="round-title">Harf: <span id="challengeLetter">A</span></div>
+                </div>
+
+                <div class="challenge-timer">
+                    <div class="challenge-timer-label">Kalan Süre</div>
+                    <div class="challenge-timer-value" id="challengeTimerValue">15</div>
+                </div>
+
+                <div class="challenge-info">
+                    ⚠️ Geçersiz gördüğünüz cevaplara itiraz edebilirsiniz. Çoğunluk onaylarsa cevap iptal olur!
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="challenge-table" id="challengeTable">
+                        <!-- Challenge table will be generated here -->
+                    </table>
+                </div>
+
+                <div class="challenge-count" id="challengeCount"></div>
+
+                <button class="btn btn-primary" id="skipChallengeBtn">
+                    ✓ İtiraz Yok, Devam Et
+                </button>
+            </div>
+        </div>
+
         <!-- ROUND RESULTS SCREEN -->
+
         <div id="resultsScreen" class="screen">
             <div class="card">
                 <div class="round-header">
@@ -968,6 +1186,7 @@
         const lobbyScreen = document.getElementById('lobbyScreen');
         const waitingScreen = document.getElementById('waitingScreen');
         const gameScreen = document.getElementById('gameScreen');
+        const challengeScreen = document.getElementById('challengeScreen');
         const resultsScreen = document.getElementById('resultsScreen');
         const finalScreen = document.getElementById('finalScreen');
         const connectionStatus = document.getElementById('connectionStatus');
@@ -994,7 +1213,11 @@
             usedLetters: [],
             scores: {},
             roundAnswers: {},
-            submittedPlayers: []
+            submittedPlayers: [],
+            // Challenge system
+            challenges: {},           // { 'playerId_catId': { challenger, votes: {} } }
+            challengedAnswers: {},    // { 'playerId_catId': true } - final rejected answers
+            challengeReady: []        // players ready to continue from challenge
         };
 
         let timerInterval = null;
@@ -1012,7 +1235,7 @@
 
         // Show screen
         function showScreen(screen) {
-            [menuScreen, lobbyScreen, waitingScreen, gameScreen, resultsScreen, finalScreen]
+            [menuScreen, lobbyScreen, waitingScreen, gameScreen, challengeScreen, resultsScreen, finalScreen]
                 .forEach(s => s.classList.remove('active'));
             screen.classList.add('active');
         }
@@ -1194,6 +1417,15 @@
                 if (data.type === 'next_round_ready') {
                     handleNextRoundReady(data.playerId);
                 }
+
+                // Challenge system messages
+                if (data.type === 'challenge') {
+                    handleChallenge(data);
+                }
+
+                if (data.type === 'challenge_ready') {
+                    handleChallengeReady(data.playerId);
+                }
             });
 
             conn.on('close', () => {
@@ -1266,8 +1498,275 @@
             broadcast({ type: 'submit_progress', submitted: submitted, total: players.length });
 
             if (submitted >= players.length) {
-                calculateRoundScores();
+                // Start challenge phase instead of calculating scores directly
+                startChallengePhase();
             }
+        }
+
+        // ========================
+        // CHALLENGE SYSTEM
+        // ========================
+
+        let challengeTimer = null;
+        const CHALLENGE_TIME = 15; // seconds
+
+        function startChallengePhase() {
+            // Stop game timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            // Reset challenge state
+            gameState.challenges = {};
+            gameState.challengedAnswers = {};
+            gameState.challengeReady = [];
+
+            // Broadcast to all players to show challenge screen
+            broadcast({
+                type: 'challenge_start',
+                round: gameState.currentRound,
+                letter: gameState.currentLetter,
+                answers: gameState.roundAnswers
+            });
+
+            showChallengeScreen();
+        }
+
+        function showChallengeScreen() {
+            document.getElementById('challengeRound').textContent = gameState.currentRound;
+            document.getElementById('challengeLetter').textContent = gameState.currentLetter;
+
+            const letter = gameState.currentLetter.toUpperCase();
+
+            // Build challenge table
+            const table = document.getElementById('challengeTable');
+            let headerRow = '<tr><th>Oyuncu</th>';
+            gameSettings.categories.forEach(catId => {
+                const cat = ALL_CATEGORIES.find(c => c.id === catId);
+                headerRow += `<th>${cat.emoji} ${cat.name}</th>`;
+            });
+            headerRow += '</tr>';
+
+            let rows = '';
+            players.forEach(p => {
+                let row = `<tr><td style="font-weight:600;">${p.name}</td>`;
+
+                gameSettings.categories.forEach(catId => {
+                    const answer = (gameState.roundAnswers[p.id]?.[catId] || '').trim();
+                    const isValid = answer && answer.charAt(0).toUpperCase() === letter;
+                    const challengeKey = `${p.id}_${catId}`;
+                    const isOwnAnswer = p.id === myId;
+                    const isChallenged = gameState.challenges[challengeKey];
+
+                    let cellContent = '';
+                    if (!answer) {
+                        cellContent = `<span class="challenge-answer-text invalid">-</span>`;
+                    } else if (!isValid) {
+                        cellContent = `<span class="challenge-answer-text invalid">${answer}</span>`;
+                    } else if (isChallenged) {
+                        cellContent = `
+                            <div class="challenge-answer">
+                                <span class="challenge-answer-text challenged">${answer}</span>
+                                <span class="challenge-status pending">İtiraz Edildi</span>
+                            </div>`;
+                    } else if (isOwnAnswer) {
+                        cellContent = `<span class="challenge-answer-text">${answer}</span>`;
+                    } else {
+                        cellContent = `
+                            <div class="challenge-answer">
+                                <span class="challenge-answer-text">${answer}</span>
+                                <button class="challenge-btn" onclick="challengeAnswer('${p.id}', '${catId}')">❌ İtiraz</button>
+                            </div>`;
+                    }
+
+                    row += `<td>${cellContent}</td>`;
+                });
+
+                row += '</tr>';
+                rows += row;
+            });
+
+            table.innerHTML = headerRow + rows;
+
+            // Update challenge count
+            updateChallengeCount();
+
+            // Start challenge timer
+            let timeLeft = CHALLENGE_TIME;
+            document.getElementById('challengeTimerValue').textContent = timeLeft;
+
+            challengeTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('challengeTimerValue').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(challengeTimer);
+                    challengeTimer = null;
+                    finishChallengePhase();
+                }
+            }, 1000);
+
+            showScreen(challengeScreen);
+        }
+
+        function updateChallengeCount() {
+            const count = Object.keys(gameState.challenges).length;
+            const countEl = document.getElementById('challengeCount');
+            if (count > 0) {
+                countEl.innerHTML = `<span>${count}</span> cevaba itiraz edildi`;
+            } else {
+                countEl.textContent = '';
+            }
+        }
+
+        function challengeAnswer(targetPlayerId, categoryId) {
+            const challengeKey = `${targetPlayerId}_${categoryId}`;
+
+            // Already challenged?
+            if (gameState.challenges[challengeKey]) return;
+
+            // Can't challenge own answer
+            if (targetPlayerId === myId) return;
+
+            // Mark as challenged locally
+            gameState.challenges[challengeKey] = {
+                challenger: myId,
+                votes: { [myId]: true } // Challenger automatically votes to reject
+            };
+
+            if (isHost) {
+                handleChallenge({ challengeKey, challengerId: myId });
+            } else {
+                sendToHost({ type: 'challenge', challengeKey: challengeKey, challengerId: myId });
+            }
+
+            // Refresh UI
+            showChallengeScreen();
+        }
+
+        function handleChallenge(data) {
+            const { challengeKey, challengerId } = data;
+
+            if (!gameState.challenges[challengeKey]) {
+                gameState.challenges[challengeKey] = {
+                    challenger: challengerId,
+                    votes: { [challengerId]: true }
+                };
+            }
+
+            // Broadcast challenge to all players
+            broadcast({
+                type: 'challenge_update',
+                challenges: gameState.challenges
+            });
+
+            // Refresh host UI
+            showChallengeScreen();
+        }
+
+        function skipChallenge() {
+            // Player is ready to move on
+            if (isHost) {
+                handleChallengeReady(myId);
+            } else {
+                sendToHost({ type: 'challenge_ready', playerId: myId });
+            }
+
+            document.getElementById('skipChallengeBtn').disabled = true;
+            document.getElementById('skipChallengeBtn').textContent = 'Bekleniyor...';
+        }
+
+        function handleChallengeReady(playerId) {
+            if (!gameState.challengeReady.includes(playerId)) {
+                gameState.challengeReady.push(playerId);
+            }
+
+            // If all players ready OR timeout, finish challenge phase
+            if (gameState.challengeReady.length >= players.length) {
+                finishChallengePhase();
+            }
+        }
+
+        function finishChallengePhase() {
+            if (challengeTimer) {
+                clearInterval(challengeTimer);
+                challengeTimer = null;
+            }
+
+            // Process challenges - majority vote determines if answer is rejected
+            Object.keys(gameState.challenges).forEach(challengeKey => {
+                const challenge = gameState.challenges[challengeKey];
+                const voteCount = Object.values(challenge.votes).filter(v => v === true).length;
+                const majority = Math.ceil(players.length / 2);
+
+                if (voteCount >= majority) {
+                    gameState.challengedAnswers[challengeKey] = true;
+                }
+            });
+
+            // Broadcast final challenged answers and proceed to scoring
+            broadcast({
+                type: 'challenge_complete',
+                challengedAnswers: gameState.challengedAnswers
+            });
+
+            calculateRoundScores();
+        }
+
+        function refreshChallengeTable() {
+            // Refresh the challenge table UI without restarting timer
+            const letter = gameState.currentLetter.toUpperCase();
+            const table = document.getElementById('challengeTable');
+
+            let headerRow = '<tr><th>Oyuncu</th>';
+            gameSettings.categories.forEach(catId => {
+                const cat = ALL_CATEGORIES.find(c => c.id === catId);
+                headerRow += `<th>${cat.emoji} ${cat.name}</th>`;
+            });
+            headerRow += '</tr>';
+
+            let rows = '';
+            players.forEach(p => {
+                let row = `<tr><td style="font-weight:600;">${p.name}</td>`;
+
+                gameSettings.categories.forEach(catId => {
+                    const answer = (gameState.roundAnswers[p.id]?.[catId] || '').trim();
+                    const isValid = answer && answer.charAt(0).toUpperCase() === letter;
+                    const challengeKey = `${p.id}_${catId}`;
+                    const isOwnAnswer = p.id === myId;
+                    const isChallenged = gameState.challenges[challengeKey];
+
+                    let cellContent = '';
+                    if (!answer) {
+                        cellContent = `<span class="challenge-answer-text invalid">-</span>`;
+                    } else if (!isValid) {
+                        cellContent = `<span class="challenge-answer-text invalid">${answer}</span>`;
+                    } else if (isChallenged) {
+                        cellContent = `
+                            <div class="challenge-answer">
+                                <span class="challenge-answer-text challenged">${answer}</span>
+                                <span class="challenge-status pending">İtiraz Edildi</span>
+                            </div>`;
+                    } else if (isOwnAnswer) {
+                        cellContent = `<span class="challenge-answer-text">${answer}</span>`;
+                    } else {
+                        cellContent = `
+                            <div class="challenge-answer">
+                                <span class="challenge-answer-text">${answer}</span>
+                                <button class="challenge-btn" onclick="challengeAnswer('${p.id}', '${catId}')">❌ İtiraz</button>
+                            </div>`;
+                    }
+
+                    row += `<td>${cellContent}</td>`;
+                });
+
+                row += '</tr>';
+                rows += row;
+            });
+
+            table.innerHTML = headerRow + rows;
+            updateChallengeCount();
         }
 
         function calculateRoundScores() {
@@ -1295,14 +1794,19 @@
                 });
             });
 
-            // Calculate scores
+            // Calculate scores (considering challenged answers)
             gameSettings.categories.forEach(cat => {
                 players.forEach(p => {
                     const rawAnswer = (gameState.roundAnswers[p.id]?.[cat] || '').trim();
                     const answer = rawAnswer.toLowerCase();
+                    const challengeKey = `${p.id}_${cat}`;
+                    const wasChallenged = gameState.challengedAnswers[challengeKey];
 
                     if (!answer || answer.charAt(0).toUpperCase() !== letter) {
                         roundScores[p.id][cat] = { answer: rawAnswer || '-', score: 0, type: 'empty' };
+                    } else if (wasChallenged) {
+                        // Answer was successfully challenged - 0 points
+                        roundScores[p.id][cat] = { answer: rawAnswer, score: 0, type: 'challenged' };
                     } else if (answerCounts[cat][answer] === 1) {
                         roundScores[p.id][cat] = { answer: rawAnswer, score: 10, type: 'unique' };
                         gameState.scores[p.id] = (gameState.scores[p.id] || 0) + 10;
@@ -1446,6 +1950,28 @@
                     gameState.scores = data.scores;
                     players = data.players;
                     showFinalResults();
+                    break;
+
+                // Challenge system messages
+                case 'challenge_start':
+                    gameState.currentRound = data.round;
+                    gameState.currentLetter = data.letter;
+                    gameState.roundAnswers = data.answers;
+                    gameState.challenges = {};
+                    gameState.challengedAnswers = {};
+                    gameState.challengeReady = [];
+                    showChallengeScreen();
+                    break;
+
+                case 'challenge_update':
+                    gameState.challenges = data.challenges;
+                    // Refresh UI without restarting timer
+                    refreshChallengeTable();
+                    break;
+
+                case 'challenge_complete':
+                    gameState.challengedAnswers = data.challengedAnswers;
+                    // Host will send round_results next
                     break;
             }
         }
@@ -1663,6 +2189,7 @@
         document.getElementById('startGameBtn').addEventListener('click', startGame);
         document.getElementById('submitAnswersBtn').addEventListener('click', submitAnswers);
         document.getElementById('nextRoundBtn').addEventListener('click', nextRound);
+        document.getElementById('skipChallengeBtn').addEventListener('click', skipChallenge);
 
         document.getElementById('copyCodeBtn').addEventListener('click', () => {
             const code = document.getElementById('roomCodeDisplay').textContent;
