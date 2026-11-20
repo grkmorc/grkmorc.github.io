@@ -35,7 +35,13 @@ td,th{padding:6px;border-bottom:1px solid var(--bd)}
 body.bl .nm{font-size:19px;line-height:1.3}.big small{font-weight:400;color:var(--mut)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.big{padding:20px 10px;font-size:15px;line-height:1.6}
 .sec{font-size:12px;color:var(--mut);margin:14px 0 4px;text-align:left;grid-column:1/-1}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:28px;letter-spacing:.18em;font-weight:800;margin:8px 0}
+.conn{font-size:12px;text-align:center;margin:6px 0;color:var(--mut)}
+.conn.on{color:var(--ok)}.conn.off{color:var(--bad)}
+.err{color:var(--bad);font-size:13px;margin-top:8px;min-height:1.2em}
+input.name,input.room{width:min(220px,70vw)}
 </style>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 <main>
@@ -43,7 +49,7 @@ body.bl .nm{font-size:19px;line-height:1.3}.big small{font-weight:400;color:var(
 <div class="top"><div class="pl" id="s0"></div><div class="pl" id="s1"></div></div>
 <div class="stage" id="st"></div>
 <div class="log" id="lg"></div>
-<p class="note">Sanal oyun parası kullanılır. Değerler yaklaşık olup oyun sonuna kadar gizlidir. Gerçek para veya bahis yoktur. <a href="#" onclick="menu();return false" style="color:var(--mut)">Konsept menüsü</a></p>
+<p class="note">Sanal oyun parası kullanılır. Değerler yaklaşık olup oyun sonuna kadar gizlidir. Gerçek para veya bahis yoktur. <a href="#" onclick="home();return false" style="color:var(--mut)">Ana menü</a></p>
 </main>
 <script>
 const C0=[
@@ -67,15 +73,20 @@ const C=C0.concat(Object.keys(FM).map(k=>{
   const d=f.s.flat();
   return {e:f.e,t:f.t,m:f.m,d,s:f.s,fm:1};
 }));
-let T,P,BL=0;
 const H0={
 'Efsane Forvetler':{'Cristiano Ronaldo':['En az 2 Ballon d’Or’u olan futbolcu',600],'Lionel Messi':['Dünya Kupası finalinde gol atmış futbolcu',600],'Pelé':['Dünya Kupası’nı en az 2 kez kazanmış futbolcu',450],'Romário':['Barcelona’da forma giymiş Brezilyalı golcü',450],'Gerd Müller':['Bundesliga’da oynamış, en az bir kez gol kralı olmuş forvet',600],'Robert Lewandowski':['Bayern Münih’te forma giymiş golcü',500],'Zlatan Ibrahimović':['Birden fazla ülkede lig şampiyonu olmuş forvet',450],'Ronaldo Nazário':['Hem Barcelona’da hem Real Madrid’de oynamış futbolcu',350],'Thierry Henry':['Premier Lig’de gol krallığı yaşamış forvet',300],'Marco van Basten':['Milan’da oynamış Hollandalı futbolcu',250]},
 'NBA Efsaneleri':{'LeBron James':['En az 4 NBA şampiyonluğu olan oyuncu',28000],'Kareem Abdul-Jabbar':['Lakers formasıyla şampiyon olmuş oyuncu',30000],'Karl Malone':['Sezonun MVP’si seçilmiş ama hiç şampiyon olamamış oyuncu',25000],'Kobe Bryant':['Kariyerinin tamamını tek takımda geçiren, 19+ yıl oynamış oyuncu',30000],'Michael Jordan':['En az 5 kez sezonun MVP’si seçilmiş oyuncu',33000],'Dirk Nowitzki':['Avrupalı doğmuş NBA şampiyonu',28000],'Wilt Chamberlain':['Tek maçta 50+ sayı atmış oyuncu',30000],'Shaquille O’Neal':['Boyu 2.10’un üzerinde, Finals MVP olmuş oyuncu',28000],'Hakeem Olajuwon':['ABD dışında doğup Finals MVP olmuş oyuncu',25000],'Magic Johnson':['Tüm zamanlar en çok asist yapanlar ilk 10’unda yer alan oyuncu',20000]},
 'Tenis Devleri':{'Novak Djokovic':['En az 20 Grand Slam kazanmış tenisçi',22],'Rafael Nadal':['Roland Garros’ta en az 3 kez şampiyon olmuş oyuncu',14],'Roger Federer':['300+ hafta dünya 1 numarası olmuş tenisçi',22],'Pete Sampras':['Wimbledon’ı en az 7 kez kazanmış oyuncu',17],'Björn Borg':['Wimbledon’ı üst üste 5 kez kazanmış oyuncu',15],'Rod Laver':['Avustralya Açık’ı en az 3 kez kazanmış oyuncu',14],'Andre Agassi':['Dört Grand Slam’i de kariyerinde kazanmış tenisçi',14],'Ivan Lendl':['Wimbledon’ı hiç kazanamamış ama 5+ Grand Slam’i olan oyuncu',6],'Jimmy Connors':['ABD Açık’ı en az 5 kez kazanmış oyuncu',14],'Boris Becker':['Grand Slam’i 18 yaşından önce kazanmış oyuncu',6]},
 'F1 Pilotları':{'Lewis Hamilton':['En az 7 dünya şampiyonluğu olan pilot',98],'Michael Schumacher':['Ferrari ile dünya şampiyonu olmuş pilot',40],'Sebastian Vettel':['Red Bull ile dünya şampiyonu olmuş pilot',62],'Alain Prost':['McLaren ile dünya şampiyonu olmuş pilot',55],'Ayrton Senna':['Monaco GP’yi en az 5 kez kazanmış pilot',55],'Fernando Alonso':['Hem Ferrari hem McLaren’da yarışmış, dünya şampiyonu pilot',40],'Nigel Mansell':['İngiliz dünya şampiyonu pilot',45],'Jackie Stewart':['Üç kez dünya şampiyonu olmuş pilot',55],'Jim Clark':['Lotus ile dünya şampiyonu olmuş piloto',28],'Niki Lauda':['1970’lerde dünya şampiyonluğu kazanmış pilot',30]}
 };
-const N=["Sen","Rakip (Bilgisayar)"];
-let G;
+let N=["Sen","Rakip (Bilgisayar)"];
+let G=null,T=null,P=null,BL=0;
+let MODE='cpu';
+let mySeat=0;
+let isHost=false;
+let peer=null,conn=null,roomCode='';
+let myName='',oppName='';
+let applyingRemote=false;
 const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const can=p=>G.bud[p]>0&&G.sq[p].length<5, full=p=>G.sq[p].length>=5;
 const $=id=>document.getElementById(id);
@@ -131,54 +142,266 @@ function drawFromSlices(slices){
   return sh(slices.flat()).slice(0,10);
 }
 
-function newGame(i){
-  if(i!==undefined)T=C[i];
-  let raw;
-  if(T.s){
-    raw=drawFromSlices(T.s);
-  }else{
-    raw=sh(T.d).slice(0,10);
+
+function setNames(){
+  if(MODE==='cpu'){N=["Sen","Rakip (Bilgisayar)"]}
+  else{
+    const host=isHost?myName:(oppName||'Kurucu');
+    const guest=isHost?(oppName||'Misafir'):myName;
+    N=[host||'Oyuncu 1', guest||'Oyuncu 2'];
   }
-  P=raw.map(x=>{
+}
+function label(p){return MODE==='online'?(p===mySeat?'Sen':(N[p]||'Rakip')):N[p]}
+function connected(){return !!(conn&&conn.open)}
+function send(msg){if(connected())conn.send(msg)}
+function syncState(){
+  if(MODE!=='online'||!isHost||!connected()||!G)return;
+  send({type:'sync',BL,ci:C.indexOf(T),G:JSON.parse(JSON.stringify(G)),names:[...N]});
+}
+function applySync(data){
+  applyingRemote=true;
+  BL=!!data.BL;T=C[data.ci];G=data.G;N=data.names||N;
+  document.body.classList.toggle('bl',!!BL);
+  R();
+  applyingRemote=false;
+}
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='';for(let i=0;i<6;i++)c+=chars[(Math.random()*chars.length)|0];
+  return c;
+}
+function cleanupPeer(){
+  try{if(conn)conn.close()}catch(e){}
+  try{if(peer)peer.destroy()}catch(e){}
+  peer=null;conn=null;roomCode='';isHost=false;mySeat=0;
+}
+function initPeer(id=null){
+  return new Promise((resolve,reject)=>{
+    peer=id?new Peer(id):new Peer();
+    const t=setTimeout(()=>reject(new Error('Bağlantı zaman aşımı')),15000);
+    peer.on('open',pid=>{clearTimeout(t);resolve(pid)});
+    peer.on('error',err=>{
+      clearTimeout(t);
+      if(err.type==='unavailable-id')reject(new Error('Bu oda kodu kullanımda'));
+      else if(err.type==='peer-unavailable')reject(new Error('Oda bulunamadı'));
+      else reject(err);
+    });
+  });
+}
+function setupConn(c){
+  conn=c;
+  conn.on('open',()=>{
+    send({type:'hello',name:myName,host:isHost});
+    if(isHost) onlineReady();
+    else onlineGuestWait();
+  });
+  conn.on('data',onMsg);
+  conn.on('close',()=>{
+    if(MODE==='online'&&G){alert('Rakip bağlantısı kesildi');home()}
+  });
+}
+function onMsg(data){
+  if(!data||!data.type)return;
+  if(data.type==='hello'){
+    oppName=data.name||'Rakip';
+    setNames();
+    if(isHost) onlineReady();
+    else onlineGuestWait();
+    return;
+  }
+  if(data.type==='sync'){applySync(data);return}
+  if(data.type==='action'){
+    if(!isHost||!G)return;
+    handleRemoteAction(data);
+    return;
+  }
+  if(data.type==='home'){home(true);return}
+}
+function handleRemoteAction(data){
+  const seat=data.seat;
+  if(seat!==0&&seat!==1)return;
+  if(data.action==='bid'){
+    if(!G||G.a.mode!=='auction'||G.a.turn!==seat)return;
+    const x=+data.x;
+    if(!(x>G.a.bid)||x<1||x>G.bud[seat])return;
+    bid(seat,x);R();turnStep();
+  }else if(data.action==='pass'){
+    if(!G||G.a.mode!=='auction'||G.a.turn!==seat||G.a.bid===0)return;
+    L(`${N[seat]}: pas`);finish();
+  }else if(data.action==='free'){
+    if(!G||G.a.mode!=='free'||G.a.d!==seat)return;
+    const to=+data.to;
+    if(to!==0&&to!==1)return;
+    if(full(to)&&to!==seat)return;
+    give(to,0,`${N[seat]} karar verdi:`);
+  }else if(data.action==='next'){
+    if(!G||G.a.mode!=='result')return;
+    round();
+  }
+}
+
+function home(fromRemote){
+  document.body.classList.remove('bl');
+  G=null;T=null;
+  if(!fromRemote&&MODE==='online'&&connected())send({type:'home'});
+  if(!fromRemote)cleanupPeer();
+  MODE='cpu';mySeat=0;isHost=false;oppName='';myName='';
+  setNames();
+  $('s0').innerHTML='';$('s1').innerHTML='';$('lg').innerHTML='';
+  $('st').innerHTML=`<div class="nm">Mod seç</div>
+    <div class="gl" style="margin:8px 0">Aynı kurallar · 20 ₺ · 5 kart · 10 tur · gerçek para yok</div>
+    <div class="row" style="margin-top:14px">
+      <button onclick="startCpu()">Bilgisayara karşı</button>
+      <button class="alt" onclick="startOnlineMenu()">Arkadaşla online</button>
+    </div>
+    <div class="conn" id="connHint"></div>`;
+}
+function startCpu(){
+  cleanupPeer();MODE='cpu';mySeat=0;setNames();menu();
+}
+function startOnlineMenu(){
+  MODE='online';setNames();
+  $('s0').innerHTML='';$('s1').innerHTML='';$('lg').innerHTML='';
+  $('st').innerHTML=`<div class="nm">Online mezat</div>
+    <div class="gl">İki telefonda oyna · PeerJS (Imposter/Decode ile aynı)</div>
+    <div class="row" style="margin:12px 0"><input class="name" id="pn" placeholder="İsmin" maxlength="16"></div>
+    <div class="row"><button onclick="createRoom()">Oda oluştur</button></div>
+    <div class="row" style="margin-top:10px"><input class="room" id="rc" placeholder="Oda kodu" maxlength="6" style="text-transform:uppercase">
+      <button class="alt" onclick="joinRoom()">Katıl</button></div>
+    <div class="err" id="menuErr"></div>
+    <div class="row" style="margin-top:14px"><button class="alt" onclick="home()">← Geri</button></div>`;
+}
+function showErr(t){const e=$('menuErr');if(e)e.textContent=t||''}
+async function createRoom(){
+  const name=($('pn')?.value||'').trim();
+  if(!name){showErr('İsim gir');return}
+  myName=name;isHost=true;mySeat=0;MODE='online';
+  roomCode=genCode();
+  try{
+    showErr('Oda açılıyor…');
+    await initPeer('MEZAT_'+roomCode);
+    peer.on('connection',c=>{
+      if(conn&&conn.open){c.on('open',()=>{c.send({type:'full'});c.close()});return}
+      setupConn(c);
+    });
+    setNames();
+    $('st').innerHTML=`<div class="nm">Oda hazır</div>
+      <div class="gl">Kodu arkadaşına gönder</div>
+      <div class="code" id="codeDisp">${roomCode}</div>
+      <div class="row"><button class="alt" onclick="navigator.clipboard.writeText(roomCode)">Kopyala</button></div>
+      <div class="conn off" id="connSt">🔴 Arkadaş bekleniyor…</div>
+      <div class="row" style="margin-top:14px"><button class="alt" onclick="home()">İptal</button></div>`;
+  }catch(err){showErr(err.message||'Oda açılamadı');cleanupPeer()}
+}
+async function joinRoom(){
+  const name=($('pn')?.value||'').trim();
+  const code=($('rc')?.value||'').trim().toUpperCase();
+  if(!name){showErr('İsim gir');return}
+  if(code.length!==6){showErr('6 haneli oda kodu gir');return}
+  myName=name;isHost=false;mySeat=1;MODE='online';roomCode=code;
+  try{
+    showErr('Bağlanıyor…');
+    await initPeer();
+    const c=peer.connect('MEZAT_'+code,{reliable:true});
+    setupConn(c);
+    $('st').innerHTML=`<div class="nm">Katılıyor…</div><div class="gl">Kod: <b>${code}</b></div><div class="conn" id="connSt">Bağlantı kuruluyor…</div>
+      <div class="row" style="margin-top:14px"><button class="alt" onclick="home()">İptal</button></div>`;
+  }catch(err){showErr(err.message||'Katılınamadı');cleanupPeer()}
+}
+function onlineReady(){
+  setNames();
+  const st=$('connSt');if(st){st.className='conn on';st.textContent='🟢 '+oppName+' bağlandı'}
+  menu();
+}
+function onlineGuestWait(){
+  setNames();
+  $('st').innerHTML=`<div class="nm">Bağlandın</div>
+    <div class="gl">${oppName||'Kurucu'} konsept seçiyor…</div>
+    <div class="conn on">🟢 Bağlı · oda ${roomCode}</div>
+    <div class="row" style="margin-top:14px"><button class="alt" onclick="home()">Ayrıl</button></div>`;
+}
+
+function buildPool(){
+  let raw;
+  if(T.s) raw=drawFromSlices(T.s);
+  else raw=sh(T.d).slice(0,10);
+  return raw.map(x=>{
     const h=BL&&H[T.t]&&H[T.t][x[0]];
     return h?{n:h[0],r:x[0],g:x[1],v:h[1]}:{n:x[0],g:x[1]};
   });
+}
+function newGame(i,fromRemote){
+  if(MODE==='online'&&!isHost&&!fromRemote)return;
+  if(i!==undefined)T=C[i];
+  P=buildPool();
   document.body.classList.toggle('bl',!!BL);
-  const avgSrc=T.s?T.d:T.d;
+  const avgSrc=T.d;
+  setNames();
   G={pool:P,i:0,bud:[20,20],sq:[[],[]],log:[],a:null,avg:avgSrc.reduce((s,x)=>s+x[1],0)/avgSrc.length};
   round();
 }
 function menu(){
+  if(MODE==='online'&&!isHost){onlineGuestWait();return}
   document.body.classList.remove('bl');G=null;$('s0').innerHTML='';$('s1').innerHTML='';$('lg').innerHTML='';
   const btn=(c,i)=>`<button class="alt big" ${BL&&!H[c.t]?'disabled':''} onclick="newGame(${i})">${c.e}<br>${c.t}${BL&&!H[c.t]?'<br><small>körleme yok</small>':''}<br><small>havuz: ${c.d.length}</small></button>`;
   const classic=C.filter(c=>!c.fm);
   const foot=C.filter(c=>c.fm);
-  $('st').innerHTML='<div class="nm">Konsept seç</div><div class="row" style="margin:10px 0"><button class="'+(BL?'alt':'')+'" onclick="BL=0;menu()">Normal</button><button class="'+(BL?'':'alt')+'" onclick="BL=1;menu()">🕶️ Körleme</button></div><div class="gl">'+(BL?'Kartlarda isim yok, sadece ipucu var. Kim olduğunu oyun sonunda öğrenirsin.':'Kurallar aynı, kartlar değişir')+'</div><div class="grid"><div class="sec">Futbol metrikleri</div>'+foot.map(c=>btn(c,C.indexOf(c))).join('')+'<div class="sec">Klasik konseptler</div>'+classic.map(c=>btn(c,C.indexOf(c))).join('')+'</div>';
+  const back=MODE==='online'?`<div class="conn on">🟢 Online · ${oppName||'rakip'} · ${roomCode}</div>`:`<div class="row" style="margin-bottom:8px"><button class="alt" onclick="home()">← Mod seçimi</button></div>`;
+  $('st').innerHTML=back+`<div class="nm">Konsept seç</div><div class="row" style="margin:10px 0"><button class="${BL?'alt':''}" onclick="BL=0;menu()">Normal</button><button class="${BL?'':'alt'}" onclick="BL=1;menu()">🕶️ Körleme</button></div><div class="gl">${BL?'Kartlarda isim yok, sadece ipucu var. Kim olduğunu oyun sonunda öğrenirsin.':'Kurallar aynı, kartlar değişir'}</div><div class="grid"><div class="sec">Futbol metrikleri</div>`+foot.map(c=>btn(c,C.indexOf(c))).join('')+`<div class="sec">Klasik konseptler</div>`+classic.map(c=>btn(c,C.indexOf(c))).join('')+`</div>`;
 }
 function L(t){G.log.push(t)}
 function round(){
-  if(G.i>=10){G.a={mode:'end'};return R()}
+  if(G.i>=10){G.a={mode:'end'};R();syncState();return}
   const first=G.i%2,c=G.pool[G.i];
   G.a={mode:'auction',c,first,bid:0,lead:null,turn:first};
-  if(full(0)){return give(1,0,'Kadron dolu olduğu için')}
-  if(full(1)){return give(0,0,'Rakibin kadrosu dolu olduğu için')}
-  if(!can(0)&&!can(1)){const t=G.sq[0].length!==G.sq[1].length?(G.sq[0].length<G.sq[1].length?0:1):first;return give(t,0,'İkinizin de parası bitti, oyuncu')}
-  if(can(0)!==can(1)){const d=can(0)?0:1;G.a.mode='free';G.a.d=d;L(`${N[1-d]} parasız, ${c.n} için karar ${N[d]}’de.`);
-    if(d===1){R();return setTimeout(()=>{if(!G||G.a.mode!=='free'||G.a.c!==c)return;const toMe=(c.v||c.g)<G.avg*.85&&!full(0);give(toMe?0:1,0,'Bilgisayar karar verdi:')},1000)}
-    return R()}
+  if(full(0)){give(1,0,'Kadron dolu olduğu için');return}
+  if(full(1)){give(0,0,'Rakibin kadrosu dolu olduğu için');return}
+  if(!can(0)&&!can(1)){
+    const t=G.sq[0].length!==G.sq[1].length?(G.sq[0].length<G.sq[1].length?0:1):first;
+    give(t,0,'İkinizin de parası bitti, oyuncu');return
+  }
+  if(can(0)!==can(1)){
+    const d=can(0)?0:1;G.a.mode='free';G.a.d=d;L(`${N[1-d]} parasız, ${c.n} için karar ${N[d]}’de.`);
+    if(MODE==='cpu'&&d===1){
+      R();syncState();
+      return setTimeout(()=>{if(!G||G.a.mode!=='free'||G.a.c!==c)return;const toMe=(c.v||c.g)<G.avg*.85&&!full(0);give(toMe?0:1,0,'Bilgisayar karar verdi:')},1000)
+    }
+    R();syncState();return
+  }
   R();turnStep()
 }
 function turnStep(){
-  const a=G.a;if(a.turn===1){return setTimeout(cpu,900)}
-  if(a.bid>0&&G.bud[0]<=a.bid){L('Bütçen yetmiyor, otomatik pas.');return finish()}
-  R()
+  const a=G.a;
+  if(MODE==='cpu'&&a.turn===1){R();return setTimeout(cpu,900)}
+  if(a.bid>0&&G.bud[a.turn]<=a.bid){L(`${N[a.turn]}: bütçe yetmiyor, otomatik pas.`);return finish()}
+  R();syncState()
 }
 function bid(p,x){const a=G.a;a.bid=x;a.lead=p;a.turn=1-p;L(`${N[p]}: ${x} ₺ teklif`)}
-function hBid(){const a=G.a,x=parseInt($('in').value);if(!(x>a.bid)||x<1||x>G.bud[0]){$('in').style.borderColor='var(--bad)';return}bid(0,x);R();turnStep()}
-function hPass(){L('Sen: pas');finish()}
+function hBid(){
+  if(!G||G.a.mode!=='auction'||G.a.turn!==mySeat)return;
+  const a=G.a,x=parseInt($('in').value);
+  if(!(x>a.bid)||x<1||x>G.bud[mySeat]){$('in').style.borderColor='var(--bad)';return}
+  if(MODE==='online'&&!isHost){send({type:'action',action:'bid',seat:mySeat,x});return}
+  bid(mySeat,x);R();turnStep()
+}
+function hPass(){
+  if(!G||G.a.mode!=='auction'||G.a.turn!==mySeat||G.a.bid===0)return;
+  if(MODE==='online'&&!isHost){send({type:'action',action:'pass',seat:mySeat});return}
+  L(`${N[mySeat]}: pas`);finish()
+}
+function hFree(to){
+  if(!G||G.a.mode!=='free'||G.a.d!==mySeat)return;
+  if(MODE==='online'&&!isHost){send({type:'action',action:'free',seat:mySeat,to});return}
+  give(to,0,`${N[mySeat]} karar verdi:`)
+}
+function hNext(){
+  if(!G)return;
+  if(MODE==='online'&&!isHost){send({type:'action',action:'next',seat:mySeat});return}
+  if(G.a.mode==='result')round();
+}
 function cpuMax(){const c=G.a.c,slots=5-G.sq[1].length;return Math.min(G.bud[1],Math.max(1,Math.round(G.bud[1]/slots*((c.v||c.g)/G.avg)*1.4+(Math.random()*2-1))))}
 function cpu(){
-  if(!G||G.a.mode!=='auction'||G.a.turn!==1)return;
+  if(!G||MODE!=='cpu'||G.a.mode!=='auction'||G.a.turn!==1)return;
   const a=G.a,mx=cpuMax();
   if(a.bid===0){bid(1,Math.min(G.bud[1],Math.max(1,Math.round(mx*.4))));R();return turnStep()}
   let n=a.bid+(Math.random()<.25?2:1);if(n>mx)n=a.bid+1;
@@ -189,29 +412,65 @@ function finish(){const a=G.a;give(a.lead,a.bid,`Mezat bitti:`)}
 function give(p,price,why){
   const a=G.a,c=a.c;G.bud[p]-=price;G.sq[p].push(c);
   L(`${why} ${c.n} → ${N[p]}${price?` (${price} ₺)`:' (bedava)'}`);
-  G.a={mode:'result',c,p,price};G.i++;R()
+  G.a={mode:'result',c,p,price};G.i++;R();syncState()
 }
 function R(){
-  for(let p=0;p<2;p++)$('s'+p).innerHTML=`<b>${N[p]}</b><span>${G.bud[p]} ₺</span><ul>${[0,1,2,3,4].map(k=>`<li>${G.sq[p][k]?G.sq[p][k].n:'—'}</li>`).join('')}</ul>`;
+  if(!G)return;
+  const me=MODE==='online'?mySeat:0, opp=1-me;
+  const side=(p,el)=>{
+    const mine=p===me;
+    $(el).innerHTML=`<b>${mine?'Sen':N[p]}</b><span>${G.bud[p]} ₺</span><ul>${[0,1,2,3,4].map(k=>`<li>${G.sq[p][k]?G.sq[p][k].n:'—'}</li>`).join('')}</ul>`;
+  };
+  side(me,'s0');side(opp,'s1');
   $('lg').innerHTML=G.log.slice(-5).reverse().join('<br>');
   const a=G.a,st=$('st');
+  if(!a)return;
   if(a.mode==='end'){
     const t=[0,1].map(p=>G.sq[p].reduce((s,x)=>s+x.g,0));
-    const w=t[0]===t[1]?'🤝 Berabere!':t[0]>t[1]?'🏆 Sen kazandın!':'🏆 Bilgisayar kazandı!';
-    st.innerHTML=`<div class="nm">${w}</div><div class="gl" style="margin:8px 0">Açılan metrik: <b>${T.m}</b></div><table><tr><th>${N[0]}</th><th>${T.m}</th><th>${N[1]}</th></tr>${[0,1,2,3,4].map(k=>`<tr><td>${G.sq[0][k].r||G.sq[0][k].n}</td><td>${G.sq[0][k].g}</td><td>${G.sq[1][k].r||G.sq[1][k].n} (${G.sq[1][k].g})</td></tr>`).join('')}<tr><th>Toplam</th><th>${t[0]}</th><th>${t[1]}</th></tr></table><div class="row" style="margin-top:14px"><button onclick="newGame()">Yeniden oyna</button><button class="alt" onclick="menu()">Konsept değiştir</button></div>`;return
+    let w;
+    if(t[0]===t[1])w='🤝 Berabere!';
+    else if(MODE==='cpu')w=t[0]>t[1]?'🏆 Sen kazandın!':'🏆 Bilgisayar kazandı!';
+    else w=t[me]>t[opp]?'🏆 Sen kazandın!':`🏆 ${N[opp]} kazandı!`;
+    const again=MODE==='online'
+      ?(isHost?`<div class="row" style="margin-top:14px"><button onclick="newGame()">Yeniden oyna</button><button class="alt" onclick="menu()">Konsept değiştir</button></div><div class="row" style="margin-top:8px"><button class="alt" onclick="home()">Ana menü</button></div>`
+              :`<div class="gl" style="margin-top:12px">Kurucu yeni oyun açabilir</div><div class="row" style="margin-top:8px"><button class="alt" onclick="home()">Ana menü</button></div>`)
+      :`<div class="row" style="margin-top:14px"><button onclick="newGame()">Yeniden oyna</button><button class="alt" onclick="menu()">Konsept değiştir</button></div><div class="row" style="margin-top:8px"><button class="alt" onclick="home()">Ana menü</button></div>`;
+    st.innerHTML=`<div class="nm">${w}</div><div class="gl" style="margin:8px 0">Açılan metrik: <b>${T.m}</b></div><table><tr><th>${N[me]}</th><th>${T.m}</th><th>${N[opp]}</th></tr>${[0,1,2,3,4].map(k=>`<tr><td>${G.sq[me][k].r||G.sq[me][k].n}</td><td>${G.sq[me][k].g}</td><td>${G.sq[opp][k].r||G.sq[opp][k].n} (${G.sq[opp][k].g})</td></tr>`).join('')}<tr><th>Toplam</th><th>${t[me]}</th><th>${t[opp]}</th></tr></table>`+again;
+    return
   }
   const c=a.c,hd=`<div class="rn">Tur ${Math.min(G.i+1,10)} / 10</div><div class="nm">${c.n}</div><div class="gl">${T.m}: ???</div>`;
   if(a.mode==='result'){
-    st.innerHTML=`<div class="rn">Tur ${G.i} / 10</div><div class="nm">${c.n}</div><div class="bid">${N[a.p]} aldı${a.price?` · ${a.price} ₺`:' · bedava'}</div><div class="row"><button onclick="round()">${G.i>=10?'Sonucu gör':'Sonraki oyuncu'}</button></div>`;return
+    const btn=(MODE==='online'&&!isHost)
+      ?`<div class="gl" style="margin-top:10px">Kurucu sonraki turu açacak…</div>`
+      :`<div class="row"><button onclick="hNext()">${G.i>=10?'Sonucu gör':'Sonraki oyuncu'}</button></div>`;
+    st.innerHTML=`<div class="rn">Tur ${G.i} / 10</div><div class="nm">${c.n}</div><div class="bid">${N[a.p]} aldı${a.price?` · ${a.price} ₺`:' · bedava'}</div>`+btn;
+    return
   }
   if(a.mode==='free'){
-    st.innerHTML=hd+(a.d===0?`<div class="bid">Rakibin parası bitti. Oyuncuyu kim alsın?</div><div class="row"><button onclick="give(0,0,'Sen aldın:')">Kendi takımıma al</button><button class="alt" onclick="give(1,0,'Sen verdin:')" ${full(1)?'disabled':''}>Rakibe ver</button></div>`:`<div class="bid">Bilgisayar karar veriyor…</div>`);return
+    if(a.d===mySeat){
+      st.innerHTML=hd+`<div class="bid">Rakibin parası bitti. Oyuncuyu kim alsın?</div><div class="row"><button onclick="hFree(${mySeat})">Kendi takımıma al</button><button class="alt" onclick="hFree(${opp})" ${full(opp)?'disabled':''}>Rakibe ver</button></div>`;
+    }else{
+      const waitTxt=MODE==='cpu'?'Bilgisayar karar veriyor…':`${N[a.d]} karar veriyor…`;
+      st.innerHTML=hd+`<div class="bid">${waitTxt}</div>`;
+    }
+    return
   }
-  const opening=a.bid===0&&a.turn===0,ph=a.turn===1;
-  const info=a.bid===0?(ph?'Bilgisayar açılış teklifini düşünüyor…':'Açılış teklifini ver (en az 1 ₺, pas yok)'):`En yüksek teklif: <b>${a.bid} ₺</b> (${N[a.lead]})`;
-  st.innerHTML=hd+`<div class="bid">${info}</div>`+(ph?`<div class="gl">Bilgisayar düşünüyor…</div>`:`<div class="row"><input id="in" type="number" min="${a.bid+1}" max="${G.bud[0]}" value="${a.bid+1}"><button onclick="hBid()">Teklif ver</button><button class="alt" onclick="hPass()" ${opening?'disabled':''}>Pas</button></div><div class="gl" style="margin-top:8px">En fazla ${G.bud[0]} ₺ verebilirsin</div>`)
+  const myTurn=a.turn===mySeat;
+  const opening=a.bid===0&&myTurn;
+  let info;
+  if(a.bid===0){
+    info=myTurn?'Açılış teklifini ver (en az 1 ₺, pas yok)':(MODE==='cpu'?'Bilgisayar açılış teklifini düşünüyor…':`${N[a.turn]} açılış teklifini veriyor…`);
+  }else{
+    info=`En yüksek teklif: <b>${a.bid} ₺</b> (${N[a.lead]})`+(myTurn?'':' · sıra: '+N[a.turn]);
+  }
+  if(myTurn){
+    st.innerHTML=hd+`<div class="bid">${info}</div><div class="row"><input id="in" type="number" min="${a.bid+1}" max="${G.bud[mySeat]}" value="${a.bid+1}"><button onclick="hBid()">Teklif ver</button><button class="alt" onclick="hPass()" ${opening?'disabled':''}>Pas</button></div><div class="gl" style="margin-top:8px">En fazla ${G.bud[mySeat]} ₺ · sıra sende</div>`;
+  }else{
+    const wait=MODE==='cpu'?'Bilgisayar düşünüyor…':`Sıra: ${N[a.turn]}`;
+    st.innerHTML=hd+`<div class="bid">${info}</div><div class="gl">${wait}</div>`;
+  }
 }
-menu();
+home();
 </script>
 </body>
 </html>
