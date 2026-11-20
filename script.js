@@ -70,6 +70,10 @@ gameCards.forEach(card => {
                 // DECODE sayfasına yönlendir
                 window.location.href = 'decode.html';
                 break;
+            case 'mezat':
+                // Mezat Arenası sayfasına yönlendir
+                window.location.href = 'mezat-arenasi.html';
+                break;
             case 'gizliyer':
                 // Gizli yer sayfasına yönlendir
                 window.location.href = 'gizliyer.html';
